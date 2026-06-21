@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-Hans" xml:lang="zh-Hans"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="拿到一个需求后，如何把它拆成程序可以承接的结构，如何判断哪些部分自己写、哪些部分交给库、框架、组件或脚手架，最后如何组装成一个最小可运行系统。五层递进：需求场景 → 程序结构建模 → 构造件选择 → 胶水代码连接 → 最小可运行系统。">
+
+<title>8&nbsp; Chapter 8：交互结构与状态结构（Interaction Structure and State Structure） – 程序构造力</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./chapter-09-boundary-composition-reliability.html" rel="next">
+<link href="./chapter-07-domain-structure.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-f418161beb48e0141c760e455f12af2c.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-95edd58b3b27b9774827898c46d4f452.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-8fd8d5ae0c9443bae954c065c7c237ad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-95edd58b3b27b9774827898c46d4f452.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chapter-06-structure-modeling.html">程序结构建模层</a></li><li class="breadcrumb-item"><a href="./chapter-08-interaction-and-state.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Chapter 8：交互结构与状态结构（Interaction Structure and State Structure）</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">程序构造力</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="切换深色模式"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="切换阅读器模式">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="搜索"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">程序构造的起点：需求场景</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-01-demand-scenario.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Chapter 1：程序不是从语法开始，而是从需求场景开始（Demand Scenario）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-02-demand-to-structure.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Chapter 2：把需求拆成对象、动作、状态、边界和约束（Demand to Structure）</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">支撑模块：基础代码材料与程序表达</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-03-basic-syntax-materials.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Chapter 3：基础语法只是低阶代码材料（Basic Syntax Materials）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-04-syntax-to-expression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Chapter 4：基础语法如何进入程序表达（Syntax to Expression）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-05-expression-unit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Chapter 5：程序表达单元：数据、集合、判断、运行、失败与反馈（Program Expression Units）</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">程序结构建模层</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-06-structure-modeling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Chapter 6：程序结构建模是什么（Program Structure Modeling）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-07-domain-structure.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Chapter 7：领域结构：对象、字段、关系、生命周期与领域约束（Domain Structure）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-08-interaction-and-state.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Chapter 8：交互结构与状态结构（Interaction Structure and State Structure）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-boundary-composition-reliability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Chapter 9：边界结构、组合结构与约束可靠性切面（Boundary, Composition &amp; Reliability）</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">构造件层</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-10-construction-assets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Chapter 10：构造件是什么：库、框架、组件、SDK 与脚手架（Construction Assets）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-11-frontend-assets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Chapter 11：前端构造件：组件库、路由、状态、表单、请求与反馈（Frontend Assets）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-12-backend-assets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Chapter 12：后端构造件：API、数据访问、权限、任务、缓存与观测（Backend Assets）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-13-scaffold.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Chapter 13：脚手架：把结构规格变成项目壳（Scaffold）</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">程序组装层</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-14-structure-to-implementation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Chapter 14：从结构模型到实现方案（From Structure Model to Implementation Plan）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-15-glue-code-and-assembly.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Chapter 15：自写代码、构造件和胶水代码如何连接（Glue Code and Assembly）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-16-minimum-runnable-system.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Chapter 16：形成最小可运行系统（Minimum Runnable System）</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">附录</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./appendix-a-five-layer-summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">附录 A：主构造链总表与支撑模块（Main Chain Summary and Support Module）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./appendix-b-structure-modeling-template.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">附录 B：结构建模模板（Structure Modeling Templates）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./appendix-c-structure-to-asset-mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">附录 C：结构到构造件映射表（Structure-to-Asset Mapping）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./appendix-d-frontend-asset-catalog.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">附录 D：前端构造件分类表（Frontend Asset Catalog）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./appendix-e-backend-asset-catalog.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">E</span>&nbsp; <span class="chapter-title">附录 E：后端构造件分类表（Backend Asset Catalog）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./appendix-f-minimum-runnable-system-checklist.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">F</span>&nbsp; <span class="chapter-title">附录 F：最小可运行系统检查表（Minimum Runnable System Checklist）</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目录</h2>
+   
+  <ul>
+  <li><a href="#本章问题" id="toc-本章问题" class="nav-link active" data-scroll-target="#本章问题"><span class="header-section-number">8.1</span> 本章问题</a></li>
+  <li><a href="#背景为什么这章重要" id="toc-背景为什么这章重要" class="nav-link" data-scroll-target="#背景为什么这章重要"><span class="header-section-number">8.2</span> 背景：为什么这章重要</a></li>
+  <li><a href="#核心内容" id="toc-核心内容" class="nav-link" data-scroll-target="#核心内容"><span class="header-section-number">8.3</span> 核心内容</a>
+  <ul class="collapse">
+  <li><a href="#交互结构" id="toc-交互结构" class="nav-link" data-scroll-target="#交互结构"><span class="header-section-number">8.3.1</span> 交互结构</a></li>
+  <li><a href="#状态结构" id="toc-状态结构" class="nav-link" data-scroll-target="#状态结构"><span class="header-section-number">8.3.2</span> 状态结构</a></li>
+  <li><a href="#状态到构造件的映射预览" id="toc-状态到构造件的映射预览" class="nav-link" data-scroll-target="#状态到构造件的映射预览"><span class="header-section-number">8.3.3</span> 状态到构造件的映射（预览）</a></li>
+  </ul></li>
+  <li><a href="#例子与实践" id="toc-例子与实践" class="nav-link" data-scroll-target="#例子与实践"><span class="header-section-number">8.4</span> 例子与实践</a>
+  <ul class="collapse">
+  <li><a href="#场景task-manager-的交互与状态结构" id="toc-场景task-manager-的交互与状态结构" class="nav-link" data-scroll-target="#场景task-manager-的交互与状态结构"><span class="header-section-number">8.4.1</span> 场景：Task Manager 的交互与状态结构</a></li>
+  </ul></li>
+  <li><a href="#小结" id="toc-小结" class="nav-link" data-scroll-target="#小结"><span class="header-section-number">8.5</span> 小结</a></li>
+  <li><a href="#本章产物" id="toc-本章产物" class="nav-link" data-scroll-target="#本章产物"><span class="header-section-number">8.6</span> 本章产物</a></li>
+  <li><a href="#从业者输出" id="toc-从业者输出" class="nav-link" data-scroll-target="#从业者输出"><span class="header-section-number">8.7</span> 从业者输出</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chapter-06-structure-modeling.html">程序结构建模层</a></li><li class="breadcrumb-item"><a href="./chapter-08-interaction-and-state.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Chapter 8：交互结构与状态结构（Interaction Structure and State Structure）</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Chapter 8：交互结构与状态结构（Interaction Structure and State Structure）</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="本章问题" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="本章问题"><span class="header-section-number">8.1</span> 本章问题</h2>
+<p>领域结构定义了有什么事物，但程序不是静态的事物集合。用户要创建任务、分配任务、完成任务——这些都是交互。任务的状态从 open 变成 in_progress 再到 done——这是状态变化。交互结构和状态结构回答的是”事物之间怎么相互作用”和”什么会变化、怎么变”。</p>
+</section>
+<section id="背景为什么这章重要" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="背景为什么这章重要"><span class="header-section-number">8.2</span> 背景：为什么这章重要</h2>
+<p>交互结构（Interaction Structure）和状态结构（State Structure）是程序结构建模层的动态维度。</p>
+<p><strong>交互结构</strong>描述谁可以做什么——用户动作、系统事件、命令、查询、交互流程。它对应需求拆解中的<strong>动词</strong>。</p>
+<p><strong>状态结构</strong>描述什么会变化——状态拥有者、业务状态、UI 状态、请求状态、缓存状态、异步任务状态、状态转移。它对应需求拆解中的<strong>阶段</strong>。</p>
+<p>这两类结构一起覆盖了程序的动态行为。没有它们，领域结构只是静态的数据定义——你不知道谁操作这些数据、数据怎么变化。</p>
+<p>这一章还建立了从结构到前端/后端构造件的第一座桥梁。状态结构中的不同状态类型直接映射到不同的前端状态库——这是第 11 章的基础。</p>
+</section>
+<section id="核心内容" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="核心内容"><span class="header-section-number">8.3</span> 核心内容</h2>
+<section id="交互结构" class="level3" data-number="8.3.1">
+<h3 data-number="8.3.1" class="anchored" data-anchor-id="交互结构"><span class="header-section-number">8.3.1</span> 交互结构</h3>
+<p>交互结构（Interaction Structure）解决”谁能做什么”的问题。</p>
+<section id="用户动作user-action" class="level4" data-number="8.3.1.1">
+<h4 data-number="8.3.1.1" class="anchored" data-anchor-id="用户动作user-action"><span class="header-section-number">8.3.1.1</span> 用户动作（User Action）</h4>
+<p>用户通过界面或 API 发起的操作。</p>
+<p><strong>解决什么问题</strong>：需求中的”用户创建任务”需要精确化——谁触发、输入什么、输出什么、前置条件是什么。</p>
+<p>用户动作表模板：</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 13%">
+<col style="width: 13%">
+<col style="width: 13%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>动作名</th>
+<th>角色</th>
+<th>输入</th>
+<th>输出</th>
+<th>前置条件</th>
+<th>后置条件</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>create_task</td>
+<td>Member</td>
+<td>title, desc, priority, due_date</td>
+<td>Task</td>
+<td>-</td>
+<td>Task 进入 open 状态</td>
+</tr>
+<tr class="even">
+<td>assign_task</td>
+<td>Manager</td>
+<td>task_id, user_id</td>
+<td>Task</td>
+<td>task.status == open</td>
+<td>Task 进入 in_progress</td>
+</tr>
+<tr class="odd">
+<td>complete_task</td>
+<td>Member</td>
+<td>task_id, note</td>
+<td>Task</td>
+<td>task.status == in_progress, 当前用户是 assignee</td>
+<td>Task 进入 pending_review</td>
+</tr>
+<tr class="even">
+<td>approve_task</td>
+<td>Manager</td>
+<td>task_id</td>
+<td>Task</td>
+<td>task.status == pending_review, 当前用户不是 assignee</td>
+<td>Task 进入 done</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="系统事件system-event" class="level4" data-number="8.3.1.2">
+<h4 data-number="8.3.1.2" class="anchored" data-anchor-id="系统事件system-event"><span class="header-section-number">8.3.1.2</span> 系统事件（System Event）</h4>
+<p>系统自动执行的操作，不需要用户触发。</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 22%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>事件名</th>
+<th>触发条件</th>
+<th>执行动作</th>
+<th>后置条件</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>auto_close</td>
+<td>task 7 天未处理</td>
+<td>将 task 标记为 closed</td>
+<td>Task 进入 closed</td>
+</tr>
+<tr class="even">
+<td>send_notification</td>
+<td>task 状态变化</td>
+<td>通知相关人员</td>
+<td>通知记录写入日志</td>
+</tr>
+<tr class="odd">
+<td>retry_failed_task</td>
+<td>task 执行失败且重试次数未超限</td>
+<td>重新执行 task</td>
+<td>Task 重回 in_progress</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="命令与查询command-query" class="level4" data-number="8.3.1.3">
+<h4 data-number="8.3.1.3" class="anchored" data-anchor-id="命令与查询command-query"><span class="header-section-number">8.3.1.3</span> 命令与查询（Command &amp; Query）</h4>
+<p>区分写操作（命令）和读操作（查询）。这是 CQRS（Command Query Responsibility Segregation）的基本思想。</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>类型</th>
+<th>名称</th>
+<th>输入</th>
+<th>输出</th>
+<th>副作用</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Command</td>
+<td>CreateTask</td>
+<td>TaskCreateRequest</td>
+<td>Task</td>
+<td>写入数据库</td>
+</tr>
+<tr class="even">
+<td>Command</td>
+<td>AssignTask</td>
+<td>AssignRequest</td>
+<td>Task</td>
+<td>更新数据和状态</td>
+</tr>
+<tr class="odd">
+<td>Query</td>
+<td>GetTask</td>
+<td>task_id</td>
+<td>Task</td>
+<td>无</td>
+</tr>
+<tr class="even">
+<td>Query</td>
+<td>ListTasks</td>
+<td>filters</td>
+<td>list[Task]</td>
+<td>无</td>
+</tr>
+<tr class="odd">
+<td>Query</td>
+<td>GetUserTasks</td>
+<td>user_id</td>
+<td>list[Task]</td>
+<td>无</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="交互流程interaction-flow" class="level4" data-number="8.3.1.4">
+<h4 data-number="8.3.1.4" class="anchored" data-anchor-id="交互流程interaction-flow"><span class="header-section-number">8.3.1.4</span> 交互流程（Interaction Flow）</h4>
+<p>多个动作按顺序执行形成一个完整的用户使用场景。</p>
+<pre class="text"><code>创建任务流程:
+  1. Member 填写表单（输入 title, desc, priority, due_date）
+  2. 系统验证输入
+  3. 系统创建 Task（status = open）
+  4. 系统通知创建者
+  5. 页面跳转到任务详情
+
+分配任务流程:
+  1. Manager 选择任务 + 负责人
+  2. 系统验证 task 状态为 open
+  3. 系统验证 user 存在
+  4. 系统分配（status = in_progress）
+  5. 系统通知 assignee</code></pre>
+</section>
+</section>
+<section id="状态结构" class="level3" data-number="8.3.2">
+<h3 data-number="8.3.2" class="anchored" data-anchor-id="状态结构"><span class="header-section-number">8.3.2</span> 状态结构</h3>
+<p>状态结构（State Structure）解决”什么会变化”的问题。</p>
+<section id="状态拥有者state-owner" class="level4" data-number="8.3.2.1">
+<h4 data-number="8.3.2.1" class="anchored" data-anchor-id="状态拥有者state-owner"><span class="header-section-number">8.3.2.1</span> 状态拥有者（State Owner）</h4>
+<p>每个状态的承载对象。</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 35%">
+<col style="width: 29%">
+<col style="width: 35%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>状态拥有者</th>
+<th>状态类型</th>
+<th>状态值集合</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Task</td>
+<td>业务状态</td>
+<td>open, in_progress, pending_review, done, closed, failed</td>
+</tr>
+<tr class="even">
+<td>页面</td>
+<td>UI 状态</td>
+<td>loading, loaded, empty, error</td>
+</tr>
+<tr class="odd">
+<td>表单</td>
+<td>UI 状态</td>
+<td>idle, submitting, submitted, error</td>
+</tr>
+<tr class="even">
+<td>API 请求</td>
+<td>请求状态</td>
+<td>pending, success, error</td>
+</tr>
+<tr class="odd">
+<td>缓存</td>
+<td>缓存状态</td>
+<td>fresh, stale, expired</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="业务状态business-state" class="level4" data-number="8.3.2.2">
+<h4 data-number="8.3.2.2" class="anchored" data-anchor-id="业务状态business-state"><span class="header-section-number">8.3.2.2</span> 业务状态（Business State）</h4>
+<p>领域相关的状态，通常由 status 字段表示。</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> TaskStatus(Enum):</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    OPEN <span class="op">=</span> <span class="st">"open"</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    IN_PROGRESS <span class="op">=</span> <span class="st">"in_progress"</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    PENDING_REVIEW <span class="op">=</span> <span class="st">"pending_review"</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    DONE <span class="op">=</span> <span class="st">"done"</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    CLOSED <span class="op">=</span> <span class="st">"closed"</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    FAILED <span class="op">=</span> <span class="st">"failed"</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="ui-状态ui-state" class="level4" data-number="8.3.2.3">
+<h4 data-number="8.3.2.3" class="anchored" data-anchor-id="ui-状态ui-state"><span class="header-section-number">8.3.2.3</span> UI 状态（UI State）</h4>
+<p>界面交互过程中的临时状态。这些状态不写入数据库，只存在于前端运行时。</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>UI 状态</th>
+<th>含义</th>
+<th>在 Task Manager 中的例子</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>loading</td>
+<td>数据加载中</td>
+<td>任务列表加载时显示骨架屏</td>
+</tr>
+<tr class="even">
+<td>loaded</td>
+<td>数据已加载</td>
+<td>任务列表显示正常内容</td>
+</tr>
+<tr class="odd">
+<td>empty</td>
+<td>数据为空</td>
+<td>没有任务时显示”暂无任务”</td>
+</tr>
+<tr class="even">
+<td>error</td>
+<td>加载失败</td>
+<td>请求错误时显示错误提示</td>
+</tr>
+<tr class="odd">
+<td>submitting</td>
+<td>提交中</td>
+<td>创建任务时按钮显示 loading</td>
+</tr>
+<tr class="even">
+<td>idle</td>
+<td>初始状态</td>
+<td>表单空白等待输入</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="请求状态request-state" class="level4" data-number="8.3.2.4">
+<h4 data-number="8.3.2.4" class="anchored" data-anchor-id="请求状态request-state"><span class="header-section-number">8.3.2.4</span> 请求状态（Request State）</h4>
+<p>网络请求的生命周期。</p>
+<pre class="text"><code>idle → pending → success
+  ↓       ↓
+error   timeout</code></pre>
+<p>每一个 API 调用都有这三个或四个状态。它们不需要写入数据库，但前端必须追踪。</p>
+</section>
+<section id="缓存状态cache-state" class="level4" data-number="8.3.2.5">
+<h4 data-number="8.3.2.5" class="anchored" data-anchor-id="缓存状态cache-state"><span class="header-section-number">8.3.2.5</span> 缓存状态（Cache State）</h4>
+<p>缓存数据的有效期。</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>缓存状态</th>
+<th>含义</th>
+<th>处理方式</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>fresh</td>
+<td>数据是最新的</td>
+<td>直接使用</td>
+</tr>
+<tr class="even">
+<td>stale</td>
+<td>数据可能过时了</td>
+<td>显示旧数据，后台刷新</td>
+</tr>
+<tr class="odd">
+<td>expired</td>
+<td>数据过期</td>
+<td>重新获取</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="状态转移state-transition" class="level4" data-number="8.3.2.6">
+<h4 data-number="8.3.2.6" class="anchored" data-anchor-id="状态转移state-transition"><span class="header-section-number">8.3.2.6</span> 状态转移（State Transition）</h4>
+<p>状态之间合法转移的定义。</p>
+<p>状态转移表模板：</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 25%">
+<col style="width: 16%">
+<col style="width: 25%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>编号</th>
+<th>起始状态</th>
+<th>动作</th>
+<th>目标状态</th>
+<th>约束</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>S01</td>
+<td>open</td>
+<td>assign_task</td>
+<td>in_progress</td>
+<td>assignee 存在</td>
+</tr>
+<tr class="even">
+<td>S02</td>
+<td>in_progress</td>
+<td>complete_task</td>
+<td>pending_review</td>
+<td>当前用户是 assignee</td>
+</tr>
+<tr class="odd">
+<td>S03</td>
+<td>pending_review</td>
+<td>approve_task</td>
+<td>done</td>
+<td>当前用户不是 assignee</td>
+</tr>
+<tr class="even">
+<td>S04</td>
+<td>pending_review</td>
+<td>reject_task</td>
+<td>in_progress</td>
+<td>填写驳回原因</td>
+</tr>
+<tr class="odd">
+<td>S05</td>
+<td>done</td>
+<td>reopen_task</td>
+<td>open</td>
+<td>30 天内</td>
+</tr>
+<tr class="even">
+<td>S06</td>
+<td>in_progress</td>
+<td>fail_task</td>
+<td>failed</td>
+<td>记录失败原因</td>
+</tr>
+<tr class="odd">
+<td>S07</td>
+<td>failed</td>
+<td>retry_task</td>
+<td>in_progress</td>
+<td>retry_count &lt; max_retries</td>
+</tr>
+<tr class="even">
+<td>S08</td>
+<td>open</td>
+<td>cancel_task</td>
+<td>closed</td>
+<td>-</td>
+</tr>
+<tr class="odd">
+<td>S09</td>
+<td>in_progress</td>
+<td>cancel_task</td>
+<td>closed</td>
+<td>-</td>
+</tr>
+<tr class="even">
+<td>S10</td>
+<td>done</td>
+<td>archive_task</td>
+<td>closed</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="反馈动作feedback-action" class="level4" data-number="8.3.2.7">
+<h4 data-number="8.3.2.7" class="anchored" data-anchor-id="反馈动作feedback-action"><span class="header-section-number">8.3.2.7</span> 反馈动作（Feedback Action）</h4>
+<p>状态变化之后的系统反馈——通知、日志、提示。</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>状态变化</th>
+<th>反馈动作</th>
+<th>反馈对象</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>open → in_progress</td>
+<td>通知 assignee</td>
+<td>assignee</td>
+</tr>
+<tr class="even">
+<td>in_progress → pending_review</td>
+<td>通知 creator</td>
+<td>creator</td>
+</tr>
+<tr class="odd">
+<td>pending_review → done</td>
+<td>通知 assignee + creator</td>
+<td>assignee, creator</td>
+</tr>
+<tr class="even">
+<td>pending_review → in_progress</td>
+<td>通知 assignee（驳回原因）</td>
+<td>assignee</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="状态到构造件的映射预览" class="level3" data-number="8.3.3">
+<h3 data-number="8.3.3" class="anchored" data-anchor-id="状态到构造件的映射预览"><span class="header-section-number">8.3.3</span> 状态到构造件的映射（预览）</h3>
+<p>不同状态类型对应不同的前端构造件。这是第 11 章的预览：</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>状态类型</th>
+<th>对应的前端构造件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>UI 局部状态</td>
+<td>useState, useReducer</td>
+<td>React 内置钩子</td>
+</tr>
+<tr class="even">
+<td>全局共享状态</td>
+<td>Redux, Zustand, Pinia</td>
+<td>跨组件共享</td>
+</tr>
+<tr class="odd">
+<td>服务端数据状态</td>
+<td>TanStack Query, SWR, Apollo</td>
+<td>与 API 同步</td>
+</tr>
+<tr class="even">
+<td>表单状态</td>
+<td>React Hook Form</td>
+<td>表单输入追踪</td>
+</tr>
+<tr class="odd">
+<td>路由状态</td>
+<td>React Router, Vue Router</td>
+<td>URL 导航状态</td>
+</tr>
+</tbody>
+</table>
+<p>这个映射说明：状态结构不仅是设计工具，它还告诉你用什么构造件来实现。</p>
+</section>
+</section>
+<section id="例子与实践" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="例子与实践"><span class="header-section-number">8.4</span> 例子与实践</h2>
+<section id="场景task-manager-的交互与状态结构" class="level3" data-number="8.4.1">
+<h3 data-number="8.4.1" class="anchored" data-anchor-id="场景task-manager-的交互与状态结构"><span class="header-section-number">8.4.1</span> 场景：Task Manager 的交互与状态结构</h3>
+<p><strong>交互结构：用户动作表</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 30%">
+<col style="width: 30%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>动作</th>
+<th>角色</th>
+<th>前置条件</th>
+<th>后置条件</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>create_task</td>
+<td>Member</td>
+<td>-</td>
+<td>Task(open)</td>
+</tr>
+<tr class="even">
+<td>assign_task</td>
+<td>Manager</td>
+<td>Task(open)</td>
+<td>Task(in_progress)</td>
+</tr>
+<tr class="odd">
+<td>complete_task</td>
+<td>Member</td>
+<td>Task(in_progress), is_assignee</td>
+<td>Task(pending_review)</td>
+</tr>
+<tr class="even">
+<td>approve_task</td>
+<td>Manager</td>
+<td>Task(pending_review), not_assignee</td>
+<td>Task(done)</td>
+</tr>
+<tr class="odd">
+<td>reject_task</td>
+<td>Manager</td>
+<td>Task(pending_review), not_assignee</td>
+<td>Task(in_progress)</td>
+</tr>
+<tr class="even">
+<td>cancel_task</td>
+<td>Member</td>
+<td>Task(open/in_progress)</td>
+<td>Task(closed)</td>
+</tr>
+<tr class="odd">
+<td>add_comment</td>
+<td>Member</td>
+<td>-</td>
+<td>Comment added</td>
+</tr>
+<tr class="even">
+<td>reopen_task</td>
+<td>Manager</td>
+<td>Task(done/closed), within_30_days</td>
+<td>Task(open)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>交互结构：系统事件表</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 28%">
+<col style="width: 42%">
+<col style="width: 28%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>事件</th>
+<th>触发条件</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>task_created</td>
+<td>create_task 成功</td>
+<td>send_notification(creator)</td>
+</tr>
+<tr class="even">
+<td>task_assigned</td>
+<td>assign_task 成功</td>
+<td>send_notification(assignee)</td>
+</tr>
+<tr class="odd">
+<td>task_completed</td>
+<td>complete_task 成功</td>
+<td>send_notification(manager)</td>
+</tr>
+<tr class="even">
+<td>task_overdue</td>
+<td>due_date &lt; today, status == open</td>
+<td>send_notification(assignee)</td>
+</tr>
+<tr class="odd">
+<td>task_auto_close</td>
+<td>7 天未处理</td>
+<td>自动 cancel</td>
+</tr>
+</tbody>
+</table>
+<p><strong>状态结构：状态拥有者</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 57%">
+<col style="width: 42%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>状态拥有者</th>
+<th>状态集</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Task (业务)</td>
+<td>open, in_progress, pending_review, done, closed, failed</td>
+</tr>
+<tr class="even">
+<td>任务列表页 (UI)</td>
+<td>loading, loaded, empty, error</td>
+</tr>
+<tr class="odd">
+<td>创建任务表单 (UI)</td>
+<td>idle, submitting, submitted, error</td>
+</tr>
+<tr class="even">
+<td>任务详情 API (请求)</td>
+<td>pending, success, error</td>
+</tr>
+</tbody>
+</table>
+<p><strong>状态结构：状态转移表</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>起始</th>
+<th>动作</th>
+<th>目标</th>
+<th>额外条件</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>open</td>
+<td>assign</td>
+<td>in_progress</td>
+<td>assignee != null</td>
+</tr>
+<tr class="even">
+<td>in_progress</td>
+<td>complete</td>
+<td>pending_review</td>
+<td>user == assignee</td>
+</tr>
+<tr class="odd">
+<td>pending_review</td>
+<td>approve</td>
+<td>done</td>
+<td>user != assignee</td>
+</tr>
+<tr class="even">
+<td>pending_review</td>
+<td>reject</td>
+<td>in_progress</td>
+<td>user != assignee</td>
+</tr>
+<tr class="odd">
+<td>in_progress</td>
+<td>fail</td>
+<td>failed</td>
+<td>-</td>
+</tr>
+<tr class="even">
+<td>failed</td>
+<td>retry</td>
+<td>in_progress</td>
+<td>retry_count &lt; 3</td>
+</tr>
+<tr class="odd">
+<td>open</td>
+<td>cancel</td>
+<td>closed</td>
+<td>-</td>
+</tr>
+<tr class="even">
+<td>done</td>
+<td>reopen</td>
+<td>open</td>
+<td>within 30 days</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="小结" class="level2" data-number="8.5">
+<h2 data-number="8.5" class="anchored" data-anchor-id="小结"><span class="header-section-number">8.5</span> 小结</h2>
+<p>交互结构和状态结构覆盖了程序的动态行为。交互结构定义谁能做什么（用户动作、系统事件、命令、查询、交互流程），状态结构定义什么会变化（业务状态、UI 状态、请求状态、缓存状态、状态转移）。</p>
+<p>这两类结构合在一起，可以回答一个完整的问题：谁在什么时候做什么、做完后什么发生了变化、变化后有什么反馈。</p>
+<p>下一章进入剩下的两类结构：边界结构（数据从哪进出）、组合结构（各部分如何组织），以及贯穿所有结构的约束与可靠性切面。</p>
+</section>
+<section id="本章产物" class="level2" data-number="8.6">
+<h2 data-number="8.6" class="anchored" data-anchor-id="本章产物"><span class="header-section-number">8.6</span> 本章产物</h2>
+<p>完成本章后，你拥有以下可交付产物：</p>
+<ul>
+<li>四张表（用户动作表、系统事件表、状态拥有者表、状态转移表）和一份状态到构造件的映射预览。</li>
+</ul>
+<p>可复用模板见附录 B：结构建模模板（Structure Modeling Templates）中的对应模板。</p>
+</section>
+<section id="从业者输出" class="level2" data-number="8.7">
+<h2 data-number="8.7" class="anchored" data-anchor-id="从业者输出"><span class="header-section-number">8.7</span> 从业者输出</h2>
+<p>完成本章后，你能做四件事：</p>
+<p>第一，为一个需求写出一份完整的交互结构表。你列出所有用户动作、系统事件、命令和查询，以及它们的前置条件和后置条件。</p>
+<p>第二，为一个核心对象画出一份完整的<strong>状态转移表</strong>。你列出所有合法转移路径，标注每个转移的前置条件。</p>
+<p>第三，区分<strong>业务状态</strong>和<strong>UI 状态</strong>。你知道 Task.status 是业务状态（需要写入数据库），而”表单正在提交”是 UI 状态（只在前端生效）。</p>
+<p>第四，看到项目中使用的状态库（Redux、Zustand、TanStack Query 等）时，能说出它承接了什么类型的状态结构——而不是只说”这是个状态管理库”。</p>
+<p>产出物是四张表（用户动作表、系统事件表、状态拥有者表、状态转移表）和一份状态到构造件的映射预览。</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "已复制");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "已复制");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./chapter-07-domain-structure.html" class="pagination-link" aria-label="Chapter 7：领域结构：对象、字段、关系、生命周期与领域约束（Domain Structure）">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Chapter 7：领域结构：对象、字段、关系、生命周期与领域约束（Domain Structure）</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./chapter-09-boundary-composition-reliability.html" class="pagination-link" aria-label="Chapter 9：边界结构、组合结构与约束可靠性切面（Boundary, Composition &amp; Reliability）">
+        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Chapter 9：边界结构、组合结构与约束可靠性切面（Boundary, Composition &amp; Reliability）</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

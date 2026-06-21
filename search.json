@@ -1,0 +1,1915 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "程序构造力",
+    "section": "",
+    "text": "Preface\n学完基础语法之后，然后呢？\n这是每个编程学习者都会遇到的问题。你会写 for 循环，会用 if 做判断，知道 dict 可以存键值对——但面对一个实际需求时，不知道从哪里开始。\n问题不在语法。问题在于：语法只是材料，不是蓝图。\n这本书从一个更基本的问题开始：拿到一个需求后，如何把它变成可运行的系统？\n答案不是”用语法堆出程序”。程序构造力不是从语法自然长出程序，而是把需求中的对象、动作、状态、边界、组合和约束抽取成结构模型，再选择代码、库、框架、组件、脚手架或 AI 生成器来承接这些结构，最后用胶水代码组装成可运行系统。\n现代开发的真实过程是：\n需求场景 → 程序结构建模 → 构造件选择 → 胶水代码连接 → 最小可运行系统\n你不需要从零写每一行代码。你需要学会： - 把需求拆成对象、动作、状态、边界和约束 - 把这些结构映射到代码、库、框架、组件和脚手架 - 用最少的胶水代码把一切组装起来\n本书把这条路径分成主构造链的五层。注意，基础语法和程序表达不是主链的一层——它们是贯穿所有层的支撑模块，帮助理解代码如何表达局部含义，但不决定程序的整体结构。读完本书，你不会记住所有语法细节，但你会知道：拿到一个需求，怎么拆出结构，怎么选构造件，怎么组装出一个最小可运行系统。\n我们从一个贯穿全书的需求开始——任务管理系统 Task Manager。",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "chapter-01-demand-scenario.html",
+    "href": "chapter-01-demand-scenario.html",
+    "title": "1  Chapter 1：程序不是从语法开始，而是从需求场景开始（Demand Scenario）",
+    "section": "",
+    "text": "1.1 本章问题\n拿到一个需求后，你的第一反应是什么？很多人第一反应是选框架、搭项目壳、写代码。但这是倒置的。第一件事应该是搞清楚：这个程序要解决什么问题、谁使用它、用户要做什么、系统要接收什么输入、输出什么结果、哪些失败必须处理。",
+    "crumbs": [
+      "程序构造的起点：需求场景",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Chapter 1：程序不是从语法开始，而是从需求场景开始（Demand Scenario）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-01-demand-scenario.html#背景为什么这章重要",
+    "href": "chapter-01-demand-scenario.html#背景为什么这章重要",
+    "title": "1  Chapter 1：程序不是从语法开始，而是从需求场景开始（Demand Scenario）",
+    "section": "1.2 背景：为什么这章重要",
+    "text": "1.2 背景：为什么这章重要\n传统编程教学从语法开始。变量、条件、循环、函数——学完这些后给你一个需求，你试图用语法去堆出程序。这条路的问题是：语法不包含需求上下文。你不会因为知道 for 怎么写就知道这个程序要解决什么问题。\n需求场景层（Demand Scenario Layer）是主构造链的第一个关键环节。它不是代码层，也不是设计层——它是建立程序构造的真正的起点。\n这一层不写代码。这一层做的事是：把模糊的、口头的、文档化的需求，变成一个结构化的场景描述。这个描述是后续所有工作的输入。没有清晰的需求场景，后面的结构建模、构造件选择、代码组装都是在打靶但没有靶心。",
+    "crumbs": [
+      "程序构造的起点：需求场景",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Chapter 1：程序不是从语法开始，而是从需求场景开始（Demand Scenario）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-01-demand-scenario.html#核心内容",
+    "href": "chapter-01-demand-scenario.html#核心内容",
+    "title": "1  Chapter 1：程序不是从语法开始，而是从需求场景开始（Demand Scenario）",
+    "section": "1.3 核心内容",
+    "text": "1.3 核心内容\n\n1.3.1 需求场景层的定义\n需求场景层解决的核心问题：程序要解决的真实世界问题是什么。\n\n\n\n\n\n\n\n维度\n说明\n\n\n\n\n解决的问题\n明确程序的目标、用户、动作、输入、输出和失败条件\n\n\n输入\n模糊的需求描述（口头、文档、Issue）\n\n\n输出\n结构化的六要素场景描述\n\n\n边界\n不涉及技术选型、代码结构、UI 设计\n\n\n取舍\n场景描述越精确，后续结构建模越容易；但过度细化会提前陷入实现细节\n\n\n\n输入：老板说”做个任务管理系统”——这是一句需求。\n输出：一份六要素场景描述——谁用系统做什么、输入什么、输出什么、失败了怎么办。\n\n\n1.3.2 需求场景的六要素\n一个完整的需求场景包含六个要素。缺任何一个，后续的结构建模都会出现盲区。\n\n1.3.2.1 1. 问题（Problem）\n程序要解决的核心问题是什么？一句话说清楚。\n❌ 我们要做一个任务管理系统。\n✅ 团队目前没有统一的任务追踪方式，任务经常遗漏或重复。\n问题描述决定程序的价值。如果问题不清晰，后续所有设计都没有判断标准。\n\n\n1.3.2.2 2. 用户（User）\n谁使用这个程序？列出所有角色。\n❌ 用户是团队成员。\n✅ 角色：团队成员（创建和执行任务）、团队负责人（分配和审核任务）、系统管理员（管理用户和配置）。\n不同角色有不同的动作、权限和视图。角色遗漏是需求场景最常见的缺陷。\n\n\n1.3.2.3 3. 动作（Action）\n每个角色要做什么？列出所有用户动作。\n❌ 用户管理任务。\n✅ 团队成员：创建任务、查看任务列表、更新任务状态、评论任务。\n   团队负责人：分配任务、审核任务完成、查看团队进度。\n   系统管理员：管理用户、管理项目、查看系统日志。\n动作是后续交互结构和状态结构的主要来源。遗漏动作意味着后续结构建模会缺路径。\n\n\n1.3.2.4 4. 输入（Input）\n系统从外部接收什么数据？\n❌ 用户输入任务信息。\n✅ 创建任务时接收：标题（必填，1-200 字符）、描述（可选，最长 2000 字符）、优先级（低/中/高/紧急）、截止日期（可选）。\n输入决定边界结构。没有输入规格，边界结构无法定义校验逻辑。\n\n\n1.3.2.5 5. 输出（Output）\n系统向外部输出什么结果？\n❌ 显示任务列表。\n✅ 任务列表 API 返回：任务 ID、标题、状态、优先级、负责人、创建时间、截止时间。\n   错误时返回：错误码、错误信息、可选的详细验证失败列表。\n输出决定 API 契约和 UI 展示结构。\n\n\n1.3.2.6 6. 失败（Failure）\n哪些失败必须处理？\n❌ 系统出错时显示错误。\n✅ 创建任务时标题为空 → 返回验证错误。\n   分配任务给不存在的用户 → 返回用户不存在错误。\n   数据库写入失败 → 重试 3 次后返回系统错误。\n   通知发送失败 → 记录日志，不阻断主流程。\n失败不是异常情况——失败是所有程序都必须处理的预期路径。不列失败清单，就不算完整的需求场景。\n\n\n\n1.3.3 需求场景六要素检查表\n\n\n\n要素\n识别动作\n必须明确的答案\n\n\n\n\n问题\n写出一句话描述程序解决什么真实问题\n一句话核心问题\n\n\n用户\n列出所有使用该系统的角色\n至少一个角色定义\n\n\n动作\n为每个角色列出他们要做的操作\n每个角色的动作列表\n\n\n输入\n列出系统从外部接收的每项数据\n每个输入的格式和约束\n\n\n输出\n列出系统返回给外部的每种结果\n成功和失败的输出格式\n\n\n失败\n列出至少三个必须处理的失败场景\n至少 3 个失败场景\n\n\n\n\n\n1.3.4 需求场景和代码材料的区别\n需求场景层不出现代码。不出现 dict、不出现 class、不出现 def。需求场景层只出现业务语言。\n❌ 用户通过 POST /tasks 提交 JSON 格式的任务数据。\n✅ 用户填写任务标题、描述和优先级，点击\"创建\"按钮。\n代码出现在后面的层。需求场景层只回答”做什么”，不回答”怎么做”。\n\n\n1.3.5 需求场景到程序结构建模的入口\n需求场景层不是终点。它是后续层的入口。六要素各自映射到程序结构建模层的不同结构：\n问题 → 全书主线，不直接映射结构\n用户 + 动作 → 交互结构 + 状态结构\n输入 → 边界结构\n输出 → 边界结构\n失败 → 约束与可靠性切面\n这个映射是第 2 章的展开内容。本章只建立”需求场景是起点”的认知。",
+    "crumbs": [
+      "程序构造的起点：需求场景",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Chapter 1：程序不是从语法开始，而是从需求场景开始（Demand Scenario）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-01-demand-scenario.html#例子与实践",
+    "href": "chapter-01-demand-scenario.html#例子与实践",
+    "title": "1  Chapter 1：程序不是从语法开始，而是从需求场景开始（Demand Scenario）",
+    "section": "1.4 例子与实践",
+    "text": "1.4 例子与实践\n\n1.4.1 场景：任务管理系统 Task Manager 的需求场景\n贯穿全书的例子是一个任务管理系统。下面写出它的需求场景。\n问题：团队缺乏统一的任务追踪方式。任务通过口头、IM 消息、邮件散布，没有集中管理。任务被遗漏、重复创建、进度不可追踪。\n用户与角色： - 团队成员（Member）：创建任务、查看任务列表、更新自己任务的状态、评论任务 - 团队负责人（Manager）：分配任务给成员、审核任务完成、查看团队所有任务 - 系统管理员（Admin）：管理用户账号、管理项目分类、查看系统日志\n动作用例：\n\n\n\n角色\n动作\n触发条件\n预期结果\n\n\n\n\nMember\n创建任务\n有新工作需要记录\n任务进入待分配状态\n\n\nManager\n分配任务\n任务待分配，适合的成员已确定\n任务进入执行状态\n\n\nMember\n完成任务\n工作完成\n任务进入待审核状态\n\n\nManager\n审核任务\n任务完成待审核\n任务进入已完成状态\n\n\nMember\n评论任务\n需要对任务发表意见\n评论被记录并通知相关人员\n\n\nAdmin\n管理用户\n需要添加/移除团队成员\n用户被添加或移除\n\n\n系统\n发送通知\n任务状态变化\n通知相关人员\n\n\n\n输入规格：\n\n\n\n动作\n输入字段\n约束\n\n\n\n\n创建任务\ntitle（必填）\n1-200 字符\n\n\n创建任务\ndescription（可选）\n0-2000 字符\n\n\n创建任务\npriority（必填）\nlow / medium / high / urgent\n\n\n创建任务\ndue_date（可选）\n日期格式，不早于今天\n\n\n分配任务\ntask_id + assignee_id\nassignee 必须是有效用户\n\n\n评论任务\ntask_id + content\ncontent 1-1000 字符\n\n\n\n输出规格：\n\n\n\n场景\n输出内容\n\n\n\n\n创建任务成功\ntask 对象（含自动生成的 id、created_at）\n\n\n创建任务失败（验证）\n错误码: VALIDATION_ERROR + 失败字段列表\n\n\n分配成功\ntask 对象（status 更新为 in_progress）\n\n\n分配失败（用户不存在）\n错误码: NOT_FOUND\n\n\n操作成功\n标准成功响应\n\n\n系统内部错误\n错误码: INTERNAL_ERROR\n\n\n\n失败场景：\n\n\n\n失败场景\n处理方式\n\n\n\n\n标题为空\n返回验证错误，不创建任务\n\n\n分配给不存在的用户\n返回用户不存在错误\n\n\n状态转移非法（如从 closed 直接到 done）\n返回状态冲突错误\n\n\n数据库写入失败\n重试 3 次，全部失败返回系统错误\n\n\n通知发送失败\n记录日志，不阻断主流程\n\n\n\n\n\n1.4.2 六要素检查\n\n\n\n要素\nTask Manager 的答案\n\n\n\n\n问题\n团队任务缺乏统一追踪\n\n\n用户\nMember, Manager, Admin\n\n\n动作\n创建、分配、完成、审核、评论、通知\n\n\n输入\n标题、描述、优先级、截止日期\n\n\n输出\n任务对象、错误响应\n\n\n失败\n验证错误、状态冲突、数据库失败、通知失败",
+    "crumbs": [
+      "程序构造的起点：需求场景",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Chapter 1：程序不是从语法开始，而是从需求场景开始（Demand Scenario）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-01-demand-scenario.html#小结",
+    "href": "chapter-01-demand-scenario.html#小结",
+    "title": "1  Chapter 1：程序不是从语法开始，而是从需求场景开始（Demand Scenario）",
+    "section": "1.5 小结",
+    "text": "1.5 小结\n需求场景层是主构造链的第一个关键环节。它不写代码，不做设计，只做一件事：把模糊的需求变成结构化的六要素场景描述。\n问题、用户、动作、输入、输出、失败——六个要素缺一不可。缺了任何一个，后续的结构建模都会出现盲区。完成了需求场景层，你才真正知道：这个程序要解决什么问题。\n下一章做的事：把需求场景中的六个要素，拆成程序结构建模层可以消费的五类结构。",
+    "crumbs": [
+      "程序构造的起点：需求场景",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Chapter 1：程序不是从语法开始，而是从需求场景开始（Demand Scenario）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-01-demand-scenario.html#本章产物",
+    "href": "chapter-01-demand-scenario.html#本章产物",
+    "title": "1  Chapter 1：程序不是从语法开始，而是从需求场景开始（Demand Scenario）",
+    "section": "1.6 本章产物",
+    "text": "1.6 本章产物\n完成本章后，你拥有以下可交付产物：\n\n一份六要素场景描述。\n\n可复用模板见附录 B：结构建模模板（Structure Modeling Templates）中的对应模板。",
+    "crumbs": [
+      "程序构造的起点：需求场景",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Chapter 1：程序不是从语法开始，而是从需求场景开始（Demand Scenario）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-01-demand-scenario.html#从业者输出",
+    "href": "chapter-01-demand-scenario.html#从业者输出",
+    "title": "1  Chapter 1：程序不是从语法开始，而是从需求场景开始（Demand Scenario）",
+    "section": "1.7 从业者输出",
+    "text": "1.7 从业者输出\n完成本章后，你能做三件事：\n第一，对一个模糊的需求写出六要素场景描述。拿到一句”做个任务管理系统”后，你能写出问题、用户、动作、输入、输出、失败六个维度的结构化描述。\n第二，用六要素检查表评估一个现有的需求文档。你能标出哪些要素已覆盖、哪些要素有遗漏——最常见的遗漏是失败场景和输入约束。\n第三，区分”需求场景”和”技术方案”。你能判断一句描述是属于需求场景层（“用户要创建任务”）还是属于技术方案层（“用 POST /tasks API”），并坚持在需求场景层不讨论技术实现。\n产出物是一份六要素场景描述。它不是代码，也不是设计文档——它是程序构造的真正起点。",
+    "crumbs": [
+      "程序构造的起点：需求场景",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Chapter 1：程序不是从语法开始，而是从需求场景开始（Demand Scenario）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-02-demand-to-structure.html",
+    "href": "chapter-02-demand-to-structure.html",
+    "title": "2  Chapter 2：把需求拆成对象、动作、状态、边界和约束（Demand to Structure）",
+    "section": "",
+    "text": "2.1 本章问题\n需求场景的六要素描述清楚了程序要做什么，但程序不能直接消费”用户创建任务”这样的描述。程序需要的是结构化的规格——对象是什么、动作有什么、状态怎么变化、边界在哪里、约束是什么。怎么把一个业务描述变成程序可以承接的结构？",
+    "crumbs": [
+      "程序构造的起点：需求场景",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Chapter 2：把需求拆成对象、动作、状态、边界和约束（Demand to Structure）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-02-demand-to-structure.html#背景为什么这章重要",
+    "href": "chapter-02-demand-to-structure.html#背景为什么这章重要",
+    "title": "2  Chapter 2：把需求拆成对象、动作、状态、边界和约束（Demand to Structure）",
+    "section": "2.2 背景：为什么这章重要",
+    "text": "2.2 背景：为什么这章重要\n第 1 章产出了需求场景的六要素描述。但需求场景是业务语言，程序需要的是结构语言。\n业务语言说”用户创建任务”。程序结构语言需要把这个翻译成： - 有一个 Task 对象 - 有一个 create 动作 - 任务创建后进入 open 状态 - 标题不能为空（约束） - 数据从表单进入系统（边界）\n没有这个翻译阶段，你会直接从需求跳到代码——结果写出来的代码和业务描述对不上。\n这一章建立第一层转换：从需求场景到程序结构的五个出口。\n需求场景 → [名词] → 领域结构\n          → [动词] → 交互结构\n          → [阶段] → 状态结构\n          → [交互点] → 边界结构\n          → [限制] → 约束与可靠性切面\n这五个出口对应 Part 3 的五类结构建模。本章只需要做一件事：把需求场景里的业务语言，分别放进这五个出口。",
+    "crumbs": [
+      "程序构造的起点：需求场景",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Chapter 2：把需求拆成对象、动作、状态、边界和约束（Demand to Structure）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-02-demand-to-structure.html#核心内容",
+    "href": "chapter-02-demand-to-structure.html#核心内容",
+    "title": "2  Chapter 2：把需求拆成对象、动作、状态、边界和约束（Demand to Structure）",
+    "section": "2.3 核心内容",
+    "text": "2.3 核心内容\n\n2.3.1 为什么需求不能直接写代码\n需求不能直接写代码的两个原因：\n第一，需求的粒度不统一。一句”用户管理任务”包含了多个动作（创建、查看、更新、删除）和多个对象（任务、用户）。直接翻译成代码会少东西。\n第二，需求隐含的结构需要显式化。“分配给负责人”隐含了”任务有 assignee 字段，assignee 引用 User 对象，分配后任务状态变为 in_progress”。需求不写这些，但程序需要。\n拆解需求就是把隐含的结构变成显式的规格。\n\n\n2.3.2 从需求抽取五类结构的方法\n\n2.3.2.1 方法 1：名词 → 领域结构\n把需求描述中所有名词和名词短语列出来。排除技术名词，只留业务名词。\n输入（以 Task Manager 为例）：\n任务、用户、项目、标题、描述、优先级、截止日期、负责人、评论、状态\n处理每个名词的三步： - 第一步，标记独立事物，生成对象卡片。 - 第二步，标记事物特征，生成字段说明。 - 第三步，标记对象之间的关联，生成对象关系表。\n\n\n\n名词\n判定\n结构产物\n\n\n\n\n任务\n独立事物\n对象卡片 Task\n\n\n用户\n独立事物\n对象卡片 User\n\n\n项目\n独立事物\n对象卡片 Project\n\n\n标题\nTask 的特征\n字段 title\n\n\n描述\nTask 的特征\n字段 description\n\n\n优先级\nTask 的特征\n字段 priority\n\n\n截止日期\nTask 的特征\n字段 due_date\n\n\n负责人\nTask 关联 User\n关系 assignee\n\n\n评论\n独立事物\n对象卡片 Comment（或作为 Task 的嵌入）\n\n\n状态\nTask 的特征\n字段 status + 状态结构\n\n\n\n\n\n2.3.2.2 方法 2：动词 → 交互结构\n把需求描述中所有动词或动词短语列出来。区分用户发起的动作和系统自动执行的事件。\n输入：\n创建任务、分配任务、完成任务、审核任务、评论任务、取消任务、管理用户、发送通知、超时关闭\n处理每个动词的三步： - 第一步，标记发起者，区分用户动作和系统事件。 - 第二步，标记操作对象，关联到对象卡片。 - 第三步，标记执行后的状态变化，关联到状态结构。\n\n\n\n动词\n发起者\n操作对象\n结构产物\n\n\n\n\n创建任务\nMember\nTask\n用户动作 create_task\n\n\n分配任务\nManager\nTask\n用户动作 assign_task\n\n\n完成任务\nMember\nTask\n用户动作 complete_task\n\n\n审核任务\nManager\nTask\n用户动作 approve_task\n\n\n评论任务\nMember\nTask\n用户动作 comment_task\n\n\n取消任务\nMember/Manager\nTask\n用户动作 cancel_task\n\n\n管理用户\nAdmin\nUser\n用户动作 manage_user\n\n\n发送通知\n系统\n-\n系统事件 send_notification\n\n\n超时关闭\n系统\nTask\n系统事件 auto_close\n\n\n\n\n\n2.3.2.3 方法 3：阶段 → 状态结构\n把需求描述中所有阶段、状态、状态变化列出来。一个对象从创建到销毁经历了哪些阶段。\n输入：\n待分配、执行中、待审核、已完成、已关闭、失败\n处理阶段的三步： - 第一步，标记属于哪个对象，确定状态拥有者。 - 第二步，标记状态之间的转移，生成状态转移图。 - 第三步，标记每个状态下允许的动作，确定动作权限。\n\n\n\n状态\n属于\n含义\n\n\n\n\nopen\nTask\n待分配\n\n\nin_progress\nTask\n执行中\n\n\npending_review\nTask\n待审核\n\n\ndone\nTask\n已完成\n\n\nclosed\nTask\n已关闭\n\n\nfailed\nTask\n执行失败\n\n\n\n方法：列出所有状态，画出转移路径，标注合法转移。\n\n\n2.3.2.4 方法 4：交互点 → 边界结构\n把需求描述中所有系统与外部交互的点列出来。包括输入来源和输出目标。\n输入：\n用户通过表单创建任务、系统通过邮箱发送通知、数据存在数据库、管理员通过页面管理用户\n每个交互点问两个问题： - 数据从哪来？→ 输入边界 - 数据到哪去？→ 输出边界\n\n\n\n交互点\n方向\n边界类型\n结构产物\n\n\n\n\n用户填写表单\n输入\nUI 边界\n表单边界\n\n\nAPI 调用\n输入/输出\nAPI 边界\n接口契约\n\n\n数据库\n存储\n数据边界\n数据访问边界\n\n\n邮箱通知\n输出\n外部服务边界\n通知边界\n\n\n日志系统\n输出\n观测边界\n日志边界\n\n\n\n\n\n2.3.2.5 方法 5：限制 → 约束与可靠性切面\n把需求描述中所有限制、规则、条件、假设列出来。\n输入：\n标题不能为空、优先级必须三选一、只有负责人可以完成任务、任务超过 30 天自动关闭、状态变化必须按顺序\n每个限制问两个问题： - 约束的是什么结构？→ 归属的结构类别 - 违反时怎么处理？→ 可靠性策略\n\n\n\n限制\n归属结构\n处理方式\n\n\n\n\n标题不能为空\n领域结构（字段约束）\n验证错误\n\n\n优先级必须三选一\n领域结构（字段约束）\n验证错误\n\n\n只有负责人可以完成\n交互结构（权限约束）\n权限错误\n\n\n30 天自动关闭\n状态结构（状态转移）\n定时任务\n\n\n状态变化必须按顺序\n状态结构（转移约束）\n状态冲突错误\n\n\n\n\n\n\n2.3.3 需求拆解五类表\n以下是一份完整的从需求描述到五类结构的映射表：\n\n\n\n需求陈述\n类别\n结构产物\n\n\n\n\n“每个任务有标题”\n名词 → 领域结构\nTask.title 字段\n\n\n“任务可以分配给成员”\n名词 → 领域结构\nTask.assignee → User 关系\n\n\n“任务有状态”\n阶段 → 状态结构\nTask.status + 状态定义\n\n\n“成员可以创建任务”\n动词 → 交互结构\ncreate_task 动作\n\n\n“任务创建后待分配”\n阶段 → 状态结构\nopen 状态\n\n\n“通过表单提交任务”\n交互点 → 边界结构\n表单输入边界\n\n\n“标题不能为空”\n限制 → 约束\ntitle 字段验证\n\n\n“通知发送失败记录日志”\n限制 → 可靠性\n通知失败降级策略\n\n\n\n\n\n2.3.4 需求到结构映射模板\n以下模板可以直接用于拆解一个需求的五类结构：\n需求陈述：_______________\n\n\n\n分析维度\n需求中的内容\n提取方式\n结构产物\n\n\n\n\n名词\n________\n列出所有业务名词\n对象卡片 / 字段 / 关系\n\n\n动词\n________\n列出所有动作\n用户动作 / 系统事件\n\n\n阶段\n________\n列出所有状态\n状态定义 / 状态转移\n\n\n交互点\n________\n列出所有输入输出点\n边界定义\n\n\n限制\n________\n列出所有规则条件\n约束 / 可靠性策略",
+    "crumbs": [
+      "程序构造的起点：需求场景",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Chapter 2：把需求拆成对象、动作、状态、边界和约束（Demand to Structure）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-02-demand-to-structure.html#例子与实践",
+    "href": "chapter-02-demand-to-structure.html#例子与实践",
+    "title": "2  Chapter 2：把需求拆成对象、动作、状态、边界和约束（Demand to Structure）",
+    "section": "2.4 例子与实践",
+    "text": "2.4 例子与实践\n\n2.4.1 场景：Task Manager 的需求拆解\n使用第 1 章的 Task Manager 需求场景，应用五类拆解方法。\n第一步：从需求描述中提取名词 → 领域结构\n名词列表：任务、用户、项目、标题、描述、优先级、截止日期、负责人、评论、状态、创建时间、更新时间、角色\n对象卡片：\n\n\n\n\n\n\n\n\n对象卡片\n核心字段\n关系\n\n\n\n\nTask\nid, title, description, priority, due_date, status, created_at, updated_at\nassignee → User, creator → User, project → Project\n\n\nUser\nid, name, email, role, created_at\ntasks → Task[]\n\n\nProject\nid, name, description\nowner → User, tasks → Task[]\n\n\nComment\nid, content, created_at\nauthor → User, task → Task\n\n\n\n第二步：从需求描述中提取动词 → 交互结构\n\n\n\n\n\n\n\n\n\n\n动作\n发起者\n输入\n输出\n副作用\n\n\n\n\ncreate_task\nMember\ntitle, description, priority, due_date\nTask\n写入数据库\n\n\nassign_task\nManager\ntask_id, user_id\nTask\n更新 status\n\n\ncomplete_task\nMember\ntask_id\nTask\n更新 status\n\n\napprove_task\nManager\ntask_id\nTask\n更新 status\n\n\ncancel_task\nMember\ntask_id\nTask\n更新 status\n\n\nadd_comment\nMember\ntask_id, content\nComment\n写入数据库\n\n\nsend_notification\n系统\nuser_id, message\n-\n发送邮件/消息\n\n\n\n第三步：从需求描述中提取阶段 → 状态结构\nTask 的状态：open → in_progress → pending_review → done → closed\n转移路径：\n\n\n\n当前状态\n动作\n目标状态\n\n\n\n\nopen\nassign_task\nin_progress\n\n\nin_progress\ncomplete_task\npending_review\n\n\npending_review\napprove_task\ndone\n\n\npending_review\nreject_task\nin_progress\n\n\nin_progress\nfail_task\nfailed\n\n\nfailed\nretry_task\nin_progress\n\n\nopen / done\ncancel_task\nclosed\n\n\nclosed\nreopen_task\nopen\n\n\n\n第四步：从需求描述中提取交互点 → 边界结构\n\n\n\n边界\n方向\n类型\n格式\n\n\n\n\n创建任务表单\n输入\nUI 边界\n表单字段\n\n\nAPI 请求\n输入/输出\nAPI 边界\nJSON\n\n\n数据库\n存储\n数据边界\nSQL / ORM\n\n\n通知邮件\n输出\n外部服务边界\n邮箱格式\n\n\n系统日志\n输出\n观测边界\n结构化日志\n\n\n\n第五步：从需求描述中提取限制 → 约束与可靠性\n\n\n\n约束\n类别\n违反处理\n\n\n\n\ntitle 1-200 字符\n字段约束\n验证错误\n\n\npriority 必须是枚举值\n字段约束\n验证错误\n\n\ndue_date 不早于今天\n字段约束\n验证错误（警告级别）\n\n\n只有负责人可以完成任务\n权限约束\n权限错误\n\n\n不能审核自己的任务\n权限约束\n权限错误\n\n\n状态必须按合法路径转移\n转移约束\n状态冲突错误\n\n\n通知发送失败不阻断主流程\n可靠性策略\n记录日志 + 降级\n\n\n数据库写入失败重试 3 次\n可靠性策略\n失败后返回 500\n\n\n\n\n\n2.4.2 拆解产物\n一份完整的五类拆解产物交给下一阶段（Part 3 结构建模层）：\n领域结构×4：Task, User, Project, Comment\n交互结构×8：create, assign, complete, approve, cancel, comment, notify, auto-close\n状态结构×1：Task 的 6 个状态 + 8 条转移\n边界结构×5：表单、API、数据库、通知、日志\n约束切面×8：字段约束×3 + 权限约束×2 + 状态约束×1 + 可靠性策略×2",
+    "crumbs": [
+      "程序构造的起点：需求场景",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Chapter 2：把需求拆成对象、动作、状态、边界和约束（Demand to Structure）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-02-demand-to-structure.html#小结",
+    "href": "chapter-02-demand-to-structure.html#小结",
+    "title": "2  Chapter 2：把需求拆成对象、动作、状态、边界和约束（Demand to Structure）",
+    "section": "2.5 小结",
+    "text": "2.5 小结\n需求不能直接写代码。需求需要拆解成五类结构：名词变成领域结构，动词变成交互结构，阶段变成状态结构，交互点变成边界结构，限制变成约束与可靠性切面。\n拆解完成后，你有一个结构化的需求规格包。它不是代码，但它比代码更接近程序的本质——它明确了程序应该有什么事物、什么动作、什么状态、什么边界、什么约束。\n下一章开始 Part 2，回到代码的基础——基础语法和程序表达。但你现在已经知道：语法不是起点，需求才是。语法只是实现结构的手段。",
+    "crumbs": [
+      "程序构造的起点：需求场景",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Chapter 2：把需求拆成对象、动作、状态、边界和约束（Demand to Structure）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-02-demand-to-structure.html#本章产物",
+    "href": "chapter-02-demand-to-structure.html#本章产物",
+    "title": "2  Chapter 2：把需求拆成对象、动作、状态、边界和约束（Demand to Structure）",
+    "section": "2.6 本章产物",
+    "text": "2.6 本章产物\n完成本章后，你拥有以下可交付产物：\n\n五类拆解表，它是 Part 3 结构建模层的直接输入。\n\n可复用模板见附录 B：结构建模模板（Structure Modeling Templates）中的对应模板。",
+    "crumbs": [
+      "程序构造的起点：需求场景",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Chapter 2：把需求拆成对象、动作、状态、边界和约束（Demand to Structure）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-02-demand-to-structure.html#从业者输出",
+    "href": "chapter-02-demand-to-structure.html#从业者输出",
+    "title": "2  Chapter 2：把需求拆成对象、动作、状态、边界和约束（Demand to Structure）",
+    "section": "2.7 从业者输出",
+    "text": "2.7 从业者输出\n完成本章后，你能做四件事：\n第一，对任何一段业务需求描述，独立完成五类拆解。你能标出哪些是名词（→领域结构）、哪些是动词（→交互结构）、哪些是阶段（→状态结构）、哪些是交互点（→边界结构）、哪些是限制（→约束）。\n第二，判断一个需求描述是否足够清晰。如果你的拆解过程中发现某个类别提取不出来（比如找不到动词、找不到交互点），说明需求描述有遗漏——你需要回去补充需求场景。\n第三，使用需求→结构映射模板，把一个完整的业务需求翻译成结构规格。产出物是五类结构的初步表格，可以直接交付给 Part 3 的结构建模层使用。\n第四，在拆解过程中识别”伪需求”。如果一个需求描述中的名词没有对应的事物定义（“系统需要智能调度”→ 调度是什么？）、动词没有对应的用户角色（“系统自动优化”→ 谁触发？），你就能问出准确的问题来澄清需求。\n产出物是五类拆解表，它是 Part 3 结构建模层的直接输入。",
+    "crumbs": [
+      "程序构造的起点：需求场景",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Chapter 2：把需求拆成对象、动作、状态、边界和约束（Demand to Structure）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-03-basic-syntax-materials.html",
+    "href": "chapter-03-basic-syntax-materials.html",
+    "title": "3  Chapter 3：基础语法只是低阶代码材料（Basic Syntax Materials）",
+    "section": "",
+    "text": "3.1 本章问题\n学会 Python 基础语法之后，依然写不出一个像样的程序。变量、条件、循环、函数、类都背下来了，但打开编辑器面对一个实际问题时，脑子里只有零散的语法碎片。\n这个问题的根源在于你把基础语法当成了程序本身。语法不是程序——语法是代码的低阶材料。真正决定程序构造的，是需求、结构、构造件和组装方式。",
+    "crumbs": [
+      "支撑模块：基础代码材料与程序表达",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Chapter 3：基础语法只是低阶代码材料（Basic Syntax Materials）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-03-basic-syntax-materials.html#背景为什么这章重要",
+    "href": "chapter-03-basic-syntax-materials.html#背景为什么这章重要",
+    "title": "3  Chapter 3：基础语法只是低阶代码材料（Basic Syntax Materials）",
+    "section": "3.2 背景：为什么这章重要",
+    "text": "3.2 背景：为什么这章重要\n基础语法层（Basic Syntax Layer）不是主构造链的一层，而是贯穿所有层的支撑模块。它提供最低阶的实现材料，帮助理解代码如何表达局部含义，但不决定程序的整体结构。\n注意这个定位的变化：本书不把语法当作全书的起点（起点是需求场景），也不把语法当作全书的顶点（顶点是可运行系统）。语法只是贯穿全程的低阶工具——它有用，但不应主导你的思考方式。\n把基础语法想象成乐高积木。每一块都有固定的形状和连接方式，但单块积木不构成任何有意义的结构。更重要的是：你不需要用积木从零搭建一切——后来你会用到预制的组件（构造件），积木只用来补缺失的部分。",
+    "crumbs": [
+      "支撑模块：基础代码材料与程序表达",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Chapter 3：基础语法只是低阶代码材料（Basic Syntax Materials）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-03-basic-syntax-materials.html#核心内容",
+    "href": "chapter-03-basic-syntax-materials.html#核心内容",
+    "title": "3  Chapter 3：基础语法只是低阶代码材料（Basic Syntax Materials）",
+    "section": "3.3 核心内容",
+    "text": "3.3 核心内容\n\n3.3.1 基础语法层的定义\n基础语法层是编程语言提供的最底层构造单元集合。每个单元有固定的写法（syntax）和确定的执行行为（semantics）。\n\n\n\n维度\n说明\n\n\n\n\n输入\n程序员敲出的文本\n\n\n输出\n语言解释器或编译器可识别的指令\n\n\n解决的问题\n让计算机执行单一、原子的操作\n\n\n边界\n单个语法构造不能表达完整的业务含义\n\n\n取舍\n语法越丰富，表达能力越强，但学习曲线越陡\n\n\n\n\n\n3.3.2 代码材料的六类分类\n基础语法按解决的问题可以分成六类：\n\n3.3.2.1 数据材料（Data Material）\n存储和表示数据的语法构造。\n\n\n\n构造\n解决问题\n输入\n输出\n\n\n\n\n变量赋值\n给数据一个名字\n值\n可引用的名字\n\n\n列表\n存储有序集合\n多个值\n有序序列\n\n\n字典\n存储键值映射\n键和值\n可按键查找的映射\n\n\n字符串\n表示文本\n字符序列\n不可变文本\n\n\n数字\n表示数量\n数值\n可计算的值\n\n\n\n\n\n3.3.2.2 控制材料（Control Material）\n改变程序执行流程的语法构造。\n\n\n\n构造\n解决问题\n输入\n输出\n\n\n\n\nif / elif / else\n按条件分支\n布尔条件\n选择性执行路径\n\n\nfor ... in\n遍历可迭代对象\n可迭代对象\n逐元素执行\n\n\nwhile\n条件循环\n布尔条件\n重复执行直到条件为假\n\n\n\n\n\n3.3.2.3 抽象材料（Abstraction Material）\n把一组操作包装成一个可命名单元的语法构造。\n\n\n\n构造\n解决问题\n输入\n输出\n\n\n\n\ndef function()\n把操作序列命名\n一组语句\n可调用的函数\n\n\nclass ClassName\n把数据和操作打包\n字段和方法\n可实例化的模板\n\n\n\n\n\n3.3.2.4 调用材料（Call Material）\n触发已定义的抽象去执行。\n\n\n\n构造\n解决问题\n输入\n输出\n\n\n\n\n函数调用\n执行已定义的函数\n参数\n返回值\n\n\n方法调用\n执行对象的方法\n对象 + 参数\n返回值\n\n\n运算符\n执行内置运算\n操作数\n计算结果\n\n\n\n\n\n3.3.2.5 外部交互材料（External Interaction Material）\n程序与外部世界交换数据的语法构造。\n\n\n\n\n\n\n\n\n\n构造\n解决问题\n输入\n输出\n\n\n\n\n文件读写\n持久化数据\n文件路径 + 模式\n文件对象\n\n\n模块导入\n加载外部代码\n模块名\n模块对象\n\n\n输入打印\n读取用户输入 / 输出结果\n提示字符串 / 数据\n用户输入 / 屏幕输出\n\n\n\n\n\n3.3.2.6 失败处理材料（Failure Handling Material）\n程序面对异常情况时保持可控的语法构造。\n\n\n\n构造\n解决问题\n输入\n输出\n\n\n\n\ntry / except\n捕获并处理异常\n可能出错的代码块\n正常或错误分支\n\n\nraise\n主动触发异常\n异常类型 + 信息\n中断当前流程\n\n\nfinally\n清理资源\n无论是否异常都执行的代码\n资源释放\n\n\n\n\n\n\n3.3.3 基础语法层总表\n\n\n\n\n\n\n\n\n\n类别\n解决问题\n核心构造\n典型输出\n\n\n\n\n数据材料\n存储和表示数据\n变量、列表、字典、字符串、数字\n可被其他操作引用的值\n\n\n控制材料\n改变执行流程\nif、for、while、break、continue\n选择性或重复执行的路径\n\n\n抽象材料\n包装命名操作集\ndef、class、lambda\n可调用函数或实例化模板\n\n\n调用材料\n触发已定义的抽象\nfunc()、obj.method()、Class()、运算符\n返回值或计算结果\n\n\n外部交互材料\n与程序外部交换数据\nopen()、import、print()、input()\n文件对象、模块、用户输入\n\n\n失败处理材料\n异常情况保持可控\ntry/except、raise、finally\n正常或错误分支执行\n\n\n\n\n\n3.3.4 语法材料在全书体系中的位置\n语法材料是低阶的。低阶不等于不重要——它们是你必须熟练使用的工具。但低阶意味着：\n\n语法不能回答”程序要解决什么问题”——那是需求场景层的职责\n语法不能回答”程序应该有什么结构”——那是结构建模层的职责\n语法不能回答”这个需求用什么库或框架实现”——那是构造件层的职责\n语法能回答的只有”这段代码在计算机层面做了什么”\n\n本书的路线是：需求场景 → 结构建模 → 构造件选择 → 组装。语法材料在每一层都需要，但每一层的核心问题都不是语法。",
+    "crumbs": [
+      "支撑模块：基础代码材料与程序表达",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Chapter 3：基础语法只是低阶代码材料（Basic Syntax Materials）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-03-basic-syntax-materials.html#例子与实践",
+    "href": "chapter-03-basic-syntax-materials.html#例子与实践",
+    "title": "3  Chapter 3：基础语法只是低阶代码材料（Basic Syntax Materials）",
+    "section": "3.4 例子与实践",
+    "text": "3.4 例子与实践\n\n3.4.1 场景：语法层在全书体系中的位置\n以 Task Manager 中的”创建任务”功能为例，看语法材料在全书中的位置：\n需求场景：Member 需要记录新任务 → 需要 create_task 功能\n结构建模：Task 对象、create 动作、open 状态、title 字段约束、表单输入边界\n构造件选择：FastAPI（后端入口）、Pydantic（输入验证）、SQLAlchemy（数据访问）\n胶水代码：连接 FastAPI handler → Pydantic schema → service 函数 → SQLAlchemy 操作\n\n语法材料在这里的位置：\n  def create_task(...)       → 抽象材料（函数定义）\n  if not title: raise ...    → 控制材料 + 失败处理材料\n  db.session.add(task)       → 外部交互材料（数据持久化）\n  return TaskResponse(...)   → 调用材料（构造响应）\n语法材料是最后填充到结构中的东西。它不决定结构，它实现结构。\n\n\n3.4.2 材料分类练习\n对一个已有功能代码块，同时说出”这段代码用了哪些代码材料”和”这段代码表达了什么程序含义”。\n# 代码\ndef get_active_tasks(tasks):\n    active = []\n    for task in tasks:\n        if task.status == \"in_progress\":\n            active.append(task)\n    return active\n材料视角：抽象材料（函数定义）+ 数据材料（列表变量）+ 控制材料（for 循环 + if 判断）+ 调用材料（.append 方法调用）\n表达视角：从集合中筛选出状态为 in_progress 的任务\n两条答案必须不一样。如果一样，说明你还在语法阶段。",
+    "crumbs": [
+      "支撑模块：基础代码材料与程序表达",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Chapter 3：基础语法只是低阶代码材料（Basic Syntax Materials）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-03-basic-syntax-materials.html#小结",
+    "href": "chapter-03-basic-syntax-materials.html#小结",
+    "title": "3  Chapter 3：基础语法只是低阶代码材料（Basic Syntax Materials）",
+    "section": "3.5 小结",
+    "text": "3.5 小结\n基础语法层提供了六类代码材料：数据材料、控制材料、抽象材料、调用材料、外部交互材料、失败处理材料。每一类解决不同的问题。\n但语法不是全书的起点（起点是需求场景），也不是全书的顶点（顶点是可运行系统）。语法是低阶工具——你需要熟练使用它们，但不能被它们主导你的程序设计方式。\n第 4 章做的事：语法组合如何产生程序含义——从低阶材料到局部表达。",
+    "crumbs": [
+      "支撑模块：基础代码材料与程序表达",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Chapter 3：基础语法只是低阶代码材料（Basic Syntax Materials）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-03-basic-syntax-materials.html#本章产物",
+    "href": "chapter-03-basic-syntax-materials.html#本章产物",
+    "title": "3  Chapter 3：基础语法只是低阶代码材料（Basic Syntax Materials）",
+    "section": "3.6 本章产物",
+    "text": "3.6 本章产物\n完成本章后，你拥有以下可交付产物：\n\n基础语法层总表（六类代码材料汇总）\n代码材料分类表模板（数据材料、控制材料、抽象材料、调用材料、外部交互材料、失败处理材料）\n语法材料到表达单元的入口图\n语法和表达的区分方法\n\n可复用模板见附录 B：结构建模模板（Structure Modeling Templates）中的对应模板。",
+    "crumbs": [
+      "支撑模块：基础代码材料与程序表达",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Chapter 3：基础语法只是低阶代码材料（Basic Syntax Materials）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-03-basic-syntax-materials.html#从业者输出",
+    "href": "chapter-03-basic-syntax-materials.html#从业者输出",
+    "title": "3  Chapter 3：基础语法只是低阶代码材料（Basic Syntax Materials）",
+    "section": "3.7 从业者输出",
+    "text": "3.7 从业者输出\n学完本章，你应该能完成以下工作：\n\n分类任何语法构造：看到一段代码，标记出每行属于哪类材料。\n填写代码材料分类表：对一个已有项目，列出使用了哪些数据材料、控制材料、抽象材料、调用材料、外部交互材料、失败处理材料。\n区分语法和表达：对一个已有功能代码块，能同时说出”这段代码用了哪些代码材料”和”这段代码表达了什么程序含义”——两条答案必须不一样。\n理解语法的低阶定位：面对一个需求时，你的第一反应不是”用什么语法实现”，而是”需求是什么结构、用什么构造件承接”——语法是最后填充的细节。",
+    "crumbs": [
+      "支撑模块：基础代码材料与程序表达",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Chapter 3：基础语法只是低阶代码材料（Basic Syntax Materials）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-04-syntax-to-expression.html",
+    "href": "chapter-04-syntax-to-expression.html",
+    "title": "4  Chapter 4：基础语法如何进入程序表达（Syntax to Expression）",
+    "section": "",
+    "text": "4.1 本章问题\n你学会了一堆代码材料——知道 for 怎么写、if 怎么写、dict 怎么写——但打开一个实际需求时，你仍然不确定该用哪些语法组合来表达这个需求。问题不在你不会写语法，而在你不知道语法的特定组合对应什么程序含义。",
+    "crumbs": [
+      "支撑模块：基础代码材料与程序表达",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Chapter 4：基础语法如何进入程序表达（Syntax to Expression）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-04-syntax-to-expression.html#背景为什么这章重要",
+    "href": "chapter-04-syntax-to-expression.html#背景为什么这章重要",
+    "title": "4  Chapter 4：基础语法如何进入程序表达（Syntax to Expression）",
+    "section": "4.2 背景：为什么这章重要",
+    "text": "4.2 背景：为什么这章重要\n第 3 章定义了六类代码材料。但材料本身不产生程序含义。程序含义来自语法组合——特定的语法组合产生特定的、可重复识别的程序表达单元（Program Expression Unit）。\n这是一个关键的认知转换：\n\n语法阶段：我用了 for + if + list → 三行代码\n表达阶段：我做了”筛选” → 一个程序表达单元\n\n这个转换决定你能否把需求翻译成代码。如果你看到”从用户列表中找出活跃用户”只能想到”用 for 循环遍历，用 if 判断状态”，你还没进入表达阶段。如果你能直接想到”这是筛选”，然后自动知道筛选需要 for + if + append，你就进入了表达阶段。\n注意：程序表达单元仍然是一个局部概念。它不是程序结构，也不是完整系统。它是位于语法和结构之间的中间层——帮助你理解代码在”表达什么”，而不是”写成什么语法”。",
+    "crumbs": [
+      "支撑模块：基础代码材料与程序表达",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Chapter 4：基础语法如何进入程序表达（Syntax to Expression）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-04-syntax-to-expression.html#核心内容",
+    "href": "chapter-04-syntax-to-expression.html#核心内容",
+    "title": "4  Chapter 4：基础语法如何进入程序表达（Syntax to Expression）",
+    "section": "4.3 核心内容",
+    "text": "4.3 核心内容\n\n4.3.1 会写语法和会表达程序含义的区别\n\n\n\n\n\n\n\n\n维度\n语法会写\n会程序表达\n\n\n\n\n看一段代码\n说出用了哪些关键字\n说出这段代码在做什么\n\n\n面对需求\n翻译：“用户提到筛选 → 应该用 for 和 if”\n识别：“这是筛选 → 筛选需要 for + if + 容器”\n\n\n代码组织\n一行一行堆砌\n一段一段组织，每段一个表达\n\n\n修改需求\n在已有代码中硬插逻辑\n替换对应的表达单元\n\n\n复用\n复制粘贴代码块\n提取表达单元成函数\n\n\n\n\n\n4.3.2 基础语法到程序表达单元的转换\n以下八种转换是基础的、可重复识别的语法→表达映射：\n\n4.3.2.1 for + if → 筛选（Filtering）\n从一个集合中选出符合条件的子集。\n# 输入：tasks（任务列表），条件：status == \"in_progress\"\nactive_tasks = [t for t in tasks if t.status == \"in_progress\"]\n# 输出：筛选后的子集\n\n\n4.3.2.2 dict → 映射（Mapping）\n把一个集合中的每个元素转换成另一种形式。\n# 输入：tasks（任务列表），转换：task → task.title\ntitles = [t.title for t in tasks]\n# 输出：转换后的新集合\n\n\n4.3.2.3 dict[key] → 查找（Lookup）\n通过键从一个映射结构中获取值。\n# 输入：user 字典 + 键 \"email\"\nemail = user[\"email\"]\n# 输出：查找结果（或 KeyError）\n\n\n4.3.2.4 class + fields → 表示（Representation）\n把现实对象映射到程序数据结构。\n@dataclass\nclass Task:\n    id: int\n    title: str\n    status: str\n\n\n4.3.2.5 if + raise → 验证（Validation）\n在输入不合法时拒绝执行。\nif not title:\n    raise ValidationError(\"title is required\")\n\n\n4.3.2.6 try/except → 失败处理（Failure Handling）\n在异常情况下保持可控。\ntry:\n    result = execute(task)\nexcept DatabaseError:\n    retry_or_fail(task)\n\n\n4.3.2.7 status field + if → 状态表达（State Expression）\n通过字段值记录对象所处阶段。\nif task.status == \"open\":\n    # 只允许特定操作\n\n\n4.3.2.8 function → 动作表达（Action Expression）\n把一组相关操作封装成动作。\ndef assign_task(task_id: int, user_id: int) -&gt; Task:\n    \"\"\"分配任务给负责人\"\"\"\n    task = get_task(task_id)\n    validate_can_assign(task)\n    task.assignee_id = user_id\n    task.status = \"in_progress\"\n    return task\n\n\n\n4.3.3 基础语法到程序表达单元映射表（完整）\n\n\n\n语法组合\n程序表达\n解决的问题\n\n\n\n\nfor + if\n筛选\n从集合中选子集\n\n\nfor + 赋值\n转换\n把集合转换成新形式\n\n\ndict[key]\n查找\n根据键获取值\n\n\nfor + dict\n映射\n键到值的对应关系\n\n\nclass + fields\n表示\n现实对象映射到程序\n\n\nif + elif + else\n条件\n多路分支决策\n\n\nif + raise\n验证\n拒绝非法输入\n\n\ntry / except\n失败处理\n异常情况下保持可控\n\n\nstatus + if\n状态表达\n记录对象所处阶段\n\n\nfunction\n动作表达\n封装一组操作\n\n\nfor + aggregate\n聚合\n计算总和/计数/平均\n\n\nfor + sort\n排序\n按规则排列集合",
+    "crumbs": [
+      "支撑模块：基础代码材料与程序表达",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Chapter 4：基础语法如何进入程序表达（Syntax to Expression）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-04-syntax-to-expression.html#例子与实践",
+    "href": "chapter-04-syntax-to-expression.html#例子与实践",
+    "title": "4  Chapter 4：基础语法如何进入程序表达（Syntax to Expression）",
+    "section": "4.4 例子与实践",
+    "text": "4.4 例子与实践\n\n4.4.1 场景：Task Manager 的语法到表达转换\n以”分配任务”功能为例，标注每段代码涉及的表达单元：\n# 表达：验证 — 检查任务是否可以分配\ndef validate_can_assign(task: Task, user_id: int):\n    if task.status != \"open\":\n        raise StateError(\"只能分配待处理任务\")\n    if not user_exists(user_id):\n        raise NotFoundError(\"用户不存在\")\n    # 语法材料：if + raise → 验证表达\n\n# 表达：动作 — 分配任务\ndef assign_task(task_id: int, user_id: int) -&gt; Task:\n    task = get_task(task_id)                    # 查找表达\n    validate_can_assign(task, user_id)           # 验证表达\n    task.assignee_id = user_id                   # 字段赋值\n    task.status = \"in_progress\"                  # 状态表达\n    return task                                  # 输出表达\n\n\n4.4.2 语法片段解释表\n\n\n\n\n\n\n\n\n\n代码片段\n语法材料\n程序表达\n在 Task Manager 中的作用\n\n\n\n\nif task.status != \"open\"\n控制材料\n条件判断\n检查任务是否在待处理状态\n\n\nraise StateError(...)\n失败处理材料\n验证拒绝\n状态非法时拒绝操作\n\n\ntask.assignee_id = user_id\n数据材料\n字段赋值\n设置任务负责人\n\n\ntask.status = \"in_progress\"\n数据材料 + 控制材料\n状态转移\n任务进入执行阶段\n\n\nreturn task\n调用材料\n结果输出\n返回更新后的任务对象",
+    "crumbs": [
+      "支撑模块：基础代码材料与程序表达",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Chapter 4：基础语法如何进入程序表达（Syntax to Expression）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-04-syntax-to-expression.html#小结",
+    "href": "chapter-04-syntax-to-expression.html#小结",
+    "title": "4  Chapter 4：基础语法如何进入程序表达（Syntax to Expression）",
+    "section": "4.5 小结",
+    "text": "4.5 小结\n基础语法到程序表达单元的转换，是程序员从”会写语法”走向”会表达程序含义”的第一个台阶。语法组合产生稳定的程序含义——筛选、查找、验证、状态表达、动作表达。\n但程序表达仍然只是局部含义。一个筛选表达可以出现在任何程序中，但它不告诉你这个程序是做什么的。表达单元是中间层——它帮助你理解代码片段在做什么，但不定义程序的整体结构。\n第 5 章做的事：把程序表达单元系统化，建立五类表达单元的完整分类。",
+    "crumbs": [
+      "支撑模块：基础代码材料与程序表达",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Chapter 4：基础语法如何进入程序表达（Syntax to Expression）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-04-syntax-to-expression.html#本章产物",
+    "href": "chapter-04-syntax-to-expression.html#本章产物",
+    "title": "4  Chapter 4：基础语法如何进入程序表达（Syntax to Expression）",
+    "section": "4.6 本章产物",
+    "text": "4.6 本章产物\n完成本章后，你拥有以下可交付产物：\n\n一份语法片段解释表，标注每段代码的语法材料和程序表达。\n\n可复用模板见附录 B：结构建模模板（Structure Modeling Templates）中的对应模板。",
+    "crumbs": [
+      "支撑模块：基础代码材料与程序表达",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Chapter 4：基础语法如何进入程序表达（Syntax to Expression）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-04-syntax-to-expression.html#从业者输出",
+    "href": "chapter-04-syntax-to-expression.html#从业者输出",
+    "title": "4  Chapter 4：基础语法如何进入程序表达（Syntax to Expression）",
+    "section": "4.7 从业者输出",
+    "text": "4.7 从业者输出\n完成本章后，你能做三件事：\n第一，对一个代码片段同时说出”用了什么语法材料”和”表达了什么程序含义”——两条不同的答案。\n第二，面对一段散落的代码，识别出它包含了哪些表达单元（筛选？验证？状态转移？），并用表达单元的名称去描述这段代码在做什么。\n第三，如果你发现一段代码”你每个语法都认识但不知道在做什么”，你学会用”这段代码在表达什么程序含义”来追问自己——而不是”这段代码用了哪些语法”。\n产出物是一份语法片段解释表，标注每段代码的语法材料和程序表达。",
+    "crumbs": [
+      "支撑模块：基础代码材料与程序表达",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Chapter 4：基础语法如何进入程序表达（Syntax to Expression）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-05-expression-unit.html",
+    "href": "chapter-05-expression-unit.html",
+    "title": "5  Chapter 5：程序表达单元：数据、集合、判断、运行、失败与反馈（Program Expression Units）",
+    "section": "",
+    "text": "5.1 本章问题\n第 4 章建立了从语法到表达的转换——你知道 for + if 是筛选、class + fields 是表示、if + raise 是验证。但这些表达是散落的。程序需要的不只是单个表达——它需要知道程序在”表示什么数据”、“处理什么集合”、“做什么判断”、“怎么推进运行”、“怎么面对失败”。这五类表达构成程序的完整表达体系。",
+    "crumbs": [
+      "支撑模块：基础代码材料与程序表达",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Chapter 5：程序表达单元：数据、集合、判断、运行、失败与反馈（Program Expression Units）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-05-expression-unit.html#背景为什么这章重要",
+    "href": "chapter-05-expression-unit.html#背景为什么这章重要",
+    "title": "5  Chapter 5：程序表达单元：数据、集合、判断、运行、失败与反馈（Program Expression Units）",
+    "section": "5.2 背景：为什么这章重要",
+    "text": "5.2 背景：为什么这章重要\n程序表达单元层（Program Expression Unit Layer）是支撑模块中的概念层。它位于基础语法之上、程序结构建模之下，帮助理解代码如何表达局部含义，但不决定程序的整体结构。\n程序表达单元是基础语法组合出的、具有稳定语义的局部代码模式。它不是语法（语法只是材料），也不是结构（结构是整体组织）。它是介于两者之间的中间层——帮助你在写代码时知道自己”在表达什么含义”。\n这五类表达单元是：\n\n数据表示表达：程序如何描述现实事物\n集合处理表达：程序如何处理一批数据\n判断与规则表达：程序如何做决策\n运行推进表达：程序如何推进状态和执行\n失败与交付表达：程序如何处理失败并产出结果\n\n注意：这五类表达是局部含义的集合。它们不等于程序结构。程序结构（Part 3）是把这些表达组织成整体规格，而不仅仅是分类。",
+    "crumbs": [
+      "支撑模块：基础代码材料与程序表达",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Chapter 5：程序表达单元：数据、集合、判断、运行、失败与反馈（Program Expression Units）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-05-expression-unit.html#核心内容",
+    "href": "chapter-05-expression-unit.html#核心内容",
+    "title": "5  Chapter 5：程序表达单元：数据、集合、判断、运行、失败与反馈（Program Expression Units）",
+    "section": "5.3 核心内容",
+    "text": "5.3 核心内容\n\n5.3.1 程序表达单元的定义\n程序表达单元是基础语法组合出的、具有稳定语义的局部代码模式。\n\n\n\n维度\n说明\n\n\n\n\n解决的问题\n从”写了什么语法”到”表达了什么含义”的转换\n\n\n输入\n一组基础语法元素\n\n\n输出\n一个具有明确程序含义的局部结构\n\n\n边界\n不跨模块，不涉及完整业务流程，只描述局部意图\n\n\n取舍\n同一表达单元可以有多种语法实现\n\n\n\n\n\n5.3.2 数据表示表达\n数据表示表达（Data Representation Expression）解决的核心问题是：现实世界的一个事物如何被程序表示。\n表示（Representation）：将现实对象映射到程序数据结构。\n@dataclass\nclass Task:\n    id: int\n    title: str\n    status: str\n    priority: str\n字段（Field）：对象特征在程序中的具象化。每个字段有类型和约束。\ntitle: str        # 字符串类型\npriority: str     # 枚举值：low/medium/high/urgent\ndue_date: date | None  # 可选日期\n关系（Relation）：对象之间的关联。通过引用字段或集合字段表示。\nassignee_id: int        # 引用 User 的 id\ncomments: list[Comment]  # 一对多关系\n集合（Collection）：一组相同类型的数据单元。\ntasks: list[Task]  # 任务集合\n配置（Configuration）：程序的非业务参数。\nMAX_TASKS_PER_PROJECT = 100\nRETRY_LIMIT = 3\n结果（Result）：操作返回的结构化输出。\n@dataclass\nclass TaskResult:\n    success: bool\n    task: Task | None\n    error: str | None\n\n\n5.3.3 集合处理表达\n集合处理表达（Collection Processing Expression）解决的核心问题是：如何操作一批数据。\n遍历（Iteration）：逐个访问集合中的元素。\nfor task in tasks:\n    print(task.title)\n筛选（Filtering）：从集合中选出符合条件的子集。\nactive_tasks = [t for t in tasks if t.status == \"in_progress\"]\n转换（Transformation）：把集合中的每个元素转换成另一种形式。\ntitles = [t.title for t in tasks]\n查找（Lookup）：根据条件从集合中找到特定元素。\ntask = next((t for t in tasks if t.id == task_id), None)\n分组（Grouping）：按某个键值将集合分组。\nfrom collections import defaultdict\nby_status = defaultdict(list)\nfor t in tasks:\n    by_status[t.status].append(t)\n排序（Sorting）：按规则排列集合。\nsorted_tasks = sorted(tasks, key=lambda t: t.priority)\n聚合（Aggregation）：从集合中计算一个汇总值。\ntotal_tasks = len(tasks)\nhigh_priority_count = sum(1 for t in tasks if t.priority == \"high\")\n\n\n5.3.4 判断与规则表达\n判断与规则表达（Judgment and Rule Expression）解决的核心问题是：程序如何做决策。\n条件（Condition）：单个布尔表达式的真假判断。\nif task.priority == \"urgent\":\n    handle_urgent(task)\n规则（Rule）：多条件组合的决策逻辑。\nif task.status == \"open\" and task.assignee_id is not None:\n    can_start = True\nelif task.status == \"in_progress\":\n    can_start = False\n验证（Validation）：拒绝非法输入或状态。\nif not title or len(title) &gt; 200:\n    raise ValidationError(\"title 长度不合法\")\n权限（Permission）：按角色限制操作。\nif user.role not in (\"admin\", \"manager\"):\n    raise PermissionError(\"无权操作\")\n限制（Restriction）：禁止某些操作的条件。\nif task.status == \"closed\":\n    raise StateError(\"已关闭任务不可操作\")\n触发条件（Trigger Condition）：事件发生后自动执行动作的条件。\nif task.status == \"done\":\n    notify_creator(task)\n\n\n5.3.5 运行推进表达\n运行推进表达（Execution Progression Expression）解决的核心问题是：程序如何记录状态、推进运行。\n状态（State）：记录对象当前所处的阶段。\ntask.status = \"open\"\n状态变化（State Change）：对象从一个阶段进入另一个阶段。\ntask.status = \"in_progress\"  # 从 open 到 in_progress\n动作（Action）：封装一组相关操作。\ndef assign_task(task_id, user_id):\n    task = get_task(task_id)\n    validate_can_assign(task)\n    task.assignee_id = user_id\n    task.status = \"in_progress\"\n    return task\n流程（Flow）：动作按顺序编排。\ndef handle_create_task(request):\n    validated = validate_input(request)\n    task = create_task(validated)\n    if task.priority == \"urgent\":\n        assign_urgent(task)\n    notify_creator(task)\n    return task\n\n\n5.3.6 失败与交付表达\n失败与交付表达（Failure and Delivery Expression）解决的核心问题是：程序面对失败怎么处理、怎么交付结果。\n失败（Failure）：程序遇到异常情况的状态。\ntry:\n    result = execute(task)\nexcept DatabaseError:\n    task.status = \"failed\"\n    log_error(e)\n恢复（Recovery）：从失败中恢复到一致状态。\ntry:\n    result = execute(task)\nexcept DatabaseError as e:\n    if retry_count &lt; MAX_RETRIES:\n        retry(task, retry_count + 1)\n    else:\n        task.status = \"failed\"\n        log_error(e)\n输出（Output）：程序把结果返回给调用者。\nreturn TaskResponse(task=task, success=True)\n反馈（Feedback）：通过日志、通知等渠道告知用户结果。\nlogging.info(f\"Task {task.id} created by {user.name}\")\nnotify_assignee(task)\n\n\n5.3.7 五类表达单元总表\n\n\n\n类别\n表达单元\n解决的问题\n常见语法形式\n\n\n\n\n数据表示\n表示\n现实事物映射到程序\nclass, dataclass, dict\n\n\n数据表示\n字段\n对象特征的具象化\n类型注解, class 属性\n\n\n数据表示\n关系\n对象之间的关联\n引用字段, 集合字段\n\n\n数据表示\n集合\n一组相同类型的数据\nlist, set, tuple\n\n\n数据表示\n配置\n程序的非业务参数\n全局变量, 配置类\n\n\n数据表示\n结果\n操作的结构化输出\ndataclass, dict\n\n\n集合处理\n遍历\n逐个访问集合\nfor 循环\n\n\n集合处理\n筛选\n选出符合条件的子集\nfor + if, 列表推导式\n\n\n集合处理\n转换\n每个元素变成新形式\n列表推导式, map\n\n\n集合处理\n查找\n找到特定元素\nnext, dict[key]\n\n\n集合处理\n分组\n按键值分组\ndefaultdict, groupby\n\n\n集合处理\n排序\n按规则排列\nsorted, .sort\n\n\n集合处理\n聚合\n计算汇总值\nlen, sum, max, min\n\n\n判断与规则\n条件\n单个布尔判断\nif / elif / else\n\n\n判断与规则\n规则\n多条件组合决策\nif-elif 链\n\n\n判断与规则\n验证\n拒绝非法输入\nif + raise\n\n\n判断与规则\n权限\n按角色限制操作\nif role check\n\n\n判断与规则\n限制\n禁止某些操作\nif state check\n\n\n判断与规则\n触发条件\n事件触发自动动作\nif event check\n\n\n运行推进\n状态\n记录所处阶段\nstatus 字段\n\n\n运行推进\n状态变化\n阶段变换\n字段赋值\n\n\n运行推进\n动作\n封装一组操作\nfunction\n\n\n运行推进\n流程\n动作编排\n函数调用链\n\n\n失败与交付\n失败\n异常情况处理\ntry/except\n\n\n失败与交付\n恢复\n从失败恢复\n重试/回滚\n\n\n失败与交付\n输出\n结果交付\nreturn, yield\n\n\n失败与交付\n反馈\n告知用户结果\nprint, logging, notify",
+    "crumbs": [
+      "支撑模块：基础代码材料与程序表达",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Chapter 5：程序表达单元：数据、集合、判断、运行、失败与反馈（Program Expression Units）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-05-expression-unit.html#例子与实践",
+    "href": "chapter-05-expression-unit.html#例子与实践",
+    "title": "5  Chapter 5：程序表达单元：数据、集合、判断、运行、失败与反馈（Program Expression Units）",
+    "section": "5.4 例子与实践",
+    "text": "5.4 例子与实践\n\n5.4.1 场景：Task Manager 的表达单元标注\n以”完成任务”功能为例，标注每段代码涉及的表达单元：\n# 数据表示：Task 对象定义\n@dataclass\nclass Task:\n    id: int\n    title: str\n    status: str\n    assignee_id: int | None\n\n# 判断与规则：验证是否可以完成任务\ndef validate_can_complete(task: Task, user_id: int):\n    if task.status != \"in_progress\":         # 条件表达\n        raise StateError(\"任务不在执行中\")     # 验证表达\n    if task.assignee_id != user_id:           # 条件表达\n        raise PermissionError(\"不是负责人\")    # 权限表达\n\n# 数据表示：请求和响应结构\n@dataclass\nclass CompleteTaskRequest:\n    task_id: int\n    completion_note: str\n\n@dataclass\nclass TaskResponse:\n    success: bool\n    task: Task | None\n    error: str | None\n\n# 运行推进：完成任务的动作\ndef complete_task(request: CompleteTaskRequest, user_id: int) -&gt; TaskResponse:\n    task = get_task(request.task_id)                  # 查找表达\n    validate_can_complete(task, user_id)               # 验证表达\n    task.status = \"done\"                               # 状态变化表达\n    save_task(task)                                    # 外部交互\n    notify_creator(task)                               # 反馈表达\n    return TaskResponse(success=True, task=task)        # 输出表达\n\n\n5.4.2 表达单元到语法形式映射表\n\n\n\n表达单元\nTask Manager 中的例子\n语法形式\n\n\n\n\n表示\nTask dataclass\n(dataclass?) class\n\n\n字段\ntitle: str\n类型注解\n\n\n筛选\n[t for t in tasks if t.status == “open”]\n列表推导式 + if\n\n\n验证\nif not title: raise\nif + raise\n\n\n状态变化\ntask.status = “done”\n属性赋值\n\n\n动作\ndef complete_task(…)\n函数定义",
+    "crumbs": [
+      "支撑模块：基础代码材料与程序表达",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Chapter 5：程序表达单元：数据、集合、判断、运行、失败与反馈（Program Expression Units）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-05-expression-unit.html#小结",
+    "href": "chapter-05-expression-unit.html#小结",
+    "title": "5  Chapter 5：程序表达单元：数据、集合、判断、运行、失败与反馈（Program Expression Units）",
+    "section": "5.5 小结",
+    "text": "5.5 小结\n程序表达单元层是介于基础语法和程序结构之间的中间层。五类表达单元（数据表示、集合处理、判断与规则、运行推进、失败与交付）覆盖了程序的所有局部含义。\n但表达单元只是局部含义。它不回答程序是什么——一个筛选表达可以出现在记账程序、游戏程序、聊天程序中。表达单元是零件，不是蓝图。\n下一章进入 Part 3：程序结构建模层——把需求中的稳定结构抽取出来，而不是把表达单元升级成更大的代码说明。",
+    "crumbs": [
+      "支撑模块：基础代码材料与程序表达",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Chapter 5：程序表达单元：数据、集合、判断、运行、失败与反馈（Program Expression Units）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-05-expression-unit.html#本章产物",
+    "href": "chapter-05-expression-unit.html#本章产物",
+    "title": "5  Chapter 5：程序表达单元：数据、集合、判断、运行、失败与反馈（Program Expression Units）",
+    "section": "5.6 本章产物",
+    "text": "5.6 本章产物\n完成本章后，你拥有以下可交付产物：\n\n一份表达单元标注表，标出代码中每个片段所属的表达类别和表达单元名称。\n\n可复用模板见附录 B：结构建模模板（Structure Modeling Templates）中的对应模板。",
+    "crumbs": [
+      "支撑模块：基础代码材料与程序表达",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Chapter 5：程序表达单元：数据、集合、判断、运行、失败与反馈（Program Expression Units）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-05-expression-unit.html#从业者输出",
+    "href": "chapter-05-expression-unit.html#从业者输出",
+    "title": "5  Chapter 5：程序表达单元：数据、集合、判断、运行、失败与反馈（Program Expression Units）",
+    "section": "5.7 从业者输出",
+    "text": "5.7 从业者输出\n完成本章后，你能做三件事：\n第一，对任意一段代码，标出它包含了哪些表达单元。你能同时说出”这段代码用了什么语法”和”这段代码表达了什么”——两个不同层次的理解。\n第二，当你读别人代码时遇到不理解的片段，你会用”这个片段在表达什么”来追问——而不是”这个语法怎么写”。\n第三，区分”表达单元”和”程序结构”。你知道一个筛选表达是局部含义，而筛选在”用户管理系统”中服务于”查找活跃用户”这个整体结构。\n产出物是一份表达单元标注表，标出代码中每个片段所属的表达类别和表达单元名称。",
+    "crumbs": [
+      "支撑模块：基础代码材料与程序表达",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Chapter 5：程序表达单元：数据、集合、判断、运行、失败与反馈（Program Expression Units）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-06-structure-modeling.html",
+    "href": "chapter-06-structure-modeling.html",
+    "title": "6  Chapter 6：程序结构建模是什么（Program Structure Modeling）",
+    "section": "",
+    "text": "6.1 本章问题\n你有从需求场景拆出来的五类结构初步表——领域、交互、状态、边界、约束。但它们还是散落的。一个完整程序需要的不是散落的结构清单，而是把结构组织成一个整体规格包。这个规格包告诉实现者：程序有什么事物、事物之间怎么交互、状态怎么变化、数据从哪里进入和出去、各部分怎么组合、哪些约束必须保证。",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Chapter 6：程序结构建模是什么（Program Structure Modeling）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-06-structure-modeling.html#背景为什么这章重要",
+    "href": "chapter-06-structure-modeling.html#背景为什么这章重要",
+    "title": "6  Chapter 6：程序结构建模是什么（Program Structure Modeling）",
+    "section": "6.2 背景：为什么这章重要",
+    "text": "6.2 背景：为什么这章重要\n程序结构建模层（Program Structure Modeling Layer）是全书的核心层。前面两条线汇聚到这里： - 需求场景层（Part 1）产出了”程序要做什么”的问题描述和六要素 - 基础代码材料与程序表达（Part 2）产出了”低阶代码材料是什么、局部表达是什么”\n结构建模层做的事：把需求中的稳定结构抽取出来，产出可被代码、库、框架、组件、脚手架和 AI 生成器消费的结构规格包。\n注意和旧模型的关键区别： - 旧模型认为结构是”表达单元升级出来的”——从 dict 升级成对象卡片，从 if 升级成规则表 - 新模型认为结构是”从需求抽取出来的”——需求中的名词、动词、阶段、交互点、限制才是结构的来源\n表达单元可以作为理解代码的辅助工具，但不是结构的来源。结构的来源是需求。",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Chapter 6：程序结构建模是什么（Program Structure Modeling）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-06-structure-modeling.html#核心内容",
+    "href": "chapter-06-structure-modeling.html#核心内容",
+    "title": "6  Chapter 6：程序结构建模是什么（Program Structure Modeling）",
+    "section": "6.3 核心内容",
+    "text": "6.3 核心内容\n\n6.3.1 程序结构建模的定义\n程序结构建模（Program Structure Modeling）是把需求、场景、对象、动作、状态、边界、组合和约束抽取成结构规格的过程。\n\n\n\n维度\n说明\n\n\n\n\n解决的问题\n如何把业务需求转化为程序可以承接的结构化规格\n\n\n输入\n第 2 章产出的五类需求拆解表\n\n\n输出\n结构规格包（五类结构 + 一个横向切面）\n\n\n边界\n不涉及具体代码实现、框架选择、UI 设计\n\n\n取舍\n结构越精确，实现越明确；过度的结构建模会变成文档负担\n\n\n\n\n\n6.3.2 结构规格包：五类结构与一个横向切面\n程序结构建模层产出结构规格包，由五类结构和一个横向切面组成。\n\n6.3.2.1 1. 领域结构（Domain Structure）\n描述程序中的事物：有什么对象、每个对象有什么字段、对象之间怎么关联、对象从创建到销毁经历哪些阶段。\n对应需求中的名词。\n\n\n6.3.2.2 2. 交互结构（Interaction Structure）\n描述谁可以做什么：用户动作、系统事件、命令、查询、交互流程。\n对应需求中的动词。\n\n\n6.3.2.3 3. 状态结构（State Structure）\n描述什么会变化：状态拥有者、业务状态、UI 状态、请求状态、缓存状态、异步任务状态、状态转移。\n对应需求中的阶段和状态。\n\n\n6.3.2.4 4. 边界结构（Boundary Structure）\n描述数据从哪进出：API 边界、UI 边界、数据库边界、文件边界、外部服务边界、消息队列边界、输入输出契约。\n对应需求中的交互点。\n\n\n6.3.2.5 5. 组合结构（Composition Structure）\n描述各部分如何组织：组件树、页面结构、模块结构、服务结构、适配器结构、依赖结构。\n对应需求中的分层和组织。\n\n\n6.3.2.6 横向切面：约束与可靠性切面（Constraint & Reliability Slice）\n它不是和五类并列的结构，而是贯穿前五类结构的横向切面。每个结构都有对应的约束和可靠性要求。\n对应需求中的限制和失败场景。\n\n\n\n6.3.3 结构规格包总览表\n\n\n\n\n\n\n\n\n\n结构类别\n解决的问题\n来源\n产物形式\n\n\n\n\n领域结构\n程序有什么事物\n需求中的名词\n对象卡片、字段说明、关系表、生命周期\n\n\n交互结构\n谁可以做什么\n需求中的动词\n用户动作表、系统事件表、命令/查询定义\n\n\n状态结构\n什么会变化\n需求中的阶段\n状态拥有者表、状态转移表\n\n\n边界结构\n数据从哪进出\n需求中的交互点\n边界定义表、输入输出契约\n\n\n组合结构\n各部分如何组织\n需求中的分层\n组件树、模块结构、服务结构\n\n\n约束与可靠性（横向切面）\n哪些限制和保证\n需求中的限制\n约束表、可靠性策略表\n\n\n\n\n\n6.3.4 结构建模和代码表达的区别\n程序表达单元（Part 2）是局部的、语法层次的。结构建模是整体的、需求层次的。\n\n\n\n维度\n程序表达单元\n程序结构建模\n\n\n\n\n视角\n局部——一段代码在表达什么\n整体——程序有什么结构\n\n\n来源\n语法组合\n需求抽取\n\n\n产物\n代码含义描述\n结构规格包\n\n\n可消费性\n程序员读代码时理解\n可被代码、库、框架、脚手架消费\n\n\n包含关系\n一个表达单元不依赖上下文\n结构之间互相关联\n\n\n\n举例：一个筛选表达（[t for t in tasks if t.status == \"open\"]）是表达单元。但”筛选那些状态为 open 的任务”是领域结构中的查询规格——它服务于”获取待处理任务列表”这个业务需求。\n\n\n6.3.5 结构建模层在全书体系中的位置\n需求场景层（Part 1）\n    ↓ 需求拆解\n程序结构建模层（Part 3） ← 全书核心\n    ↓ 结构到构造件映射\n构造件层（Part 4） ← 代码资产选择\n    ↓ 胶水代码连接\n程序组装层（Part 5） ← 最终系统\n基础代码材料和程序表达（Part 2）是辅助层——它们在结构建模和组装中作为低阶工具使用，但不是主线。",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Chapter 6：程序结构建模是什么（Program Structure Modeling）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-06-structure-modeling.html#例子与实践",
+    "href": "chapter-06-structure-modeling.html#例子与实践",
+    "title": "6  Chapter 6：程序结构建模是什么（Program Structure Modeling）",
+    "section": "6.4 例子与实践",
+    "text": "6.4 例子与实践\n\n6.4.1 场景：Task Manager 的结构规格包概览\n以下是 Task Manager 的结构规格包概览。后续三章分别展开每个细节。\n领域结构：\n\n\n\n\n\n\n\n\n对象卡片\n核心字段\n关系\n\n\n\n\nTask\nid, title, status, priority, due_date, assignee_id\nassignee → User, creator → User\n\n\nUser\nid, name, email, role\ntasks → Task[]\n\n\nProject\nid, name, description\nowner → User, tasks → Task[]\n\n\n\n交互结构：\n\n\n\n动作\n角色\n操作对象\n\n\n\n\ncreate_task\nMember\nTask\n\n\nassign_task\nManager\nTask\n\n\ncomplete_task\nMember\nTask\n\n\napprove_task\nManager\nTask\n\n\n\n状态结构：\n\n\n\n\n\n\n\n\n状态拥有者\n状态集\n主转移路径\n\n\n\n\nTask\nopen, in_progress, pending_review, done, closed, failed\nopen → in_progress → pending_review → done\n\n\n\n边界结构：\n\n\n\n边界\n方向\n格式\n\n\n\n\nAPI 边界\n双向\nJSON\n\n\n数据库\n存储\nSQLAlchemy\n\n\n邮件通知\n输出\n邮箱格式\n\n\n\n组合结构：\n\n\n\n层级\n组件\n职责\n\n\n\n\nAPI 层\nrouters\nHTTP 路由\n\n\n服务层\nservices\n业务逻辑\n\n\n数据层\nrepositories\n数据访问\n\n\n\n约束与可靠性切面：\n\n\n\n约束\n归属\n处理方式\n\n\n\n\ntitle 不能为空\n领域结构\n验证错误\n\n\n只有负责人可完成\n交互结构\n权限错误\n\n\n数据库失败重试\n可靠性\n重试 3 次\n\n\n\n\n\n6.4.2 结构规格包检查\n一个完整的结构规格包必须能覆盖以下所有条目：\n\n\n\n检查条目\n对应结构\n\n\n\n\n列出所有核心事物及其特征和关联\n领域结构\n\n\n列出事物从创建到销毁经历的阶段\n领域结构 + 状态结构\n\n\n列出用户能做的所有操作\n交互结构\n\n\n列出系统自动执行的事件\n交互结构\n\n\n列出所有会变化的内容及其转移路径\n状态结构\n\n\n列出数据的所有出入口\n边界结构\n\n\n列出各部分之间的组织和层级\n组合结构\n\n\n列出必须保证的约束条件\n约束与可靠性切面\n\n\n列出失败场景及处理策略\n约束与可靠性切面",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Chapter 6：程序结构建模是什么（Program Structure Modeling）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-06-structure-modeling.html#小结",
+    "href": "chapter-06-structure-modeling.html#小结",
+    "title": "6  Chapter 6：程序结构建模是什么（Program Structure Modeling）",
+    "section": "6.5 小结",
+    "text": "6.5 小结\n程序结构建模层是全书的核心层。它把需求中的名词、动词、阶段、交互点、限制抽取成五类结构与一个横向切面：领域结构、交互结构、状态结构、边界结构、组合结构，加上横向切面约束与可靠性。\n这五类结构与一个横向切面不是从表达单元升级出来的，而是从需求抽取出来的。表达单元是理解代码的辅助工具，结构的来源是需求本身。\n从下一章开始，逐类展开结构规格包的具体构建方法。第 7 章从最基础的结构开始：领域结构。",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Chapter 6：程序结构建模是什么（Program Structure Modeling）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-06-structure-modeling.html#本章产物",
+    "href": "chapter-06-structure-modeling.html#本章产物",
+    "title": "6  Chapter 6：程序结构建模是什么（Program Structure Modeling）",
+    "section": "6.6 本章产物",
+    "text": "6.6 本章产物\n完成本章后，你拥有以下可交付产物：\n\n结构规格包概览表（五类结构 + 一个横向切面）——它是整个 Part 3 的总纲领，也是后续构造件选择和组装的依据。\n\n可复用模板见附录 B：结构建模模板（Structure Modeling Templates）中的对应模板。",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Chapter 6：程序结构建模是什么（Program Structure Modeling）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-06-structure-modeling.html#从业者输出",
+    "href": "chapter-06-structure-modeling.html#从业者输出",
+    "title": "6  Chapter 6：程序结构建模是什么（Program Structure Modeling）",
+    "section": "6.7 从业者输出",
+    "text": "6.7 从业者输出\n完成本章后，你能做三件事：\n第一，区分”程序表达”和”程序结构”。你知道 [t for t in tasks if t.status == \"open\"] 是一个筛选表达（表达单元），而”任务管理系统需要获取待处理任务列表”是一个领域结构规格。\n第二，对一个需求，写出它的结构规格包概览表。至少能回答”有什么对象”、“有什么动作”、“有什么状态”、“从哪进出”、“怎么组织”、“有什么约束”。\n第三，检查一个结构规格包是否完整。你能用上面的”结构规格包检查”清单，找出规格包中缺少的结构类别。\n产出物是结构规格包概览表（五类结构 + 一个横向切面）——它是整个 Part 3 的总纲领，也是后续构造件选择和组装的依据。",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Chapter 6：程序结构建模是什么（Program Structure Modeling）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-07-domain-structure.html",
+    "href": "chapter-07-domain-structure.html",
+    "title": "7  Chapter 7：领域结构：对象、字段、关系、生命周期与领域约束（Domain Structure）",
+    "section": "",
+    "text": "7.1 本章问题\n程序首先要有”事物”——任务、用户、项目、订单。这些事物用什么结构表示？每个事物有什么特征？事物之间怎么关联？事物从创建到销毁经历了什么阶段？这些都是领域结构回答的问题。",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Chapter 7：领域结构：对象、字段、关系、生命周期与领域约束（Domain Structure）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-07-domain-structure.html#背景为什么这章重要",
+    "href": "chapter-07-domain-structure.html#背景为什么这章重要",
+    "title": "7  Chapter 7：领域结构：对象、字段、关系、生命周期与领域约束（Domain Structure）",
+    "section": "7.2 背景：为什么这章重要",
+    "text": "7.2 背景：为什么这章重要\n领域结构（Domain Structure）是程序结构建模层的第一类结构，也是最基础的一类。原因是：程序首先要描述”有什么事物”。没有领域结构，交互结构不知道作用在什么对象上，状态结构不知道谁有状态，边界结构不知道数据的类型定义。\n领域结构直接来自第 2 章需求拆解中的名词。需求中的”任务”变成对象卡片 Task，“标题”变成字段 title，“负责人”变成关系 assignee。\n注意：领域结构不包含”配置结构”和”结果结构”。配置结构属于边界结构（涉及运行环境边界），结果结构也属于边界结构（涉及输出边界）。领域结构只关注业务事物本身。",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Chapter 7：领域结构：对象、字段、关系、生命周期与领域约束（Domain Structure）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-07-domain-structure.html#核心内容",
+    "href": "chapter-07-domain-structure.html#核心内容",
+    "title": "7  Chapter 7：领域结构：对象、字段、关系、生命周期与领域约束（Domain Structure）",
+    "section": "7.3 核心内容",
+    "text": "7.3 核心内容\n\n7.3.1 对象卡片（Object Card）\n对象卡片是领域结构的基本单元。每个对象卡片对应一个核心业务事物。\n解决什么问题：需求中的名词是口语化的（“任务”、“用户”），程序需要一个精确的定义——这个事物叫什么、有什么职责、有什么字段、跟谁关联、经历什么阶段。\n输入：第 2 章需求拆解中的名词列表。\n输出：对象卡片，包含： - 对象名称和职责描述 - 字段列表（指向字段说明） - 关系列表（指向对象关系） - 生命周期（指向状态结构）\n对象卡片模板：\nObject Card: Task\n职责: 表示一个待办任务，记录任务内容和状态变化\n字段:\n  - id: TaskID\n  - title: TaskTitle\n  - status: TaskStatus\n  - priority: Priority\n  - due_date: DueDate\n关系:\n  - assignee: User (0..1)\n  - creator: User (1)\n  - project: Project (1)\n生命周期: TaskLifecycle\n\n\n7.3.2 字段说明（Field Spec）\n字段说明定义每个字段的类型、约束、默认值和含义。\n解决什么问题：需求中的”标题”需要精确化——什么类型、多长、是否必填。\n输入：需求拆解中的名词特征。\n输出：字段说明，包含字段名、类型、必填、默认值、约束、含义。\n字段说明表模板：\n\n\n\n字段\n类型\n必填\n默认值\n约束\n说明\n\n\n\n\nid\nint\n是\n-\n唯一\n任务编号\n\n\ntitle\nstr\n是\n-\n长度 1-200\n任务标题\n\n\nstatus\nenum\n是\nopen\nopen/in_progress/done/closed\n任务状态\n\n\npriority\nenum\n是\nmedium\nlow/medium/high/urgent\n优先级\n\n\ndue_date\ndate\n否\n-\n不早于今天\n截止日期\n\n\n\n\n\n7.3.3 对象关系（Object Relation）\n对象关系定义对象之间的关联——方向、数量、生命周期。\n解决什么问题：需求中的”任务有负责人”需要精确化——一个任务有 0 或 1 个负责人，一个用户可以有多个任务。\n输入：需求拆解中名词之间的关联描述。\n输出：对象关系表，包含源对象、目标对象、方向、数量、生命周期。\n对象关系表模板：\n\n\n\n\n\n\n\n\n\n\n\n\n关系名\n源\n目标\n数量\n方向\n生命周期\n说明\n\n\n\n\nassignee\nTask\nUser\n0..1 : 1\nTask → User\nSET_NULL\n任务负责人\n\n\ncreator\nTask\nUser\n1 : 1\nTask → User\nCASCADE\n任务创建者\n\n\nowner\nProject\nUser\n1 : 1\nProject → User\nCASCADE\n项目负责人\n\n\ntasks\nProject\nTask\n1 : 0..N\nProject → Task\nCASCADE\n项目下的任务\n\n\n\n\n\n7.3.4 生命周期（Lifecycle）\n生命周期描述对象从创建到销毁经历的所有阶段。\n解决什么问题：一个 Task 创建时是 open，执行中是 in_progress，完成后是 done，取消后是 closed。这些阶段构成生命周期。\n输入：需求拆解中的阶段列表。\n输出：生命周期描述，包含状态列表、主路径、分支路径、终止状态。\n生命周期表模板：\nTask 生命周期\n状态: open → in_progress → pending_review → done → closed\n                   ↓                          ↑\n                failed ───── retry ────────────┘\n\n主路径: open → in_progress → pending_review → done → closed\n分支路径: in_progress → failed → retry → in_progress\n取消路径: open → closed\n\n\n7.3.5 领域约束（Domain Constraint）\n领域约束是施加在领域结构上的限制。它们是约束与可靠性切面在领域结构上的具体体现。\n解决什么问题：需求中的限制需要明确属于哪个对象、哪个字段、哪个关系。\n输入：第 2 章需求拆解中的限制条目。\n输出：领域约束表。\n\n\n\n\n\n\n\n\n\n约束\n作用对象\n约束类型\n违反处理\n\n\n\n\ntitle 不能为空\nTask.title\n字段必填\nValidationError\n\n\ntitle 不超过 200 字符\nTask.title\n字段长度\nValidationError\n\n\npriority 必须是枚举值\nTask.priority\n字段取值\nValidationError\n\n\ndue_date 不早于今天\nTask.due_date\n字段范围\nValidationError (WARN)\n\n\n一个 Task 必须有 creator\nTask.creator\n关系必填\nValidationError\n\n\n删除 User 后 Task.assignee 置空\nTask.assignee\n关系生命周期\nSET_NULL",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Chapter 7：领域结构：对象、字段、关系、生命周期与领域约束（Domain Structure）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-07-domain-structure.html#例子与实践",
+    "href": "chapter-07-domain-structure.html#例子与实践",
+    "title": "7  Chapter 7：领域结构：对象、字段、关系、生命周期与领域约束（Domain Structure）",
+    "section": "7.4 例子与实践",
+    "text": "7.4 例子与实践\n\n7.4.1 场景：Task Manager 的领域结构\nTask 对象卡片：\nObject Card: Task\n职责: 待办任务\n字段:\n  - id: int, 唯一, 自动生成\n  - title: str, 长度 1-200, 必填\n  - description: str, 长度 0-2000, 可选\n  - status: enum, open/in_progress/pending_review/done/closed/failed\n  - priority: enum, low/medium/high/urgent\n  - due_date: date, 可选\n  - created_at: datetime, 自动填充\n  - updated_at: datetime, 自动填充\n  - assignee_id: int, 可选 (引用 User)\n  - creator_id: int, 必填 (引用 User)\n  - project_id: int, 必填 (引用 Project)\nUser 对象卡片：\nObject Card: User\n职责: 系统用户\n字段:\n  - id: int, 唯一, 自动生成\n  - name: str, 长度 1-100, 必填\n  - email: str, 唯一, 邮箱格式, 必填\n  - role: enum, admin/manager/member\n  - created_at: datetime, 自动填充\nProject 对象卡片：\nObject Card: Project\n职责: 任务分组\n字段:\n  - id: int, 唯一, 自动生成\n  - name: str, 长度 1-100, 必填\n  - description: str, 可选\n  - owner_id: int, 必填 (引用 User)\n对象关系表：\n\n\n\n关系\n源\n目标\n数量\n说明\n\n\n\n\nassignee\nTask\nUser\nN:1\n一个用户可以有多个任务\n\n\ncreator\nTask\nUser\nN:1\n一个用户可以创建多个任务\n\n\nproject\nTask\nProject\nN:1\n一个项目可以有多个任务\n\n\nowner\nProject\nUser\nN:1\n一个用户可以有多个项目\n\n\n\nTask 生命周期：\nopen → in_progress → pending_review → done → closed\n  ↓        ↓              ↓\nclosed   failed ←──── retry\n领域约束表：\n\n\n\n约束\n归属\n\n\n\n\ntitle 必填，1-200 字符\nTask.title\n\n\npriority 必须是 low/medium/high/urgent\nTask.priority\n\n\n创建 Task 时必须有 creator_id\nTask.creator_id\n\n\n删除 User 时关联 Task 的 assignee 置空\nTask.assignee\n\n\n删除 User 时关联 Task 的 creator 级联\nTask.creator\n\n\n同一 Project 下的 Task 数量不超过 1000\nProject",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Chapter 7：领域结构：对象、字段、关系、生命周期与领域约束（Domain Structure）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-07-domain-structure.html#小结",
+    "href": "chapter-07-domain-structure.html#小结",
+    "title": "7  Chapter 7：领域结构：对象、字段、关系、生命周期与领域约束（Domain Structure）",
+    "section": "7.5 小结",
+    "text": "7.5 小结\n领域结构定义了程序中的核心事物——有什么对象、每个对象有什么字段、对象之间怎么关联、对象经历什么生命周期、有什么领域约束。\n领域结构的质量决定后续所有结构的质量。如果领域结构错了——对象卡片缺失、字段类型错误、关系方向反了——交互结构、状态结构、边界结构都会跟着错。\n第 8 章进入交互结构和状态结构：事物之间怎么相互作用、状态怎么变化。",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Chapter 7：领域结构：对象、字段、关系、生命周期与领域约束（Domain Structure）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-07-domain-structure.html#本章产物",
+    "href": "chapter-07-domain-structure.html#本章产物",
+    "title": "7  Chapter 7：领域结构：对象、字段、关系、生命周期与领域约束（Domain Structure）",
+    "section": "7.6 本章产物",
+    "text": "7.6 本章产物\n完成本章后，你拥有以下可交付产物：\n\n三张表（对象卡片集合、对象关系表、生命周期图）和一份领域约束表。\n\n可复用模板见附录 B：结构建模模板（Structure Modeling Templates）中的对应模板。",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Chapter 7：领域结构：对象、字段、关系、生命周期与领域约束（Domain Structure）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-07-domain-structure.html#从业者输出",
+    "href": "chapter-07-domain-structure.html#从业者输出",
+    "title": "7  Chapter 7：领域结构：对象、字段、关系、生命周期与领域约束（Domain Structure）",
+    "section": "7.7 从业者输出",
+    "text": "7.7 从业者输出\n完成本章后，你能做四件事：\n第一，为一个新系统的核心业务对象写出对象卡片。你拿到需求后，能识别出需要几个对象卡片、每个卡片有什么字段、对象之间怎么关联。\n第二，为一组对象卡片写出完整的字段说明表和对象关系表。你能定义每个字段的类型、约束和默认值，以及每个关系的方向、数量和生命周期。\n第三，为一个核心业务对象画出生命周期。你至少能列出它的所有状态、主路径、分支路径和终止状态。\n第四，识别领域结构中常见的缺失：对象卡片是否覆盖所有业务名词？字段是否都有类型和约束？关系是否标注了方向和数据量？生命周期是否包含终止状态？\n产出物是三张表（对象卡片集合、对象关系表、生命周期图）和一份领域约束表。它们直接作为后续交互结构、状态结构和边界结构的输入。",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Chapter 7：领域结构：对象、字段、关系、生命周期与领域约束（Domain Structure）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-08-interaction-and-state.html",
+    "href": "chapter-08-interaction-and-state.html",
+    "title": "8  Chapter 8：交互结构与状态结构（Interaction Structure and State Structure）",
+    "section": "",
+    "text": "8.1 本章问题\n领域结构定义了有什么事物，但程序不是静态的事物集合。用户要创建任务、分配任务、完成任务——这些都是交互。任务的状态从 open 变成 in_progress 再到 done——这是状态变化。交互结构和状态结构回答的是”事物之间怎么相互作用”和”什么会变化、怎么变”。",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Chapter 8：交互结构与状态结构（Interaction Structure and State Structure）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-08-interaction-and-state.html#背景为什么这章重要",
+    "href": "chapter-08-interaction-and-state.html#背景为什么这章重要",
+    "title": "8  Chapter 8：交互结构与状态结构（Interaction Structure and State Structure）",
+    "section": "8.2 背景：为什么这章重要",
+    "text": "8.2 背景：为什么这章重要\n交互结构（Interaction Structure）和状态结构（State Structure）是程序结构建模层的动态维度。\n交互结构描述谁可以做什么——用户动作、系统事件、命令、查询、交互流程。它对应需求拆解中的动词。\n状态结构描述什么会变化——状态拥有者、业务状态、UI 状态、请求状态、缓存状态、异步任务状态、状态转移。它对应需求拆解中的阶段。\n这两类结构一起覆盖了程序的动态行为。没有它们，领域结构只是静态的数据定义——你不知道谁操作这些数据、数据怎么变化。\n这一章还建立了从结构到前端/后端构造件的第一座桥梁。状态结构中的不同状态类型直接映射到不同的前端状态库——这是第 11 章的基础。",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Chapter 8：交互结构与状态结构（Interaction Structure and State Structure）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-08-interaction-and-state.html#核心内容",
+    "href": "chapter-08-interaction-and-state.html#核心内容",
+    "title": "8  Chapter 8：交互结构与状态结构（Interaction Structure and State Structure）",
+    "section": "8.3 核心内容",
+    "text": "8.3 核心内容\n\n8.3.1 交互结构\n交互结构（Interaction Structure）解决”谁能做什么”的问题。\n\n8.3.1.1 用户动作（User Action）\n用户通过界面或 API 发起的操作。\n解决什么问题：需求中的”用户创建任务”需要精确化——谁触发、输入什么、输出什么、前置条件是什么。\n用户动作表模板：\n\n\n\n\n\n\n\n\n\n\n\n动作名\n角色\n输入\n输出\n前置条件\n后置条件\n\n\n\n\ncreate_task\nMember\ntitle, desc, priority, due_date\nTask\n-\nTask 进入 open 状态\n\n\nassign_task\nManager\ntask_id, user_id\nTask\ntask.status == open\nTask 进入 in_progress\n\n\ncomplete_task\nMember\ntask_id, note\nTask\ntask.status == in_progress, 当前用户是 assignee\nTask 进入 pending_review\n\n\napprove_task\nManager\ntask_id\nTask\ntask.status == pending_review, 当前用户不是 assignee\nTask 进入 done\n\n\n\n\n\n8.3.1.2 系统事件（System Event）\n系统自动执行的操作，不需要用户触发。\n\n\n\n\n\n\n\n\n\n事件名\n触发条件\n执行动作\n后置条件\n\n\n\n\nauto_close\ntask 7 天未处理\n将 task 标记为 closed\nTask 进入 closed\n\n\nsend_notification\ntask 状态变化\n通知相关人员\n通知记录写入日志\n\n\nretry_failed_task\ntask 执行失败且重试次数未超限\n重新执行 task\nTask 重回 in_progress\n\n\n\n\n\n8.3.1.3 命令与查询（Command & Query）\n区分写操作（命令）和读操作（查询）。这是 CQRS（Command Query Responsibility Segregation）的基本思想。\n\n\n\n类型\n名称\n输入\n输出\n副作用\n\n\n\n\nCommand\nCreateTask\nTaskCreateRequest\nTask\n写入数据库\n\n\nCommand\nAssignTask\nAssignRequest\nTask\n更新数据和状态\n\n\nQuery\nGetTask\ntask_id\nTask\n无\n\n\nQuery\nListTasks\nfilters\nlist[Task]\n无\n\n\nQuery\nGetUserTasks\nuser_id\nlist[Task]\n无\n\n\n\n\n\n8.3.1.4 交互流程（Interaction Flow）\n多个动作按顺序执行形成一个完整的用户使用场景。\n创建任务流程:\n  1. Member 填写表单（输入 title, desc, priority, due_date）\n  2. 系统验证输入\n  3. 系统创建 Task（status = open）\n  4. 系统通知创建者\n  5. 页面跳转到任务详情\n\n分配任务流程:\n  1. Manager 选择任务 + 负责人\n  2. 系统验证 task 状态为 open\n  3. 系统验证 user 存在\n  4. 系统分配（status = in_progress）\n  5. 系统通知 assignee\n\n\n\n8.3.2 状态结构\n状态结构（State Structure）解决”什么会变化”的问题。\n\n8.3.2.1 状态拥有者（State Owner）\n每个状态的承载对象。\n\n\n\n\n\n\n\n\n状态拥有者\n状态类型\n状态值集合\n\n\n\n\nTask\n业务状态\nopen, in_progress, pending_review, done, closed, failed\n\n\n页面\nUI 状态\nloading, loaded, empty, error\n\n\n表单\nUI 状态\nidle, submitting, submitted, error\n\n\nAPI 请求\n请求状态\npending, success, error\n\n\n缓存\n缓存状态\nfresh, stale, expired\n\n\n\n\n\n8.3.2.2 业务状态（Business State）\n领域相关的状态，通常由 status 字段表示。\nclass TaskStatus(Enum):\n    OPEN = \"open\"\n    IN_PROGRESS = \"in_progress\"\n    PENDING_REVIEW = \"pending_review\"\n    DONE = \"done\"\n    CLOSED = \"closed\"\n    FAILED = \"failed\"\n\n\n8.3.2.3 UI 状态（UI State）\n界面交互过程中的临时状态。这些状态不写入数据库，只存在于前端运行时。\n\n\n\nUI 状态\n含义\n在 Task Manager 中的例子\n\n\n\n\nloading\n数据加载中\n任务列表加载时显示骨架屏\n\n\nloaded\n数据已加载\n任务列表显示正常内容\n\n\nempty\n数据为空\n没有任务时显示”暂无任务”\n\n\nerror\n加载失败\n请求错误时显示错误提示\n\n\nsubmitting\n提交中\n创建任务时按钮显示 loading\n\n\nidle\n初始状态\n表单空白等待输入\n\n\n\n\n\n8.3.2.4 请求状态（Request State）\n网络请求的生命周期。\nidle → pending → success\n  ↓       ↓\nerror   timeout\n每一个 API 调用都有这三个或四个状态。它们不需要写入数据库，但前端必须追踪。\n\n\n8.3.2.5 缓存状态（Cache State）\n缓存数据的有效期。\n\n\n\n缓存状态\n含义\n处理方式\n\n\n\n\nfresh\n数据是最新的\n直接使用\n\n\nstale\n数据可能过时了\n显示旧数据，后台刷新\n\n\nexpired\n数据过期\n重新获取\n\n\n\n\n\n8.3.2.6 状态转移（State Transition）\n状态之间合法转移的定义。\n状态转移表模板：\n\n\n\n\n\n\n\n\n\n\n编号\n起始状态\n动作\n目标状态\n约束\n\n\n\n\nS01\nopen\nassign_task\nin_progress\nassignee 存在\n\n\nS02\nin_progress\ncomplete_task\npending_review\n当前用户是 assignee\n\n\nS03\npending_review\napprove_task\ndone\n当前用户不是 assignee\n\n\nS04\npending_review\nreject_task\nin_progress\n填写驳回原因\n\n\nS05\ndone\nreopen_task\nopen\n30 天内\n\n\nS06\nin_progress\nfail_task\nfailed\n记录失败原因\n\n\nS07\nfailed\nretry_task\nin_progress\nretry_count &lt; max_retries\n\n\nS08\nopen\ncancel_task\nclosed\n-\n\n\nS09\nin_progress\ncancel_task\nclosed\n-\n\n\nS10\ndone\narchive_task\nclosed\n-\n\n\n\n\n\n8.3.2.7 反馈动作（Feedback Action）\n状态变化之后的系统反馈——通知、日志、提示。\n\n\n\n状态变化\n反馈动作\n反馈对象\n\n\n\n\nopen → in_progress\n通知 assignee\nassignee\n\n\nin_progress → pending_review\n通知 creator\ncreator\n\n\npending_review → done\n通知 assignee + creator\nassignee, creator\n\n\npending_review → in_progress\n通知 assignee（驳回原因）\nassignee\n\n\n\n\n\n\n8.3.3 状态到构造件的映射（预览）\n不同状态类型对应不同的前端构造件。这是第 11 章的预览：\n\n\n\n状态类型\n对应的前端构造件\n说明\n\n\n\n\nUI 局部状态\nuseState, useReducer\nReact 内置钩子\n\n\n全局共享状态\nRedux, Zustand, Pinia\n跨组件共享\n\n\n服务端数据状态\nTanStack Query, SWR, Apollo\n与 API 同步\n\n\n表单状态\nReact Hook Form\n表单输入追踪\n\n\n路由状态\nReact Router, Vue Router\nURL 导航状态\n\n\n\n这个映射说明：状态结构不仅是设计工具，它还告诉你用什么构造件来实现。",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Chapter 8：交互结构与状态结构（Interaction Structure and State Structure）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-08-interaction-and-state.html#例子与实践",
+    "href": "chapter-08-interaction-and-state.html#例子与实践",
+    "title": "8  Chapter 8：交互结构与状态结构（Interaction Structure and State Structure）",
+    "section": "8.4 例子与实践",
+    "text": "8.4 例子与实践\n\n8.4.1 场景：Task Manager 的交互与状态结构\n交互结构：用户动作表\n\n\n\n\n\n\n\n\n\n动作\n角色\n前置条件\n后置条件\n\n\n\n\ncreate_task\nMember\n-\nTask(open)\n\n\nassign_task\nManager\nTask(open)\nTask(in_progress)\n\n\ncomplete_task\nMember\nTask(in_progress), is_assignee\nTask(pending_review)\n\n\napprove_task\nManager\nTask(pending_review), not_assignee\nTask(done)\n\n\nreject_task\nManager\nTask(pending_review), not_assignee\nTask(in_progress)\n\n\ncancel_task\nMember\nTask(open/in_progress)\nTask(closed)\n\n\nadd_comment\nMember\n-\nComment added\n\n\nreopen_task\nManager\nTask(done/closed), within_30_days\nTask(open)\n\n\n\n交互结构：系统事件表\n\n\n\n\n\n\n\n\n事件\n触发条件\n动作\n\n\n\n\ntask_created\ncreate_task 成功\nsend_notification(creator)\n\n\ntask_assigned\nassign_task 成功\nsend_notification(assignee)\n\n\ntask_completed\ncomplete_task 成功\nsend_notification(manager)\n\n\ntask_overdue\ndue_date &lt; today, status == open\nsend_notification(assignee)\n\n\ntask_auto_close\n7 天未处理\n自动 cancel\n\n\n\n状态结构：状态拥有者\n\n\n\n\n\n\n\n状态拥有者\n状态集\n\n\n\n\nTask (业务)\nopen, in_progress, pending_review, done, closed, failed\n\n\n任务列表页 (UI)\nloading, loaded, empty, error\n\n\n创建任务表单 (UI)\nidle, submitting, submitted, error\n\n\n任务详情 API (请求)\npending, success, error\n\n\n\n状态结构：状态转移表\n\n\n\n起始\n动作\n目标\n额外条件\n\n\n\n\nopen\nassign\nin_progress\nassignee != null\n\n\nin_progress\ncomplete\npending_review\nuser == assignee\n\n\npending_review\napprove\ndone\nuser != assignee\n\n\npending_review\nreject\nin_progress\nuser != assignee\n\n\nin_progress\nfail\nfailed\n-\n\n\nfailed\nretry\nin_progress\nretry_count &lt; 3\n\n\nopen\ncancel\nclosed\n-\n\n\ndone\nreopen\nopen\nwithin 30 days",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Chapter 8：交互结构与状态结构（Interaction Structure and State Structure）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-08-interaction-and-state.html#小结",
+    "href": "chapter-08-interaction-and-state.html#小结",
+    "title": "8  Chapter 8：交互结构与状态结构（Interaction Structure and State Structure）",
+    "section": "8.5 小结",
+    "text": "8.5 小结\n交互结构和状态结构覆盖了程序的动态行为。交互结构定义谁能做什么（用户动作、系统事件、命令、查询、交互流程），状态结构定义什么会变化（业务状态、UI 状态、请求状态、缓存状态、状态转移）。\n这两类结构合在一起，可以回答一个完整的问题：谁在什么时候做什么、做完后什么发生了变化、变化后有什么反馈。\n下一章进入剩下的两类结构：边界结构（数据从哪进出）、组合结构（各部分如何组织），以及贯穿所有结构的约束与可靠性切面。",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Chapter 8：交互结构与状态结构（Interaction Structure and State Structure）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-08-interaction-and-state.html#本章产物",
+    "href": "chapter-08-interaction-and-state.html#本章产物",
+    "title": "8  Chapter 8：交互结构与状态结构（Interaction Structure and State Structure）",
+    "section": "8.6 本章产物",
+    "text": "8.6 本章产物\n完成本章后，你拥有以下可交付产物：\n\n四张表（用户动作表、系统事件表、状态拥有者表、状态转移表）和一份状态到构造件的映射预览。\n\n可复用模板见附录 B：结构建模模板（Structure Modeling Templates）中的对应模板。",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Chapter 8：交互结构与状态结构（Interaction Structure and State Structure）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-08-interaction-and-state.html#从业者输出",
+    "href": "chapter-08-interaction-and-state.html#从业者输出",
+    "title": "8  Chapter 8：交互结构与状态结构（Interaction Structure and State Structure）",
+    "section": "8.7 从业者输出",
+    "text": "8.7 从业者输出\n完成本章后，你能做四件事：\n第一，为一个需求写出一份完整的交互结构表。你列出所有用户动作、系统事件、命令和查询，以及它们的前置条件和后置条件。\n第二，为一个核心对象画出一份完整的状态转移表。你列出所有合法转移路径，标注每个转移的前置条件。\n第三，区分业务状态和UI 状态。你知道 Task.status 是业务状态（需要写入数据库），而”表单正在提交”是 UI 状态（只在前端生效）。\n第四，看到项目中使用的状态库（Redux、Zustand、TanStack Query 等）时，能说出它承接了什么类型的状态结构——而不是只说”这是个状态管理库”。\n产出物是四张表（用户动作表、系统事件表、状态拥有者表、状态转移表）和一份状态到构造件的映射预览。",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Chapter 8：交互结构与状态结构（Interaction Structure and State Structure）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-09-boundary-composition-reliability.html",
+    "href": "chapter-09-boundary-composition-reliability.html",
+    "title": "9  Chapter 9：边界结构、组合结构与约束可靠性切面（Boundary, Composition & Reliability）",
+    "section": "",
+    "text": "9.1 本章问题\n领域结构定义了有什么事物，交互结构定义了谁做什么，状态结构定义了什么会变化。但还有三个关键问题没有回答：数据从哪些边界进出系统？系统的各部分如何组织在一起？哪些约束必须保证、失败了怎么办？边界结构、组合结构和约束可靠性切面回答的就是这三个问题。",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Chapter 9：边界结构、组合结构与约束可靠性切面（Boundary, Composition & Reliability）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-09-boundary-composition-reliability.html#背景为什么这章重要",
+    "href": "chapter-09-boundary-composition-reliability.html#背景为什么这章重要",
+    "title": "9  Chapter 9：边界结构、组合结构与约束可靠性切面（Boundary, Composition & Reliability）",
+    "section": "9.2 背景：为什么这章重要",
+    "text": "9.2 背景：为什么这章重要\n边界结构（Boundary Structure）、组合结构（Composition Structure）和约束与可靠性切面（Constraint & Reliability Slice）是结构建模层的最后三个组成部分。\n边界结构定义数据从哪进、从哪出。没有边界结构，你不知道程序的输入格式是什么、输出格式是什么、错误怎么返回。\n组合结构定义各部分如何组织。没有组合结构，你不知道页面、组件、模块、服务之间的关系。\n约束与可靠性切面是横向切面——它不是第五类结构，而是贯穿前五类结构的质量保证层。每个结构都有约束和可靠性要求。\n注意和旧模型的区别： - 旧模型把”实现结构”（数据结构说明、函数规格、模块职责）放在结构建模层 - 新模型把实现结构移到 Part 5 组装层——结构建模层只回答”长什么样”，不回答”怎么实现” - 旧模型把”可靠性结构”作为一个独立类别（异常处理、恢复、输出、反馈、测试） - 新模型把可靠性作为横向切面——它不从属于任何一个结构，而是每个结构都派生可靠性要求 - 旧模型把”配置结构”和”结果结构”放在领域结构 - 新模型把它们移到边界结构——配置是运行环境边界，结果是输出边界",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Chapter 9：边界结构、组合结构与约束可靠性切面（Boundary, Composition & Reliability）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-09-boundary-composition-reliability.html#核心内容",
+    "href": "chapter-09-boundary-composition-reliability.html#核心内容",
+    "title": "9  Chapter 9：边界结构、组合结构与约束可靠性切面（Boundary, Composition & Reliability）",
+    "section": "9.3 核心内容",
+    "text": "9.3 核心内容\n\n9.3.1 边界结构（Boundary Structure）\n边界结构定义程序与外部世界的所有交互点。\n\n9.3.1.1 API 边界（API Boundary）\n程序对外暴露的接口。\n\n\n\n边界\n方向\n协议\n格式\n示例\n\n\n\n\nREST API\n双向\nHTTP\nJSON\nPOST /tasks, GET /tasks/{id}\n\n\nWebSocket\n双向\nWS\nJSON\n实时通知\n\n\n\nAPI 边界规格表：\n\n\n\n\n\n\n\n\n\n\nAPI\n方法\n输入\n输出(成功)\n输出(失败)\n\n\n\n\nPOST /tasks\nCreate\n{title, description?, priority, due_date?}\n{task}\n{error, message, violations?}\n\n\nPUT /tasks/{id}/assign\nAssign\n{user_id}\n{task}\n{error, message}\n\n\nPUT /tasks/{id}/complete\nComplete\n{note}\n{task}\n{error, message}\n\n\nGET /tasks\nList\n?status=&priority=\n{tasks: []}\n{error, message}\n\n\n\n\n\n9.3.1.2 UI 边界（UI Boundary）\n用户界面接收的输入和展示的输出。\n\n\n\n\n\n\n\n\n\nUI 元素\n输入\n输出\n约束\n\n\n\n\n创建任务表单\ntitle, description, priority, due_date\nJSON 请求体\n标题必填，1-200 字\n\n\n任务列表\n-\n任务卡片列表\n分页参数\n\n\n任务详情\ntask_id\n完整任务信息\n-\n\n\n\n\n\n9.3.1.3 数据边界（Data Boundary）\n程序与存储系统之间的边界。\n\n\n\n存储类型\n操作\n输入\n输出\n技术选择\n\n\n\n\n关系数据库\nCRUD\n查询参数\n数据行\nSQLAlchemy / Prisma\n\n\n缓存\n读写\n键值对\n缓存值\nRedis\n\n\n文件系统\n读写\n文件路径\n文件内容\n文件 API\n\n\n\n\n\n9.3.1.4 外部服务边界（External Service Boundary）\n程序与外部服务的交互。\n\n\n\n服务\n交互方式\n协议\n失败策略\n\n\n\n\n邮件服务\n调用 API\nSMTP / HTTP\n重试 3 次，失败降级\n\n\n日志服务\n写入\nstdout / 文件\n不阻断主流程\n\n\n\n\n\n9.3.1.5 输入输出契约（Input/Output Contract）\n每个边界的输入输出格式定义。\n# 创建任务 API 契约\nPOST /tasks\n输入:\n  title: string (1-200, required)\n  description: string (0-2000, optional)\n  priority: enum (low/medium/high/urgent, required)\n  due_date: string (ISO date, optional)\n输出(200):\n  task: Task 对象\n输出(400):\n  error: \"VALIDATION_ERROR\"\n  message: string\n  violations: [{field, message}]\n输出(500):\n  error: \"INTERNAL_ERROR\"\n  message: string\n\n\n\n9.3.2 组合结构（Composition Structure）\n组合结构定义系统的各部分如何组织在一起。\n\n9.3.2.1 组件树（Component Tree）\n前端 UI 的层级结构。\nApp\n├── Layout\n│   ├── Sidebar\n│   └── MainContent\n├── TaskListPage\n│   ├── FilterBar\n│   ├── TaskCard[]\n│   └── Pagination\n├── TaskDetailPage\n│   ├── TaskInfo\n│   ├── StatusActions\n│   └── CommentSection\n├── CreateTaskPage\n│   └── TaskForm\n└── LoginPage\n    └── LoginForm\n\n\n9.3.2.2 模块结构（Module Structure）\n后端代码的层级组织。\nsrc/\n├── api/\n│   ├── routers/\n│   │   ├── task_router.py\n│   │   ├── user_router.py\n│   │   └── project_router.py\n│   └── schemas/\n│       ├── task_schema.py\n│       └── user_schema.py\n├── services/\n│   ├── task_service.py\n│   ├── user_service.py\n│   └── notification_service.py\n├── repositories/\n│   ├── task_repository.py\n│   └── user_repository.py\n├── models/\n│   ├── task.py\n│   └── user.py\n└── config.py\n\n\n9.3.2.3 服务结构（Service Structure）\n后端服务的职责划分。\n\n\n\n\n\n\n\n\n服务\n职责\n依赖\n\n\n\n\nTaskService\n任务 CRUD 和状态管理\nTaskRepository, NotificationService\n\n\nUserService\n用户管理\nUserRepository\n\n\nNotificationService\n通知发送\n邮件客户端\n\n\nValidationService\n输入校验\n无\n\n\n\n\n\n9.3.2.4 适配器结构（Adapter Structure）\n连接不同层的适配代码。\n\n\n\n适配器\n连接\n职责\n\n\n\n\nAPI Router\nHTTP → Service\n解析请求、调用服务、格式化响应\n\n\nRepository\nService → Database\nCRUD 操作、ORM 映射\n\n\nSchema\nHTTP body → Python dict\n输入验证和序列化\n\n\n\n\n\n\n9.3.3 约束与可靠性切面（Constraint & Reliability Slice）\n约束与可靠性不是一个独立的第五类结构，而是贯穿前五类结构的横向切面。\n每个结构都派生特定的约束和可靠性要求。\n\n9.3.3.1 从领域结构派生\n\n\n\n领域元素\n约束\n可靠性要求\n测试类型\n\n\n\n\n字段\n必填、长度、取值范围\n验证失败返回明确错误\n字段边界测试\n\n\n关系\n数量约束、生命周期\n关系断裂时一致处理\n关系测试\n\n\n生命周期\n合法状态序列\n非法转移被拒绝\n生命周期测试\n\n\n\n# 领域结构派生的约束\ndef validate_task_title(title: str):\n    if not title or len(title) &gt; 200:\n        raise ValidationError(\"title 1-200 characters\")\n\n\n9.3.3.2 从交互结构派生\n\n\n\n交互元素\n约束\n可靠性要求\n测试类型\n\n\n\n\n用户动作\n前置条件\n前置条件不满足时拒绝\n用例测试\n\n\n系统事件\n触发条件\n触发条件不满足时跳过\n事件测试\n\n\n权限\n角色限制\n无权限时返回 403\n权限测试\n\n\n\n# 交互结构派生的权限约束\ndef can_complete_task(user: User, task: Task):\n    if user.id != task.assignee_id:\n        raise PermissionError(\"只有负责人可以完成任务\")\n    if task.status != \"in_progress\":\n        raise StateError(\"任务不在执行状态\")\n\n\n9.3.3.3 从状态结构派生\n\n\n\n\n\n\n\n\n\n状态元素\n约束\n可靠性要求\n测试类型\n\n\n\n\n状态转移\n合法转移路径\n非法转移被拒绝\n状态转移测试\n\n\n并发状态\n同一对象不能被两个操作同时修改\n乐观锁或悲观锁\n并发测试\n\n\n\n# 状态结构派生的转移约束\ndef validate_transition(task: Task, target_status: str):\n    allowed = {\n        \"open\": [\"in_progress\", \"closed\"],\n        \"in_progress\": [\"pending_review\", \"failed\", \"closed\"],\n        \"pending_review\": [\"done\", \"in_progress\"],\n        \"done\": [\"closed\", \"open\"],\n        \"closed\": [\"open\"],\n        \"failed\": [\"in_progress\", \"closed\"],\n    }\n    if target_status not in allowed[task.status]:\n        raise StateError(f\"不能从 {task.status} 转移到 {target_status}\")\n\n\n9.3.3.4 从边界结构派生\n\n\n\n边界元素\n约束\n可靠性要求\n测试类型\n\n\n\n\n输入校验\n格式、范围、必填\n非法输入返回 400\n输入测试\n\n\n输出格式\n统一响应结构\n所有输出遵循同一格式\n输出契约测试\n\n\n外部服务\n超时、重试\n超时重试、熔断\n集成测试\n\n\n\n# 边界结构派生的超时重试策略\ndef call_with_retry(func, max_retries=3, timeout=5):\n    for attempt in range(max_retries):\n        try:\n            return func(timeout=timeout)\n        except TimeoutError:\n            if attempt == max_retries - 1:\n                raise\n            continue\n\n\n9.3.3.5 从组合结构派生\n\n\n\n组合元素\n约束\n可靠性要求\n测试类型\n\n\n\n\n服务依赖\n依赖不为空\n依赖缺失时快速失败\n集成测试\n\n\n组件接口\n接口契约\n接口变更时通知所有使用者\n契约测试\n\n\n目录结构\n命名规范\n结构清晰可扩展\n代码审查\n\n\n\n\n\n\n9.3.4 可靠性策略分类\n\n\n\n策略\n适用场景\n实现方式\n\n\n\n\n验证\n输入到达边界时\nif + raise, schema validation\n\n\n重试\n临时性失败（网络、数据库）\nretry decorator, 指数退避\n\n\n降级\n非关键路径失败\n跳过、写日志\n\n\n熔断\n外部服务持续失败\n暂停请求、快速失败\n\n\n超时\n外部服务响应慢\ntimeout 参数\n\n\n回滚\n部分写入成功\n事务、补偿操作\n\n\n日志\n所有异常情况\nlogging, structured log\n\n\n通知\n需要人工介入的失败\n报警、通知",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Chapter 9：边界结构、组合结构与约束可靠性切面（Boundary, Composition & Reliability）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-09-boundary-composition-reliability.html#例子与实践",
+    "href": "chapter-09-boundary-composition-reliability.html#例子与实践",
+    "title": "9  Chapter 9：边界结构、组合结构与约束可靠性切面（Boundary, Composition & Reliability）",
+    "section": "9.4 例子与实践",
+    "text": "9.4 例子与实践\n\n9.4.1 场景：Task Manager 的边界、组合与可靠性\n边界结构：API 边界\n\n\n\n\n\n\n\n\n\nAPI\n输入校验\n输出格式\n错误码\n\n\n\n\nPOST /tasks\ntitle 必填, priority 枚举\nTaskResponse\n400, 500\n\n\nPUT /tasks/{id}/assign\ntask_id 存在, user_id 存在\nTaskResponse\n400, 404, 409, 500\n\n\nPUT /tasks/{id}/complete\ntask_id 存在, note 可选\nTaskResponse\n400, 404, 409, 403, 500\n\n\n\n组合结构：组件树\nApp\n├── TaskListPage          → 列表页\n├── TaskDetailPage        → 详情页\n├── CreateTaskPage        → 创建页\n├── LoginPage            → 登录页\n└── Layout               → 布局壳\n    ├── Header\n    ├── Sidebar\n    └── MainContent\n组合结构：后端模块\napp/\n├── api/                  → 边界层\n│   ├── routers/\n│   └── schemas/\n├── services/             → 业务层\n├── repositories/         → 数据层\n└── models/               → 领域层\n可靠性切面：各结构的可靠性要求\n\n\n\n所属结构\n可靠性要求\n策略\n\n\n\n\n领域 - Task.title\n不能为空，不超长\n输入验证\n\n\n交互 - assign_task\n只有 Manager 可做\n权限校验\n\n\n状态 - status\n只能按合法路径转移\n转移验证\n\n\n边界 - POST /tasks\n非 JSON 格式拒绝\n格式校验\n\n\n边界 - 数据库\n写入失败重试\n重试 3 次\n\n\n组合 - 通知服务\n发送失败不阻断主流程\n降级 + 日志",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Chapter 9：边界结构、组合结构与约束可靠性切面（Boundary, Composition & Reliability）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-09-boundary-composition-reliability.html#小结",
+    "href": "chapter-09-boundary-composition-reliability.html#小结",
+    "title": "9  Chapter 9：边界结构、组合结构与约束可靠性切面（Boundary, Composition & Reliability）",
+    "section": "9.5 小结",
+    "text": "9.5 小结\n边界结构、组合结构和约束可靠性切面完成了结构建模层的最后三个组成部分。\n边界结构回答”数据从哪进、从哪出”——API 边界、UI 边界、数据库边界、外部服务边界、输入输出契约。\n组合结构回答”各部分如何组织”——组件树、模块结构、服务结构、适配器结构。\n约束与可靠性切面是横向贯穿前五类结构的质量保证层——每个结构都派生约束和可靠性要求，而不是把它们当作一个独立的结构类别。\n至此，五类结构与一个横向切面全部定义完成。下一章进入 Part 4 构造件层——把结构规格映射到具体的库、框架、组件和脚手架。",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Chapter 9：边界结构、组合结构与约束可靠性切面（Boundary, Composition & Reliability）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-09-boundary-composition-reliability.html#本章产物",
+    "href": "chapter-09-boundary-composition-reliability.html#本章产物",
+    "title": "9  Chapter 9：边界结构、组合结构与约束可靠性切面（Boundary, Composition & Reliability）",
+    "section": "9.6 本章产物",
+    "text": "9.6 本章产物\n完成本章后，你拥有以下可交付产物：\n\n边界定义表、组合结构图、可靠性切面检查表。\n\n可复用模板见附录 B：结构建模模板（Structure Modeling Templates）中的对应模板。",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Chapter 9：边界结构、组合结构与约束可靠性切面（Boundary, Composition & Reliability）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-09-boundary-composition-reliability.html#从业者输出",
+    "href": "chapter-09-boundary-composition-reliability.html#从业者输出",
+    "title": "9  Chapter 9：边界结构、组合结构与约束可靠性切面（Boundary, Composition & Reliability）",
+    "section": "9.7 从业者输出",
+    "text": "9.7 从业者输出\n完成本章后，你能做四件事：\n第一，为一个系统列出所有边界点，并为每个边界点定义输入输出契约。你做出来的契约应该精确到字段级别：每个字段的类型、格式、必填/可选、取值范围。\n第二，画出一个系统的组合结构图。你至少能画出组件树（前端层级）、模块结构（后端目录）、服务结构（职责划分）。\n第三，为每一类结构派生可靠性要求。你看到”title 字段”时能想到”需要验证”；看到”状态转移”时能想到”需要约束检查”；看到”外部服务调用”时能想到”需要超时和重试”。\n第四，区分”可靠性结构”和”可靠性切面”。你知道可靠性不是一个独立的代码模块——它是渗透在所有代码中的约束、验证、重试和降级逻辑。\n产出物是边界定义表、组合结构图、可靠性切面检查表。这三份产物加上前三章的产物，构成完整的结构规格包，可以直接进入构造件选择和组装阶段。",
+    "crumbs": [
+      "程序结构建模层",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Chapter 9：边界结构、组合结构与约束可靠性切面（Boundary, Composition & Reliability）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-10-construction-assets.html",
+    "href": "chapter-10-construction-assets.html",
+    "title": "10  Chapter 10：构造件是什么：库、框架、组件、SDK 与脚手架（Construction Assets）",
+    "section": "",
+    "text": "10.1 本章问题\n传统编程教学有一个隐含假设：程序 = 自己写的代码。但现代开发的现实是：程序 = 自写代码 + 构造件 + 胶水代码。构造件——库、框架、组件、SDK、脚手架——已经占据了现代程序的大部分代码量。问题不是”要不要用构造件”，而是”什么结构用哪个构造件、怎么选、怎么接”。",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Chapter 10：构造件是什么：库、框架、组件、SDK 与脚手架（Construction Assets）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-10-construction-assets.html#背景为什么这章重要",
+    "href": "chapter-10-construction-assets.html#背景为什么这章重要",
+    "title": "10  Chapter 10：构造件是什么：库、框架、组件、SDK 与脚手架（Construction Assets）",
+    "section": "10.2 背景：为什么这章重要",
+    "text": "10.2 背景：为什么这章重要\n构造件层（Construction Asset Layer）是全书主构造链中的第三个关键环节，位于程序结构建模之后、胶水代码连接之前。\n为什么需要这一层？因为程序结构建模只回答了”程序应该有什么结构”，但没有回答”这些结构用什么代码实现”。而这个问题的答案通常是：大部分结构已经有现成的构造件可以承接。\n现代程序开发的效率提升，不是因为你写代码更快了，而是因为你用构造件承接了更多结构。\n库不是为了少写代码才存在。库是稳定结构的可复用承接物。\n这句话是构造件层的核心观点。一个库之所以存在，是因为某个程序结构模式反复出现，被提炼成了可复用的代码资产。\n这一章不是构造件百科，而是构造件选择的方法论。核心问题是：从结构规格出发，如何一步步选出合适的构造件。",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Chapter 10：构造件是什么：库、框架、组件、SDK 与脚手架（Construction Assets）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-10-construction-assets.html#核心内容",
+    "href": "chapter-10-construction-assets.html#核心内容",
+    "title": "10  Chapter 10：构造件是什么：库、框架、组件、SDK 与脚手架（Construction Assets）",
+    "section": "10.3 核心内容",
+    "text": "10.3 核心内容\n\n10.3.1 构造件vs 自己写\n\n\n\n维度\n自己写\n使用构造件\n\n\n\n\n控制力\n完全控制\n受限于构造件 API\n\n\n开发速度\n慢\n快\n\n\n成熟度\n需要自己测试\n已经过大量验证\n\n\n维护成本\n自己维护\n社区维护\n\n\n学习成本\n无（自己写的）\n需要学习 API\n\n\n灵活性\n完全灵活\n受限于构造件设计\n\n\n\n\n\n10.3.2 构造件选择的输入：结构规格包\n构造件选择不是凭经验装库，而是读取结构规格包。输入来自 Part 3 的完整输出：\n领域结构     → 对象卡片、字段说明、关系表、生命周期\n交互结构     → 用户动作表、系统事件表、命令/查询\n状态结构     → 状态拥有者表、状态转移表\n边界结构     → 边界定义表、输入输出契约\n组合结构     → 组件树、模块结构、服务结构\n约束与可靠性  → 约束表、可靠性策略表（横向切面）\n每一类结构都会引出一类或几类候选构造件。例如：状态结构中的”全局共享状态”引出状态库，“服务端数据状态”引出请求库。\n\n\n10.3.3 构造件选择的动作流程\n从结构规格到构造件选择的完整动作链：\n第一步：读取结构规格包。\n  翻开 Part 3 产出的所有结构表，理解每类结构的具体要求。\n\n第二步：标记可复用结构。\n  在每类结构中标注哪些是通用模式（已有成熟构造件）、哪些是业务特异性（需要自写代码）。\n  例如：API 入口结构 → 通用（FastAPI 可以承接）\n  例如：状态转移验证 → 业务特异（需要自写 validate_transition）\n\n第三步：为每个可复用结构列出候选构造件。\n  参考附录 C（结构到构造件映射表）和附录 D/E（前端/后端构造件分类表），\n  为每个可复用结构列出 2-3 个候选构造件。\n\n第四步：判断构造件是否覆盖结构要求。\n  逐一验证候选构造件是否满足结构规格的全部需求。\n  不满足的部分标记为\"缺口\"。\n\n第五步：记录构造件不能覆盖的部分。\n  缺口包括：构造件不支持的约束、不满足的性能要求、不兼容的接口风格。\n  这些缺口必须由自写代码或胶水代码填补。\n\n第六步：把缺口分配给自写代码或胶水代码。\n  业务特异性缺口 → 自写代码（如领域约束、状态转移验证）\n  连接性缺口 → 胶水代码（如配置、路由、数据转换、适配器）\n\n\n10.3.4 构造件分类总表\n\n\n\n\n\n\n\n\n\n类别\n构造件类型\n承接的结构\n例子\n\n\n\n\nUI 构造件\n组件库\n界面展示结构\nMUI, Ant Design, shadcn/ui\n\n\nUI 框架\n框架\n组件组合结构\nReact, Vue, Svelte\n\n\n状态构造件\n状态库\n状态结构\nRedux, Zustand, Pinia\n\n\n路由构造件\n路由库\n页面流转结构\nReact Router, Vue Router\n\n\n请求构造件\n请求库\n服务端数据状态\nTanStack Query, SWR\n\n\n表单构造件\n表单库\n输入交互结构\nReact Hook Form\n\n\n验证构造件\n验证库\n字段约束结构\nZod, Yup, Pydantic\n\n\n后端入口构造件\nWeb 框架\nAPI 入口结构\nFastAPI, Express, Spring Boot\n\n\n数据访问构造件\nORM\n数据访问结构\nSQLAlchemy, Prisma, TypeORM\n\n\n权限构造件\n权限库\n权限结构\nAuth middleware\n\n\n任务构造件\n队列库\n异步任务结构\nCelery, BullMQ\n\n\n缓存构造件\n缓存库\n缓存结构\nRedis client\n\n\n观测构造件\n观测库\n日志观测结构\nOpenTelemetry\n\n\n测试构造件\n测试框架\n测试验证结构\npytest, Vitest, Playwright\n\n\n脚手架构造件\n脚手架\n工程壳结构\nVite, Next.js, create-app\n\n\n\n\n\n10.3.5 结构到构造件映射表\n\n\n\n结构问题\n可选构造件\n需要补的胶水代码\n\n\n\n\n需要页面流转\nReact Router / Vue Router\n路由配置、页面组件\n\n\n需要 UI 组件\nMUI / Ant Design / shadcn/ui\n主题配置、样式覆盖\n\n\n需要全局状态\nRedux / Zustand / Pinia\nstore 定义、状态切片\n\n\n需要服务端数据\nTanStack Query / SWR\n查询钩子、缓存配置\n\n\n需要表单输入\nReact Hook Form\n表单注册、验证规则\n\n\n需要输入验证\nZod / Yup / Pydantic\nschema 定义、错误消息\n\n\n需要 API 入口\nFastAPI / Express\n路由注册、中间件配置\n\n\n需要数据访问\nSQLAlchemy / Prisma\n模型定义、迁移脚本\n\n\n需要任务队列\nCelery / BullMQ\n任务定义、worker 配置\n\n\n需要项目壳\nVite / Next.js / create-app\n目录结构、构建配置\n\n\n\n\n\n10.3.6 构造件边界\n构造件能大幅提升开发效率，但它不是万能的。以下五条原则说明构造件不做什么：\n构造件不替代业务语义。\n  MUI 提供了按钮组件，但不替代\"审核按钮在 pending_review 状态才可用\"的业务规则。\n\n构造件不替代领域规则。\n  SQLAlchemy 提供了数据持久化，但不替代\"task 状态必须按合法路径转移\"的领域约束。\n\n构造件不完成跨层连接。\n  FastAPI 和 SQLAlchemy 各自独立工作，它们之间的依赖注入和数据转换需要自己写。\n\n构造件不替代结构建模。\n  装了一堆库但没有结构规格，代码最终会变得难以维护。造件选择在结构建模之后。\n\n构造件只承接稳定结构。\n  通用模式有构造件承接，业务特异性需求没有——这是自写代码的存在理由。",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Chapter 10：构造件是什么：库、框架、组件、SDK 与脚手架（Construction Assets）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-10-construction-assets.html#例子与实践",
+    "href": "chapter-10-construction-assets.html#例子与实践",
+    "title": "10  Chapter 10：构造件是什么：库、框架、组件、SDK 与脚手架（Construction Assets）",
+    "section": "10.4 例子与实践",
+    "text": "10.4 例子与实践\n\n10.4.1 场景：Task Manager 的构造件选择\n以下是应用六步动作链为 Task Manager 选择构造件的完整过程：\n第一步：读取结构规格包。 输入 Part 3 所有结构表：Task/User/Project 对象卡片、用户动作表（create/assign/complete/approve）、状态转移表（6 个状态 + 8 条转移）、API 边界表（5 个 API）、组合结构表（前端组件树 + 后端模块结构）。\n第二步：标记可复用结构。\n\n\n\n结构\n可复用判定\n判定依据\n\n\n\n\nAPI 入口结构\n可复用\n标准的 REST API 模式，框架可承接\n\n\n数据访问结构\n可复用\nCRUD + 关系查询，ORM 可承接\n\n\nUI 展示结构\n可复用\n标准按钮、表格、卡片，组件库可承接\n\n\n页面流转结构\n可复用\n多页面 URL 切换，路由库可承接\n\n\n领域约束（状态转移）\n业务特异\n每个应用的状态规则不同，需要自写\n\n\n权限规则\n业务特异\n角色和操作权限因业务而异\n\n\n\n第三步到第六步：列出候选、判断覆盖、记录缺口、分配。\n\n\n\n\n\n\n\n\n\n结构需求\n选中构造件\n构造件覆盖的部分\n缺口（自写/胶水）\n\n\n\n\n前端框架\nReact\n组件组合、状态管理、事件处理\n-\n\n\n前端脚手架\nVite\n构建配置、HMR、TypeScript\n-\n\n\nUI 组件库\nMUI\n按钮、表格、卡片、对话框\n业务组件（TaskCard、StatusBadge）→ 自写\n\n\n路由\nReact Router v6\n页面 URL 切换、参数传递\n路由守卫（权限检查）→ 胶水\n\n\n全局状态\nZustand\n跨组件状态共享\n状态持久化 → 胶水\n\n\n服务端数据\nTanStack Query\n缓存、loading/error 状态、自动刷新\n查询键管理 → 胶水\n\n\n表单\nReact Hook Form\n字段注册、提交处理\nMUI 组件适配（Controller）→ 胶水\n\n\n验证\nZod\n类型推导、运行时验证\n自定义错误消息 → 胶水\n\n\n后端框架\nFastAPI\n路由、请求解析、自动文档\nCORS 配置 → 胶水\n\n\nORM\nSQLAlchemy\n模型映射、查询、关系加载\n迁移脚本 → 脚手架\n\n\n测试\npytest + Vitest\n测试运行器、断言、fixture\n测试用例数据 → 自写",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Chapter 10：构造件是什么：库、框架、组件、SDK 与脚手架（Construction Assets）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-10-construction-assets.html#小结",
+    "href": "chapter-10-construction-assets.html#小结",
+    "title": "10  Chapter 10：构造件是什么：库、框架、组件、SDK 与脚手架（Construction Assets）",
+    "section": "10.5 小结",
+    "text": "10.5 小结\n构造件层是全书主构造链的枢纽层。它把结构规格翻译成具体的代码资产选择。\n选择构造件的核心动作链：读取结构规格包 → 标记可复用结构 → 列出候选构造件 → 判断覆盖范围 → 记录缺口 → 分配给自写代码或胶水代码。\n构造件只承接稳定结构，不替代业务语义、领域规则、跨层连接和结构建模。\n接下来的三章展开三类构造件：前端构造件（第 11 章）、后端构造件（第 12 章）、脚手架（第 13 章）。",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Chapter 10：构造件是什么：库、框架、组件、SDK 与脚手架（Construction Assets）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-10-construction-assets.html#本章产物",
+    "href": "chapter-10-construction-assets.html#本章产物",
+    "title": "10  Chapter 10：构造件是什么：库、框架、组件、SDK 与脚手架（Construction Assets）",
+    "section": "10.6 本章产物",
+    "text": "10.6 本章产物\n完成本章后，你拥有以下可交付产物：\n\n六步构造件选择动作链（可复用于任何项目的流程）\n构造件分类总表（15 类构造件及其承接的结构）\n构造件边界原则（5 条）\n一份结构到构造件映射表，标注每种结构选了哪个构造件、覆盖范围和缺口\n\n可复用模板见附录 B：结构建模模板（Structure Modeling Templates）中的对应模板。",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Chapter 10：构造件是什么：库、框架、组件、SDK 与脚手架（Construction Assets）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-10-construction-assets.html#从业者输出",
+    "href": "chapter-10-construction-assets.html#从业者输出",
+    "title": "10  Chapter 10：构造件是什么：库、框架、组件、SDK 与脚手架（Construction Assets）",
+    "section": "10.7 从业者输出",
+    "text": "10.7 从业者输出\n完成本章后，你能做三件事：\n第一，对任意一个你正在用的库，说清楚它承接了什么程序结构。用了 React Router？你知道它承接了页面流转结构。用了 TanStack Query？你知道它承接了服务端数据状态结构。\n第二，对一个已有的结构规格包，执行六步选择流程：读取结构规格 → 标记可复用结构 → 列候选 → 判断覆盖 → 记录缺口 → 分配自写/胶水。产出物是一份带覆盖范围和缺口标记的构造件选择表。\n第三，知道构造件的边界——不会因为装了构造件就认为业务逻辑不用写了。能区分”构造件覆盖了通用结构”和”自写代码需要填补业务特异性缺口”。\n产出物是一份结构到构造件映射表，标注每种结构选了哪个构造件以及需要补的胶水代码。",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Chapter 10：构造件是什么：库、框架、组件、SDK 与脚手架（Construction Assets）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-11-frontend-assets.html",
+    "href": "chapter-11-frontend-assets.html",
+    "title": "11  Chapter 11：前端构造件：组件库、路由、状态、表单、请求与反馈（Frontend Assets）",
+    "section": "",
+    "text": "11.1 本章问题\n前端开发在近十年经历了爆炸式的构造件增长。React、Vue、MUI、React Router、Redux、Zustand、TanStack Query、React Hook Form、Zod、Next.js、Vite——这些不是零散的工具集合。它们每一个都承接了一个特定的前端结构。如果不知道每个构造件承接什么结构，前端开发就变成了”装了一堆库但不知道怎么组织”。",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Chapter 11：前端构造件：组件库、路由、状态、表单、请求与反馈（Frontend Assets）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-11-frontend-assets.html#背景为什么这章重要",
+    "href": "chapter-11-frontend-assets.html#背景为什么这章重要",
+    "title": "11  Chapter 11：前端构造件：组件库、路由、状态、表单、请求与反馈（Frontend Assets）",
+    "section": "11.2 背景：为什么这章重要",
+    "text": "11.2 背景：为什么这章重要\n前端构造件是结构建模层中界面结构、交互结构、状态结构、边界结构的现成承接物。\n前端库不是帮你少写代码，而是帮你承接已经稳定化的界面结构、交互结构、状态结构、边界结构和反馈结构。\n这句话是本章的核心。本章不做前端工具大全，而是做结构到构造件的映射。\n前端构造件出现在结构建模之后——你有了页面结构、交互流程、状态结构，再去选构造件，而不是反过来先装一堆库再想怎么用。",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Chapter 11：前端构造件：组件库、路由、状态、表单、请求与反馈（Frontend Assets）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-11-frontend-assets.html#核心内容",
+    "href": "chapter-11-frontend-assets.html#核心内容",
+    "title": "11  Chapter 11：前端构造件：组件库、路由、状态、表单、请求与反馈（Frontend Assets）",
+    "section": "11.3 核心内容",
+    "text": "11.3 核心内容\n\n11.3.1 十类前端结构到构造件映射\n\n11.3.1.1 1. 页面结构 → 路由构造件\n结构描述：程序有多个页面，页面之间通过 URL 切换。\n构造件：React Router / Vue Router / Next.js Router / TanStack Router\n胶水代码：路由配置、页面组件、导航链接、路由守卫。\n// 路由构造件承接页面流转结构\nconst router = createBrowserRouter([\n  { path: \"/\", element: &lt;Layout /&gt;, children: [\n    { path: \"tasks\", element: &lt;TaskListPage /&gt; },\n    { path: \"tasks/:id\", element: &lt;TaskDetailPage /&gt; },\n    { path: \"tasks/create\", element: &lt;CreateTaskPage /&gt; },\n    { path: \"login\", element: &lt;LoginPage /&gt; },\n  ]},\n]);\n\n\n11.3.1.2 2. 组件组合结构 → UI 框架\n结构描述：UI 由组件树组成，组件之间通过 props/events 通信。\n构造件：React / Vue / Svelte\n胶水代码：组件定义、props 接口、事件处理、条件渲染。\n// React 承接组件组合结构\nfunction TaskCard({ task, onStatusChange }: TaskCardProps) {\n  return (\n    &lt;Card&gt;\n      &lt;CardContent&gt;\n        &lt;Typography variant=\"h6\"&gt;{task.title}&lt;/Typography&gt;\n        &lt;StatusBadge status={task.status} /&gt;\n      &lt;/CardContent&gt;\n      &lt;CardActions&gt;\n        &lt;Button onClick={() =&gt; onStatusChange(task.id, \"done\")}&gt;\n          完成\n        &lt;/Button&gt;\n      &lt;/CardActions&gt;\n    &lt;/Card&gt;\n  );\n}\n\n\n11.3.1.3 3. UI 展示结构 → 组件库\n结构描述：需要按钮、卡片、表单输入、表格、对话框、导航栏等 UI 元素。\n构造件：MUI / Ant Design / shadcn/ui / Chakra UI / Tailwind CSS\n胶水代码：主题配置、样式覆盖、布局组合。\n// MUI 承接 UI 展示结构\n&lt;Table&gt;\n  &lt;TableHead&gt;\n    &lt;TableRow&gt;\n      &lt;TableCell&gt;标题&lt;/TableCell&gt;\n      &lt;TableCell&gt;状态&lt;/TableCell&gt;\n      &lt;TableCell&gt;优先级&lt;/TableCell&gt;\n      &lt;TableCell&gt;操作&lt;/TableCell&gt;\n    &lt;/TableRow&gt;\n  &lt;/TableHead&gt;\n  &lt;TableBody&gt;\n    {tasks.map(task =&gt; (\n      &lt;TableRow key={task.id}&gt;\n        &lt;TableCell&gt;{task.title}&lt;/TableCell&gt;\n        &lt;TableCell&gt;&lt;Chip label={task.status} /&gt;&lt;/TableCell&gt;\n        &lt;TableCell&gt;&lt;PriorityBadge priority={task.priority} /&gt;&lt;/TableCell&gt;\n        &lt;TableCell&gt;&lt;Button&gt;操作&lt;/Button&gt;&lt;/TableCell&gt;\n      &lt;/TableRow&gt;\n    ))}\n  &lt;/TableBody&gt;\n&lt;/Table&gt;\n\n\n11.3.1.4 4. 表单交互结构 → 表单库\n结构描述：用户填写表单，字段注册、输入追踪、验证触发、提交处理。\n构造件：React Hook Form / Formik / Vue Form\n胶水代码：字段注册、验证规则、提交处理。\n// React Hook Form + MUI 简化示例\n// 注意：MUI 的 Select、DatePicker 等受控组件在生产中通常通过 &lt;Controller&gt;\n// 包装来与 React Hook Form 集成。本示例简化了该细节以聚焦结构展示。\nfunction TaskForm({ onSubmit }: TaskFormProps) {\n  const { register, handleSubmit, formState: { errors } } = useForm&lt;TaskInput&gt;();\n\n  return (\n    &lt;form onSubmit={handleSubmit(onSubmit)}&gt;\n      &lt;TextField {...register(\"title\", { required: \"标题必填\", maxLength: 200 })} /&gt;\n      {errors.title && &lt;ErrorText&gt;{errors.title.message}&lt;/ErrorText&gt;}\n      &lt;Select {...register(\"priority\")}&gt;\n        &lt;option value=\"low\"&gt;低&lt;/option&gt;\n        &lt;option value=\"medium\"&gt;中&lt;/option&gt;\n        &lt;option value=\"high\"&gt;高&lt;/option&gt;\n        &lt;option value=\"urgent\"&gt;紧急&lt;/option&gt;\n      &lt;/Select&gt;\n      &lt;DatePicker {...register(\"due_date\")} /&gt;\n      &lt;Button type=\"submit\"&gt;创建&lt;/Button&gt;\n    &lt;/form&gt;\n  );\n}\n\n\n11.3.1.5 5. 字段约束结构 → 验证库\n结构描述：输入数据需要类型校验、格式校验、范围校验。\n构造件：Zod / Yup / Valibot / Joi\n胶水代码：schema 定义、错误消息、类型推导。\n// Zod 承接字段约束结构\nconst TaskSchema = z.object({\n  title: z.string().min(1, \"标题必填\").max(200, \"标题最长 200 字\"),\n  description: z.string().max(2000).optional(),\n  priority: z.enum([\"low\", \"medium\", \"high\", \"urgent\"]),\n  due_date: z.string().date().optional(),\n});\n\ntype TaskInput = z.infer&lt;typeof TaskSchema&gt;; // 自动推导类型\n\n\n11.3.1.6 6. 服务端数据状态结构 → 请求库\n结构描述：前端需要从后端获取数据、缓存、自动刷新、处理 loading/error 状态。\n构造件：TanStack Query / SWR / Apollo Client / RTK Query\n胶水代码：查询定义、缓存配置、数据转换。\n// TanStack Query 承接服务端数据状态\nfunction useTasks(filters: TaskFilters) {\n  return useQuery({\n    queryKey: [\"tasks\", filters],\n    queryFn: () =&gt; fetch(\"/api/tasks\", { params: filters }).then(res =&gt; res.json()),\n    staleTime: 30_000, // 30 秒内不重新请求\n  });\n}\n\n// 使用时自动获得 loading / error / data 状态\nfunction TaskList() {\n  const { data, isLoading, error } = useTasks({ status: \"open\" });\n  if (isLoading) return &lt;Skeleton /&gt;;\n  if (error) return &lt;ErrorAlert /&gt;;\n  return data.map(task =&gt; &lt;TaskCard key={task.id} task={task} /&gt;);\n}\n\n\n11.3.1.7 7. 全局状态结构 → 状态库\n结构描述：多个组件需要共享同一份状态（用户信息、主题设置、当前项目）。\n构造件：Redux Toolkit / Zustand / Pinia / Jotai\n胶水代码：store 定义、状态切片、action。\n// Zustand 承接全局共享状态\ninterface AuthState {\n  user: User | null;\n  token: string | null;\n  login: (email: string, password: string) =&gt; Promise&lt;void&gt;;\n  logout: () =&gt; void;\n}\n\nconst useAuthStore = create&lt;AuthState&gt;((set) =&gt; ({\n  user: null,\n  token: null,\n  login: async (email, password) =&gt; {\n    const { user, token } = await authApi.login(email, password);\n    set({ user, token });\n  },\n  logout: () =&gt; set({ user: null, token: null }),\n}));\n\n\n11.3.1.8 8. 反馈结构 → 通知组件库\n结构描述：操作完成后需要给用户反馈——成功提示、错误提示、确认对话框。\n构造件：notistack / react-hot-toast / sonner / MUI Snackbar / SweetAlert2\n胶水代码：反馈配置、toast 调用。\n// 反馈结构 → Toast 通知\nfunction TaskActions({ task }: { task: Task }) {\n  const { enqueueSnackbar } = useSnackbar();\n\n  const handleComplete = async () =&gt; {\n    try {\n      await completeTask(task.id);\n      enqueueSnackbar(\"任务已完成\", { variant: \"success\" });\n    } catch (error) {\n      enqueueSnackbar(\"操作失败: \" + error.message, { variant: \"error\" });\n    }\n  };\n\n  return &lt;Button onClick={handleComplete}&gt;完成任务&lt;/Button&gt;;\n}\n\n\n11.3.1.9 9. 可视化输出结构 → 图表库\n结构描述：需要图表展示统计数据、趋势、分布。\n构造件：ECharts / Recharts / D3.js / Chart.js\n\n\n11.3.1.10 10. 测试验证结构 → 测试框架\n结构描述：需要测试组件渲染、用户交互、API 响应。\n构造件：Vitest / Testing Library / Playwright / Cypress\n\n\n\n11.3.2 前端构造件选择动作链\n识别工程壳结构，选择脚手架承接：Vite / Next.js / Nuxt\n识别页面流转结构，选择路由库承接：React Router / Vue Router\n识别 UI 展示结构，选择组件库承接：MUI / Ant Design / shadcn/ui\n识别表单交互结构，选择表单库承接：React Hook Form / Formik\n识别字段约束结构，选择验证库承接：Zod / Yup\n识别服务端数据状态结构，选择请求库承接：TanStack Query / SWR\n识别全局共享状态结构，选择状态库承接：Zustand / Redux / Pinia\n识别反馈结构，选择通知库承接：notistack / toast\n识别测试验证结构，选择测试库承接：Vitest / Testing Library",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Chapter 11：前端构造件：组件库、路由、状态、表单、请求与反馈（Frontend Assets）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-11-frontend-assets.html#例子与实践",
+    "href": "chapter-11-frontend-assets.html#例子与实践",
+    "title": "11  Chapter 11：前端构造件：组件库、路由、状态、表单、请求与反馈（Frontend Assets）",
+    "section": "11.4 例子与实践",
+    "text": "11.4 例子与实践\n\n11.4.1 场景：Task Manager 的前端构造件选择\n\n\n\n结构\n构造件\n胶水代码\n\n\n\n\n工程壳\nVite + React\nvite.config.ts, tsconfig.json\n\n\n页面路由\nReact Router v6\nrouter.tsx, 页面组件映射\n\n\nUI 组件\nMUI\ntheme.ts, 样式覆盖\n\n\n表单\nReact Hook Form\nuseForm 钩子, 字段注册\n\n\n验证\nZod\nTaskSchema 定义\n\n\n服务端数据\nTanStack Query\nuseTasks, useTask, useMutations\n\n\n全局状态\nZustand\nuseAuthStore, useUIStore\n\n\n反馈\nnotistack\nSnackbarProvider, 调用封装\n\n\n测试\nVitest + Testing Library\ntest utils, mock 配置\n\n\n\n\n\n11.4.2 前端构造件的核心原则\n前端库不是零散工具，而是结构承接物：\n\n组件库承接界面展示结构\n路由库承接页面流转结构\n状态库承接状态拥有和状态变化结构\n请求库承接服务端数据状态结构\n表单库承接输入交互结构\n验证库承接字段约束结构\n反馈库承接用户反馈结构\n测试库承接可靠性结构\n脚手架承接项目壳结构",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Chapter 11：前端构造件：组件库、路由、状态、表单、请求与反馈（Frontend Assets）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-11-frontend-assets.html#小结",
+    "href": "chapter-11-frontend-assets.html#小结",
+    "title": "11  Chapter 11：前端构造件：组件库、路由、状态、表单、请求与反馈（Frontend Assets）",
+    "section": "11.5 小结",
+    "text": "11.5 小结\n前端构造件不是前端工具清单。它是结构到实现的映射。当你有了页面结构、交互结构、状态结构、边界结构后，每个结构都有对应的构造件可以承接。\n前端库不是帮你少写代码——它们是帮你承接已经稳定化的程序结构。\n下一章进入后端构造件：API、数据访问、权限、任务、缓存与观测。",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Chapter 11：前端构造件：组件库、路由、状态、表单、请求与反馈（Frontend Assets）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-11-frontend-assets.html#本章产物",
+    "href": "chapter-11-frontend-assets.html#本章产物",
+    "title": "11  Chapter 11：前端构造件：组件库、路由、状态、表单、请求与反馈（Frontend Assets）",
+    "section": "11.6 本章产物",
+    "text": "11.6 本章产物\n完成本章后，你拥有以下可交付产物：\n\n前端结构到构造件映射表，标注每个结构选择了什么构造件以及需要补的胶水代码。\n\n可复用模板见附录 B：结构建模模板（Structure Modeling Templates）中的对应模板。",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Chapter 11：前端构造件：组件库、路由、状态、表单、请求与反馈（Frontend Assets）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-11-frontend-assets.html#从业者输出",
+    "href": "chapter-11-frontend-assets.html#从业者输出",
+    "title": "11  Chapter 11：前端构造件：组件库、路由、状态、表单、请求与反馈（Frontend Assets）",
+    "section": "11.7 从业者输出",
+    "text": "11.7 从业者输出\n完成本章后，你能做四件事：\n第一，说出每个前端库承接了什么程序结构。你不再说”用了 React Hook Form 处理表单”，而是说”React Hook Form 承接了输入交互结构”。\n第二，判断一个前端库在结构建模层的定位。看到一个新库时，你先问”这个库承接了什么结构”而不是”这个库有什么功能”。\n第三，使用前端构造件选择决策树，为一个前端项目选择合适的构造件组合。你知道先选脚手架，再选路由，再选组件库，再选状态管理——按结构的层级选。\n第四，发现前端项目中构造件的缺失。如果项目有表单但没有验证库，你知道”表单交互结构缺少字段约束承接”。\n产出物是前端结构到构造件映射表，标注每个结构选择了什么构造件以及需要补的胶水代码。",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Chapter 11：前端构造件：组件库、路由、状态、表单、请求与反馈（Frontend Assets）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-12-backend-assets.html",
+    "href": "chapter-12-backend-assets.html",
+    "title": "12  Chapter 12：后端构造件：API、数据访问、权限、任务、缓存与观测（Backend Assets）",
+    "section": "",
+    "text": "12.1 本章问题\n后端也有构造件。只是后端构造件通常不表现为视觉组件，而是表现为入口、边界、权限、数据、任务、缓存、错误和观测结构。如果你不知道后端构造件承接什么结构，你就会遇到两个问题：要么从零写一切（低效），要么装了一堆库但不知道怎么组合它们。",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Chapter 12：后端构造件：API、数据访问、权限、任务、缓存与观测（Backend Assets）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-12-backend-assets.html#背景为什么这章重要",
+    "href": "chapter-12-backend-assets.html#背景为什么这章重要",
+    "title": "12  Chapter 12：后端构造件：API、数据访问、权限、任务、缓存与观测（Backend Assets）",
+    "section": "12.2 背景：为什么这章重要",
+    "text": "12.2 背景：为什么这章重要\n后端构造件和前端构造件一样，都是结构建模层的承接物。区别在于后端构造件不处理 UI 展示，而是处理数据、状态、边界和流程。\n后端构造件层次清晰：\n\n入口层：Web 框架承接 API 入口结构\n边界层：验证库承接输入边界结构\n业务层：服务代码承载业务逻辑\n数据层：ORM 承接数据访问结构\n基础设施层：队列、缓存、观测承接非功能结构\n\n后端构造件的选择逻辑和前端一样：结构决定构造件。 先有结构建模，再选构造件，最后补胶水代码。",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Chapter 12：后端构造件：API、数据访问、权限、任务、缓存与观测（Backend Assets）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-12-backend-assets.html#核心内容",
+    "href": "chapter-12-backend-assets.html#核心内容",
+    "title": "12  Chapter 12：后端构造件：API、数据访问、权限、任务、缓存与观测（Backend Assets）",
+    "section": "12.3 核心内容",
+    "text": "12.3 核心内容\n\n12.3.1 十类后端结构到构造件映射\n\n12.3.1.1 1. API 入口结构 → Web 框架\n结构描述：程序通过 HTTP API 对外提供服务，需要路由、请求解析、响应格式化。\n构造件：FastAPI / Express / Spring Boot / Flask / Gin\n胶水代码：路由注册、请求模型、响应模型、中间件。\n# FastAPI 承接 API 入口结构\nfrom fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass TaskCreateRequest(BaseModel):\n    title: str\n    description: str | None = None\n    priority: str = \"medium\"\n\n@app.post(\"/tasks\")\ndef create_task(request: TaskCreateRequest):\n    # 胶水代码：连接 API 到业务层\n    task = task_service.create(request)\n    return task\n\n@app.get(\"/tasks/{task_id}\")\ndef get_task(task_id: int):\n    task = task_service.get(task_id)\n    if not task:\n        raise HTTPException(status_code=404)\n    return task\n\n\n12.3.1.2 2. 输入验证结构 → 验证库\n结构描述：到达 API 的数据需要校验格式、类型、约束。\n构造件：Pydantic / Zod (Node.js) / Joi (Node.js) / Validation (Spring)\n胶水代码：schema 定义、自定义验证器、错误消息格式化。\n# Pydantic v2 风格承接输入验证结构\nfrom pydantic import BaseModel, Field, field_validator\n\nclass TaskCreateRequest(BaseModel):\n    title: str = Field(..., min_length=1, max_length=200)\n    description: str | None = Field(None, max_length=2000)\n    priority: str = Field(default=\"medium\")\n    due_date: str | None = None\n\n    @field_validator(\"priority\")\n    @classmethod\n    def validate_priority(cls, v):\n        allowed = {\"low\", \"medium\", \"high\", \"urgent\"}\n        if v not in allowed:\n            raise ValueError(f\"priority 必须是 {allowed}\")\n        return v\n\n\n12.3.1.3 3. 权限结构 → 认证与授权构造件\n结构描述：API 需要验证用户身份、检查操作权限。\n构造件：Auth middleware / Spring Security / Passport.js / JWT lib\n胶水代码：认证策略、权限检查、角色配置。\n# FastAPI 的认证与授权\nfrom fastapi import Depends, HTTPException\nfrom fastapi.security import HTTPBearer\n\nsecurity = HTTPBearer()\n\ndef get_current_user(token: str = Depends(security)) -&gt; User:\n    payload = verify_jwt(token.credentials)\n    return user_service.get(payload[\"user_id\"])\n\ndef require_role(role: str):\n    def checker(current_user: User = Depends(get_current_user)):\n        if current_user.role != role and current_user.role != \"admin\":\n            raise HTTPException(status_code=403)\n        return current_user\n    return checker\n\n@app.put(\"/tasks/{task_id}/assign\")\ndef assign_task(task_id: int, request: AssignRequest,\n                current_user: User = Depends(require_role(\"manager\"))):\n    return task_service.assign(task_id, request.user_id)\n\n\n12.3.1.4 4. 数据访问结构 → ORM / 数据库库\n结构描述：程序需要将领域对象持久化到数据库，支持 CRUD、查询、关联。\n构造件：SQLAlchemy / Prisma / TypeORM / Django ORM / Mongoose\n胶水代码：模型定义、迁移、查询封装。\n# SQLAlchemy 承接数据访问结构\nfrom sqlalchemy import Column, Integer, String, Enum, ForeignKey, DateTime\nfrom sqlalchemy.orm import relationship, declarative_base\n\nBase = declarative_base()\n\nclass TaskModel(Base):\n    __tablename__ = \"tasks\"\n\n    id = Column(Integer, primary_key=True)\n    title = Column(String(200), nullable=False)\n    status = Column(Enum(\"open\", \"in_progress\", \"done\", \"closed\"), default=\"open\")\n    assignee_id = Column(Integer, ForeignKey(\"users.id\"), nullable=True)\n    creator_id = Column(Integer, ForeignKey(\"users.id\"), nullable=False)\n    created_at = Column(DateTime, default=datetime.utcnow)\n\n    assignee = relationship(\"UserModel\", foreign_keys=[assignee_id])\n    creator = relationship(\"UserModel\", foreign_keys=[creator_id])\n\n\n12.3.1.5 5. 异步任务结构 → 任务队列\n结构描述：耗时的操作（通知发送、数据导出、定期清理）需要异步执行。\n构造件：Celery / BullMQ (Node.js) / Sidekiq (Ruby) / RQ / Task (Spring)\n胶水代码：任务定义、worker 配置、结果存储。\n# Celery 承接异步任务结构\nfrom celery import Celery\n\ncelery_app = Celery(\"tasks\", broker=\"redis://localhost:6379/0\")\n\n@celery_app.task\ndef send_notification(user_id: int, message: str):\n    user = user_service.get(user_id)\n    email_client.send(user.email, message)\n\n\n12.3.1.6 6. 缓存结构 → 缓存层\n结构描述：频繁读取但变化较少的数据需要缓存以减少数据库负载。\n构造件：Redis / Memcached / cache decorator\n胶水代码：缓存 key 策略、过期时间、缓存更新策略。\n# 缓存结构\nimport aioredis\nfrom functools import wraps\n\ncache = aioredis.from_url(\"redis://localhost:6379/1\")\n\nasync def get_task_cached(task_id: int) -&gt; Task | None:\n    key = f\"task:{task_id}\"\n    cached = await cache.get(key)\n    if cached:\n        return Task.model_validate_json(cached)\n    task = await task_repository.get(task_id)\n    if task:\n        await cache.setex(key, 300, task.model_dump_json())  # 5 分钟过期\n    return task\n\n\n12.3.1.7 7. 日志观测结构 → 观测系统\n结构描述：程序需要记录运行状态、追踪错误、监控性能。\n构造件：logging (stdlib) / OpenTelemetry / Sentry / Datadog / Prometheus + Grafana\n胶水代码：日志配置、span 定义、指标采集。\n# OpenTelemetry 承接观测结构\nfrom opentelemetry import trace\nfrom opentelemetry.instrumentation.fastapi import FastAPIInstrumentor\n\ntracer = trace.get_tracer(__name__)\n\napp = FastAPI()\nFastAPIInstrumentor.instrument_app(app)\n\n@app.post(\"/tasks\")\ndef create_task(request: TaskCreateRequest):\n    with tracer.start_as_current_span(\"create_task\") as span:\n        span.set_attribute(\"task.title\", request.title)\n        result = task_service.create(request)\n        span.set_attribute(\"task.id\", result.id)\n        return result\n\n\n12.3.1.8 8. 接口契约结构 → 文档生成\n结构描述：API 需要有文档和客户端可以消费的契约。\n构造件：OpenAPI / Swagger / GraphQL (Apollo)\n胶水代码：文档配置、schema 注释。\n# FastAPI 自动生成 OpenAPI 文档\napp = FastAPI(\n    title=\"Task Manager API\",\n    description=\"任务管理系统 API\",\n    version=\"1.0.0\",\n)\n# 访问 /docs 即可查看 Swagger UI\n\n\n12.3.1.9 9. 部署运行结构 → 容器化\n结构描述：程序需要在一致的环境中运行、部署、扩展。\n构造件：Docker / Docker Compose / Kubernetes / Serverless\n胶水代码：Dockerfile, docker-compose.yml, k8s manifests\n# Dockerfile\nFROM python:3.12-slim\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install -r requirements.txt\nCOPY . .\nCMD [\"uvicorn\", \"main:app\", \"--host\", \"0.0.0.0\", \"--port\", \"8000\"]\n\n\n12.3.1.10 10. 测试验证结构 → 测试框架\n结构描述：后端需要测试 API 逻辑、业务规则、数据访问。\n构造件：pytest / Jest (Node.js) / JUnit (Java)\n胶水代码：fixtures、mock 配置、测试用例。\n# pytest 承接测试结构\nimport pytest\nfrom unittest.mock import Mock\n\ndef test_create_task_success():\n    service = TaskService(repository=Mock())\n    request = TaskCreateRequest(title=\"测试任务\", priority=\"high\")\n    result = service.create(request)\n    assert result.title == \"测试任务\"\n    assert result.status == \"open\"\n\n\n\n12.3.2 后端构造件选择动作链\n识别 API 入口结构，选择 Web 框架承接：FastAPI / Express / Spring Boot\n识别输入验证结构，选择验证库承接：Pydantic / Zod / Joi\n识别权限控制结构，选择认证与授权构造件承接：Auth middleware / Spring Security / Passport\n识别数据访问结构，选择 ORM 承接：SQLAlchemy / Prisma / TypeORM\n识别异步任务结构，选择队列承接：Celery / BullMQ\n识别缓存结构，选择缓存层承接：Redis / Memcached\n识别日志观测结构，选择观测库承接：OpenTelemetry / Sentry / logging\n识别接口契约结构，选择文档生成工具承接：OpenAPI / Swagger\n识别部署运行结构，选择容器化方案承接：Docker / Compose / k8s\n识别测试验证结构，选择测试框架承接：pytest / Jest / JUnit",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Chapter 12：后端构造件：API、数据访问、权限、任务、缓存与观测（Backend Assets）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-12-backend-assets.html#例子与实践",
+    "href": "chapter-12-backend-assets.html#例子与实践",
+    "title": "12  Chapter 12：后端构造件：API、数据访问、权限、任务、缓存与观测（Backend Assets）",
+    "section": "12.4 例子与实践",
+    "text": "12.4 例子与实践\n\n12.4.1 场景：Task Manager 的后端构造件选择\n\n\n\n结构\n构造件\n胶水代码\n\n\n\n\nAPI 入口\nFastAPI\napp 定义、路由注册\n\n\n输入验证\nPydantic\nRequest/Response schema\n\n\n权限\nJWT + middleware\ntoken 验证、角色检查\n\n\n数据访问\nSQLAlchemy + asyncpg\n模型定义、迁移脚本\n\n\n异步任务\nCelery + Redis\n任务定义、worker\n\n\n缓存\nRedis\n缓存 key 策略、过期配置\n\n\n日志\nOpenTelemetry\nspan 定义、导出配置\n\n\n接口文档\nOpenAPI (FastAPI 内置)\nschema 注释、标签\n\n\n容器化\nDocker + Compose\nDockerfile + compose\n\n\n测试\npytest\nfixtures、mock 配置\n\n\n\n\n\n12.4.2 后端构造件的核心原则\n后端也有构造件——只是它们不表现为视觉组件：\n\nWeb 框架承接 API 入口结构\n验证库承接输入边界结构\n权限构造件承接权限结构\nORM 承接数据访问结构\n任务队列承接异步任务结构\n缓存库承接缓存结构\n观测库承接日志观测结构\nOpenAPI 承接接口契约结构\nDocker 承接部署运行结构\n测试库承接可靠性结构",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Chapter 12：后端构造件：API、数据访问、权限、任务、缓存与观测（Backend Assets）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-12-backend-assets.html#小结",
+    "href": "chapter-12-backend-assets.html#小结",
+    "title": "12  Chapter 12：后端构造件：API、数据访问、权限、任务、缓存与观测（Backend Assets）",
+    "section": "12.5 小结",
+    "text": "12.5 小结\n后端构造件和前端构造件遵循同样的逻辑：结构决定构造件。 先有结构建模，再选构造件，最后补胶水代码。\n后端构造件的特殊性在于它们不处理 UI，而是处理数据的输入、存储、处理、输出和观测。但核心原则一样：库不是少写代码，库是稳定结构的可复用承接物。\n下一章进入最后一类构造件：脚手架——把结构规格变成可运行的项目壳。",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Chapter 12：后端构造件：API、数据访问、权限、任务、缓存与观测（Backend Assets）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-12-backend-assets.html#本章产物",
+    "href": "chapter-12-backend-assets.html#本章产物",
+    "title": "12  Chapter 12：后端构造件：API、数据访问、权限、任务、缓存与观测（Backend Assets）",
+    "section": "12.6 本章产物",
+    "text": "12.6 本章产物\n完成本章后，你拥有以下可交付产物：\n\n后端结构到构造件映射表，标注每个结构选择了什么构造件以及需要补的胶水代码。\n\n可复用模板见附录 B：结构建模模板（Structure Modeling Templates）中的对应模板。",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Chapter 12：后端构造件：API、数据访问、权限、任务、缓存与观测（Backend Assets）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-12-backend-assets.html#从业者输出",
+    "href": "chapter-12-backend-assets.html#从业者输出",
+    "title": "12  Chapter 12：后端构造件：API、数据访问、权限、任务、缓存与观测（Backend Assets）",
+    "section": "12.7 从业者输出",
+    "text": "12.7 从业者输出\n完成本章后，你能做三件事：\n第一，对一个后端项目，说出每个使用的库承接了什么程序结构。用了 FastAPI？承接 API 入口结构。用了 SQLAlchemy？承接数据访问结构。\n第二，使用后端构造件选择决策树，为一个新后端项目选择合适的构造件组合。\n第三，区分”后端框架”和”后端构造件”。你知道 FastAPI 是框架（承接多个结构），而 Pydantic 是库（承接验证结构）。\n产出物是后端结构到构造件映射表，标注每个结构选择了什么构造件以及需要补的胶水代码。",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Chapter 12：后端构造件：API、数据访问、权限、任务、缓存与观测（Backend Assets）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-13-scaffold.html",
+    "href": "chapter-13-scaffold.html",
+    "title": "13  Chapter 13：脚手架：把结构规格变成项目壳（Scaffold）",
+    "section": "",
+    "text": "13.1 本章问题\n选择完构造件之后，你不能从零写目录结构、配置文件、构建脚本。你需要一个起点——一个已经把工程壳搭好的项目骨架。这个骨架就是脚手架。问题不是你用不用脚手架，而是什么样的脚手架适合你的结构规格。",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Chapter 13：脚手架：把结构规格变成项目壳（Scaffold）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-13-scaffold.html#背景为什么这章重要",
+    "href": "chapter-13-scaffold.html#背景为什么这章重要",
+    "title": "13  Chapter 13：脚手架：把结构规格变成项目壳（Scaffold）",
+    "section": "13.2 背景：为什么这章重要",
+    "text": "13.2 背景：为什么这章重要\n脚手架（Scaffold）是构造件层的最后一类。它不是单个库或框架，而是一组结构规格的默认落地形态。\n脚手架不解决具体业务，但解决： - 目录结构在哪里 - 入口文件在哪里 - 配置放在哪里 - 依赖怎么管理 - 构建和运行命令是什么 - 测试放在哪里 - 扩展位置在哪里\n选择脚手架的时机：当结构规格中的大部分结构有稳定构造件承接时，脚手架是最快的起点。",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Chapter 13：脚手架：把结构规格变成项目壳（Scaffold）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-13-scaffold.html#核心内容",
+    "href": "chapter-13-scaffold.html#核心内容",
+    "title": "13  Chapter 13：脚手架：把结构规格变成项目壳（Scaffold）",
+    "section": "13.3 核心内容",
+    "text": "13.3 核心内容\n\n13.3.1 脚手架的定义\n脚手架是一组结构规格的默认落地形态。它提供： - 目录结构（约定文件位置） - 入口文件（启动点） - 配置文件（环境、构建、部署） - 依赖声明（package.json / requirements.txt） - 构建脚本（build / dev / test 命令） - 基础代码（空壳组件、空服务） - 测试配置（test runner 设置）\n\n\n\n维度\n说明\n\n\n\n\n解决的问题\n每次从零搭项目壳的重复劳动\n\n\n输入\n结构规格 + 构造件选择\n\n\n输出\n可运行的项目壳\n\n\n边界\n不包含业务逻辑\n\n\n取舍\n脚手架越定制，启动越快；越通用，灵活性越低\n\n\n\n\n\n13.3.2 前端脚手架：Vite + React\n以 Vite + React + TypeScript 为例，看脚手架落地了什么结构。\nproject/\n├── index.html              # 入口 HTML\n├── package.json            # 依赖管理\n├── tsconfig.json           # TypeScript 配置\n├── vite.config.ts          # 构建配置\n├── src/\n│   ├── main.tsx            # React 入口\n│   ├── App.tsx             # 根组件\n│   ├── routes/             # 路由结构\n│   │   └── index.tsx\n│   ├── pages/              # 页面组件\n│   │   ├── TaskListPage.tsx\n│   │   ├── TaskDetailPage.tsx\n│   │   └── CreateTaskPage.tsx\n│   ├── components/         # 通用组件\n│   │   ├── Layout.tsx\n│   │   ├── TaskCard.tsx\n│   │   └── StatusBadge.tsx\n│   ├── hooks/              # 自定义钩子\n│   │   ├── useTasks.ts\n│   │   └── useAuth.ts\n│   ├── stores/             # 全局状态\n│   │   ├── authStore.ts\n│   │   └── uiStore.ts\n│   ├── api/                # API 客户端\n│   │   └── taskApi.ts\n│   ├── schemas/            # 验证 schema\n│   │   └── taskSchema.ts\n│   ├── types/              # 类型定义\n│   │   └── task.ts\n│   └── tests/              # 测试\n│       ├── components/\n│       └── pages/\n脚手架中的每个目录对应一个结构：\n\n\n\n目录\n承接的结构\n构造件\n\n\n\n\nroutes/\n页面流转结构\nReact Router\n\n\npages/\n页面结构\nReact\n\n\ncomponents/\n组件组合结构\nReact + MUI\n\n\nhooks/\n服务端数据状态\nTanStack Query\n\n\nstores/\n全局共享状态\nZustand\n\n\napi/\nAPI 边界结构\nfetch / axios\n\n\nschemas/\n字段约束结构\nZod\n\n\ntypes/\n类型结构\nTypeScript\n\n\ntests/\n测试结构\nVitest\n\n\n\n\n\n13.3.3 后端脚手架：FastAPI + SQLAlchemy\nproject/\n├── requirements.txt        # 依赖管理\n├── alembic.ini             # 数据库迁移配置\n├── Dockerfile              # 容器化\n├── docker-compose.yml      # 本地开发环境\n├── app/\n│   ├── __init__.py\n│   ├── main.py             # FastAPI 入口\n│   ├── config.py           # 配置项\n│   ├── api/                # API 边界层\n│   │   ├── __init__.py\n│   │   ├── routers/\n│   │   │   ├── task_router.py\n│   │   │   └── user_router.py\n│   │   └── schemas/\n│   │       ├── task_schema.py\n│   │       └── user_schema.py\n│   ├── services/           # 业务逻辑层\n│   │   ├── __init__.py\n│   │   ├── task_service.py\n│   │   └── notification_service.py\n│   ├── repositories/       # 数据访问层\n│   │   ├── __init__.py\n│   │   └── task_repository.py\n│   ├── models/             # 数据模型层\n│   │   ├── __init__.py\n│   │   ├── task.py\n│   │   └── user.py\n│   ├── tasks/              # 异步任务\n│   │   ├── __init__.py\n│   │   └── notifications.py\n│   └── tests/              # 测试\n│       ├── __init__.py\n│       ├── test_api/\n│       ├── test_services/\n│       └── test_repositories/\n\n\n13.3.4 脚手架选择检查表\n\n\n\n\n\n\n\n\n检查项\n说明\n满足条件\n\n\n\n\n目录结构\n脚手架是否提供了和你的结构匹配的目录结构\n前端有 pages/components/routes/hooks\n\n\n入口配置\n脚手架是否提供了运行入口和构建配置\npackage.json/vite.config.ts/tsconfig\n\n\n构造件集成\n脚手架是否已经集成了你选择的构造件\n是否预装了 React Router / MUI / Zustand\n\n\n测试配置\n脚手架是否预配了测试框架\nvitest.config.ts / pytest.ini\n\n\n运行命令\n开箱可运行\nnpm run dev / uvicorn main:app\n\n\n扩展位置\n新代码放在哪个目录\n目录约定清晰\n\n\n\n\n\n13.3.5 脚手架 vs 从零搭建\n\n\n\n维度\n从零搭建\n脚手架\n\n\n\n\n时间\n30-60 分钟搭项目壳\n1 分钟\n\n\n控制力\n完全控制\n受限于脚手架约定\n\n\n一致性\n依赖个人经验\n团队约定一致\n\n\n最佳实践\n可能遗漏\n已内置最佳实践\n\n\n学习成本\n需要自己决定结构\n学习脚手架约定即可",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Chapter 13：脚手架：把结构规格变成项目壳（Scaffold）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-13-scaffold.html#例子与实践",
+    "href": "chapter-13-scaffold.html#例子与实践",
+    "title": "13  Chapter 13：脚手架：把结构规格变成项目壳（Scaffold）",
+    "section": "13.4 例子与实践",
+    "text": "13.4 例子与实践\n\n13.4.1 场景：Task Manager 的脚手架选择\n选择：前端用 Vite + React 脚手架，后端用 FastAPI 项目模板。\n前端脚手架：npm create vite@latest task-manager -- --template react-ts\n# 安装构造件\nnpm install react-router-dom @mui/material @emotion/react @emotion/styled\nnpm install @tanstack/react-query zustand react-hook-form zod\nnpm install notistack\nnpm install -D vitest @testing-library/react @testing-library/jest-dom\n后端脚手架：从 FastAPI 模板开始\n# 创建项目结构和安装依赖\nmkdir task-manager-api && cd task-manager-api\npip install fastapi uvicorn sqlalchemy asyncpg alembic\npip install pydantic pydantic-settings celery redis\npip install opentelemetry-api opentelemetry-sdk\npip install pytest pytest-asyncio httpx\n脚手架落地后的目录结构：\ntask-manager/\n├── frontend/                  # Vite + React\n│   ├── src/\n│   │   ├── pages/             # 页面：列表、详情、创建\n│   │   ├── components/        # 通用组件\n│   │   ├── hooks/             # TanStack Query hooks\n│   │   ├── stores/            # Zustand stores\n│   │   ├── api/               # API 客户端\n│   │   ├── schemas/           # Zod schemas\n│   │   └── tests/             # Vitest 测试\n│   └── package.json\n├── backend/                   # FastAPI + SQLAlchemy\n│   ├── app/\n│   │   ├── api/               # 路由 + schema\n│   │   ├── services/          # 业务逻辑\n│   │   ├── repositories/      # 数据访问\n│   │   ├── models/            # ORM 模型\n│   │   └── tests/             # pytest 测试\n│   ├── Dockerfile\n│   └── requirements.txt\n└── docker-compose.yml         # 前端 + 后端 + 数据库 + Redis\n\n\n13.4.2 脚手架使用建议\n\n先用结构规格评估：如果结构规格简单（5 个以下 API，3 个以下页面），选择简单的脚手架。结构复杂时选择更完整的脚手架。\n脚手架是起点不是终点：随着开发推进，目录结构会扩展。脚手架只负责最初的壳。\n团队统一脚手架：团队内使用统一的脚手架声明，确保所有项目结构一致。\n自定义脚手架：如果团队长期做类似项目，可以创建自己的脚手架模板。",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Chapter 13：脚手架：把结构规格变成项目壳（Scaffold）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-13-scaffold.html#小结",
+    "href": "chapter-13-scaffold.html#小结",
+    "title": "13  Chapter 13：脚手架：把结构规格变成项目壳（Scaffold）",
+    "section": "13.5 小结",
+    "text": "13.5 小结\n脚手架是构造件层的最后一类。它是结构规格的默认落地形态——不解决业务，但解决项目壳。\n脚手架的选择时机：当结构规格中的大部分结构有稳定构造件承接时，脚手架是最快的起点。\n脚手架不决定业务逻辑，它决定：代码放哪里、怎么启动、怎么构建、怎么测试。\n下一章进入 Part 5 程序组装层——把结构规格、构造件选择和胶水代码连接成可运行系统。",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Chapter 13：脚手架：把结构规格变成项目壳（Scaffold）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-13-scaffold.html#本章产物",
+    "href": "chapter-13-scaffold.html#本章产物",
+    "title": "13  Chapter 13：脚手架：把结构规格变成项目壳（Scaffold）",
+    "section": "13.6 本章产物",
+    "text": "13.6 本章产物\n完成本章后，你拥有以下可交付产物：\n\n脚手架目录结构图，标注每个目录对应的结构和构造件。\n\n可复用模板见附录 B：结构建模模板（Structure Modeling Templates）中的对应模板。",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Chapter 13：脚手架：把结构规格变成项目壳（Scaffold）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-13-scaffold.html#从业者输出",
+    "href": "chapter-13-scaffold.html#从业者输出",
+    "title": "13  Chapter 13：脚手架：把结构规格变成项目壳（Scaffold）",
+    "section": "13.7 从业者输出",
+    "text": "13.7 从业者输出\n完成本章后，你能做三件事：\n第一，为一个新项目选择合适的脚手架。你知道什么时候用 Vite（前端）、什么时候用 Next.js（全栈）、什么时候用 FastAPI 模板（后端）。\n第二，检查现有项目的脚手架完整性。逐一对照标准目录结构，标记缺失项（如 tests/、hooks/、schemas/ 等目录）。\n第三，为一个结构规格设计对应的脚手架目录结构。你知道每个目录对应什么结构、放什么代码。\n产出物是脚手架目录结构图，标注每个目录对应的结构和构造件。",
+    "crumbs": [
+      "构造件层",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Chapter 13：脚手架：把结构规格变成项目壳（Scaffold）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-14-structure-to-implementation.html",
+    "href": "chapter-14-structure-to-implementation.html",
+    "title": "14  Chapter 14：从结构模型到实现方案（From Structure Model to Implementation Plan）",
+    "section": "",
+    "text": "14.1 本章问题\n你有结构规格包（Part 3）和构造件选择（Part 4）。但结构规格不是代码，构造件选择不是实现。下一步是为每类结构规格确定实现方式：标记自写代码部分、构造件承接部分和脚手架生成部分，并补齐连接它们的胶水代码。",
+    "crumbs": [
+      "程序组装层",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Chapter 14：从结构模型到实现方案（From Structure Model to Implementation Plan）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-14-structure-to-implementation.html#背景为什么这章重要",
+    "href": "chapter-14-structure-to-implementation.html#背景为什么这章重要",
+    "title": "14  Chapter 14：从结构模型到实现方案（From Structure Model to Implementation Plan）",
+    "section": "14.2 背景：为什么这章重要",
+    "text": "14.2 背景：为什么这章重要\n程序组装阶段承接需求场景、结构规格包和构造件选择表，并进一步拆成实现方案、胶水代码连接和最小可运行系统三个动作。\n实现方案采用三分法：自写代码、使用构造件、生成脚手架。每一个结构规格都需要这个决策。\n旧模型的实现方案是”结构→代码”的直接映射——对象卡片映射到 class，动作规格映射到函数。新模型的实现方案多出了两个维度： 1. 构造件承接：大部分结构不需要自己写代码，构造件已经实现好了 2. 胶水代码：构造件不是插上就能用，需要适配代码连接\n这一章做的是：为每一个结构规格写上实现决策表。",
+    "crumbs": [
+      "程序组装层",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Chapter 14：从结构模型到实现方案（From Structure Model to Implementation Plan）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-14-structure-to-implementation.html#核心内容",
+    "href": "chapter-14-structure-to-implementation.html#核心内容",
+    "title": "14  Chapter 14：从结构模型到实现方案（From Structure Model to Implementation Plan）",
+    "section": "14.3 核心内容",
+    "text": "14.3 核心内容\n\n14.3.1 实现方案三分法\n自写代码（Write）：业务逻辑的核心代码，具有业务特异性，没有现成构造件可以承接。\n使用构造件（Use）：通用的程序结构，用库、框架、组件、脚手架承接。\n生成脚手架（Scaffold）：项目壳和基础目录结构。\n以下代码用于展示结构如何落地，不代表完整生产配置。\n\n\n\n\n\n\n\n\n\n实现方式\n适用场景\n例子\n风险\n\n\n\n\n自写代码\n业务逻辑、领域约束、胶水代码\n状态转移验证、权限检查、API 适配\n重复造轮子\n\n\n使用构造件\n通用结构\nWeb 框架、ORM、UI 组件库\n过度依赖、升级风险\n\n\n生成脚手架\n项目壳\nVite 模板、FastAPI 模板\n定制困难\n\n\n\n\n\n14.3.2 每个结构规格的实现决策表\n下面是为 Task Manager 的每个结构规格做的实现决策：\n\n14.3.2.1 领域结构实现决策\n\n\n\n\n\n\n\n\n\n领域元素\n实现方式\n具体方案\n胶水代码\n\n\n\n\nTask 对象\n自写模型 + SQLAlchemy Model\n定义 ORM 模型和 Pydantic schema\n模型字段和数据库列的映射\n\n\nUser 对象\n自写模型\nSQLAlchemy Model\n-\n\n\n字段约束\nPydantic\n在 schema 中定义\n自定义验证器\n\n\n对象关系\nSQLAlchemy relationship\n外键 + relationship\n关系加载策略\n\n\n生命周期\n自写状态机\nvalidate_transition 函数\n在 service 中调用\n\n\n\n# 自写代码：领域结构中的生命周期约束\n# 没有现成构造件承接状态转移逻辑，需要自己写\ndef validate_transition(current: str, target: str) -&gt; bool:\n    allowed = {\n        \"open\": [\"in_progress\", \"closed\"],\n        \"in_progress\": [\"pending_review\", \"failed\"],\n        \"pending_review\": [\"done\", \"in_progress\"],\n        \"done\": [\"closed\"],\n        \"closed\": [],\n        \"failed\": [\"in_progress\"],\n    }\n    if target not in allowed.get(current, []):\n        raise StateError(f\"不能从 {current} 转移到 {target}\")\n\n\n14.3.2.2 交互结构实现决策\n\n\n\n交互元素\n实现方式\n具体方案\n胶水代码\n\n\n\n\nAPI 入口\nFastAPI\n路由注册\n请求→服务的数据转换\n\n\n用户动作\n自写 service 函数\nTaskService 类\n验证→服务→响应的编排\n\n\n系统事件\nCelery task\n异步任务定义\n从 service 中触发任务\n\n\n权限\nFastAPI Depends + JWT\nAuthMiddleware\n角色检查逻辑\n\n\n\n# 构造件使用：FastAPI 承接 API 入口结构\n# 胶水代码：连接 API → Service\n@app.post(\"/tasks\", response_model=TaskResponse)\ndef create_task(request: TaskCreateRequest,\n                current_user: User = Depends(get_current_user)):\n    # 胶水代码：把请求转为服务调用\n    task = task_service.create(\n        title=request.title,\n        description=request.description,\n        priority=request.priority,\n        due_date=request.due_date,\n        creator_id=current_user.id,\n    )\n    return TaskResponse.from_orm(task)\n\n\n14.3.2.3 状态结构实现决策\n\n\n\n状态元素\n实现方式\n具体方案\n胶水代码\n\n\n\n\n业务状态\nEnum + status 字段\nTaskStatus Enum\n在 model 中定义\n\n\nUI 状态\nTanStack Query\nuseQuery / useMutation\nqueries 定义文件\n\n\n全局状态\nZustand\nuseAuthStore\nstore 定义文件\n\n\n状态转移\n自写验证函数\nvalidate_transition\n在 service 中调用\n\n\n\n\n\n14.3.2.4 边界结构实现决策\n\n\n\n边界元素\n实现方式\n具体方案\n胶水代码\n\n\n\n\nAPI 输入\nPydantic schema\nRequest schema\n字段映射和验证\n\n\nAPI 输出\nPydantic schema\nResponse schema\nORM → dict 转换\n\n\n数据库\nSQLAlchemy\nRepository 模式\n查询封装\n\n\n外部服务\n自写 adapter\nEmailAdapter\n调用外部 API\n\n\n缓存\nRedis + cache wrapper\nCacheService\n缓存 key 和过期策略\n\n\n\n\n\n14.3.2.5 组合结构实现决策\n\n\n\n组合元素\n实现方式\n具体方案\n胶水代码\n\n\n\n\n前端组件树\nReact + MUI\n组件定义\n组件 props 接口\n\n\n后端模块\nFastAPI 目录结构\n路由/服务/仓库分层\n各层依赖注入\n\n\n适配器\n自写\nschema 转换、repository\nDTO 转换函数\n\n\n\n\n\n14.3.2.6 可靠性切面实现决策\n\n\n\n可靠性需求\n实现方式\n具体方案\n胶水代码\n\n\n\n\n输入验证\nPydantic\nschema 字段级别\n自定义验证器\n\n\n权限校验\nFastAPI Depends\n依赖注入\n用户身份解析\n\n\n失败重试\ntenacity\nretry decorator\n重试策略配置\n\n\n失败降级\n自写 try/except\nNotificationService\n异常处理分支\n\n\n日志\nOpenTelemetry\n自动 + 手动 span\nspan 标签定义\n\n\n测试\npytest + Vitest\n测试文件\nfixture 和 mock\n\n\n\n\n\n\n14.3.3 实现方案总表\n\n\n\n\n\n\n\n\n\n结构类别\n自写代码\n构造件\n脚手架\n\n\n\n\n领域结构\n模型定义、验证函数、关系逻辑\nSQLAlchemy, Pydantic\n-\n\n\n交互结构\nService 函数、权限逻辑\nFastAPI, Depends\nFastAPI 模板\n\n\n状态结构\n状态转移验证\nZustand, TanStack Query\n-\n\n\n边界结构\nRepository、Adapter\nPydantic, SQLAlchemy, Redis\n-\n\n\n组合结构\n组件定义、路由配置\nReact, React Router, MUI\nVite 脚手架\n\n\n可靠性\n重试、降级、日志\ntenacity, OpenTelemetry, pytest\n-",
+    "crumbs": [
+      "程序组装层",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Chapter 14：从结构模型到实现方案（From Structure Model to Implementation Plan）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-14-structure-to-implementation.html#例子与实践",
+    "href": "chapter-14-structure-to-implementation.html#例子与实践",
+    "title": "14  Chapter 14：从结构模型到实现方案（From Structure Model to Implementation Plan）",
+    "section": "14.4 例子与实践",
+    "text": "14.4 例子与实践\n\n14.4.1 场景：Task Manager 的实现方案\n# task_service.py — 自写代码（核心业务逻辑）\nclass TaskService:\n    def __init__(self, repo: TaskRepository, notifier: NotificationService):\n        self.repo = repo\n        self.notifier = notifier\n\n    def create(self, title: str, description: str | None,\n               priority: str, creator_id: int,\n               due_date: str | None = None) -&gt; Task:\n        # 自写代码：领域约束\n        if not title or len(title) &gt; 200:\n            raise ValidationError(\"title 1-200 characters\")\n\n        # 构造件：SQLAlchemy 承接数据持久化\n        task = self.repo.create(\n            title=title,\n            description=description,\n            priority=priority,\n            status=\"open\",\n            creator_id=creator_id,\n            due_date=due_date,\n        )\n\n        # 自写代码：触发后续动作\n        self.notifier.notify_creator(task)\n        return task\n\n    def assign(self, task_id: int, assignee_id: int) -&gt; Task:\n        task = self.repo.get(task_id)\n        if not task:\n            raise NotFoundError(\"任务不存在\")\n\n        # 自写代码：状态转移验证\n        if task.status != \"open\":\n            raise StateError(\"只能分配待处理任务\")\n\n        # 自写代码 + 构造件\n        task.assignee_id = assignee_id\n        task.status = \"in_progress\"\n        updated = self.repo.update(task)\n\n        self.notifier.notify_assignee(updated)\n        return updated\n\n\n14.4.2 实现方案总检查表\n\n\n\n检查项\n标准\nTask Manager 状态\n\n\n\n\n每个结构规格是否都有实现方式\n自写/构造件/脚手架三选一\n✓\n\n\n自写代码是否有明确边界\n不超过 3 个职责\n✓\n\n\n构造件选择是否合理\n匹配结构规格\n✓\n\n\n胶水代码是否已标注\n连接自写代码和构造件的代码\n✓\n\n\n脚手架是否已确认\n项目壳结构\n✓\n\n\n缺少什么胶水代码\n每处构造件使用都需要列出\n✓",
+    "crumbs": [
+      "程序组装层",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Chapter 14：从结构模型到实现方案（From Structure Model to Implementation Plan）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-14-structure-to-implementation.html#小结",
+    "href": "chapter-14-structure-to-implementation.html#小结",
+    "title": "14  Chapter 14：从结构模型到实现方案（From Structure Model to Implementation Plan）",
+    "section": "14.5 小结",
+    "text": "14.5 小结\n从结构模型到实现方案的三分法：自写代码、使用构造件、生成脚手架。\n每一类结构规格都需要这个决策。自写代码处理业务特异性构造件不处理的部分，构造件处理通用结构，脚手架处理项目壳。\n实现方案的产物是一张实现决策表——标出每个结构元素用什么方式实现、用什么构造件、需要什么胶水代码。\n有了实现方案，下一章可以进入代码级别：自写代码和构造件怎么通过胶水代码连接。",
+    "crumbs": [
+      "程序组装层",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Chapter 14：从结构模型到实现方案（From Structure Model to Implementation Plan）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-14-structure-to-implementation.html#本章产物",
+    "href": "chapter-14-structure-to-implementation.html#本章产物",
+    "title": "14  Chapter 14：从结构模型到实现方案（From Structure Model to Implementation Plan）",
+    "section": "14.6 本章产物",
+    "text": "14.6 本章产物\n完成本章后，你拥有以下可交付产物：\n\n结构到实现方案的决策表，标注每类结构的实现方式、具体方案和需要的胶水代码。\n\n可复用模板见附录 B：结构建模模板（Structure Modeling Templates）中的对应模板。",
+    "crumbs": [
+      "程序组装层",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Chapter 14：从结构模型到实现方案（From Structure Model to Implementation Plan）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-14-structure-to-implementation.html#从业者输出",
+    "href": "chapter-14-structure-to-implementation.html#从业者输出",
+    "title": "14  Chapter 14：从结构模型到实现方案（From Structure Model to Implementation Plan）",
+    "section": "14.7 从业者输出",
+    "text": "14.7 从业者输出\n完成本章后，你能做三件事：\n第一，对一个结构规格包写出完整的实现决策表。你能为每个结构元素标记”自写/构造件/脚手架”。\n第二，识别哪些代码应该自己写、哪些应该交给构造件。你知道业务规则自己写，API 入口交给框架，数据访问交给 ORM。\n第三，判断实现方案中是否遗漏了胶水代码。你发现”用了 FastAPI 和 SQLAlchemy”时，能指出它们之间需要 Repository 模式的胶水代码。\n产出物是结构到实现方案的决策表，标注每类结构的实现方式、具体方案和需要的胶水代码。",
+    "crumbs": [
+      "程序组装层",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Chapter 14：从结构模型到实现方案（From Structure Model to Implementation Plan）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-15-glue-code-and-assembly.html",
+    "href": "chapter-15-glue-code-and-assembly.html",
+    "title": "15  Chapter 15：自写代码、构造件和胶水代码如何连接（Glue Code and Assembly）",
+    "section": "",
+    "text": "15.1 本章问题\n第 14 章做了实现决策：哪些自己写、哪些交给构造件、哪些用脚手架。但有了这些决策不等于它们能自动工作。自写代码需要调用构造件，构造件之间需要适配，数据需要在不同层之间流动。这些连接代码就是胶水代码（Glue Code）。问题不是”要不要胶水代码”，而是”胶水代码写在哪里、怎么写、怎么最小化”。",
+    "crumbs": [
+      "程序组装层",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Chapter 15：自写代码、构造件和胶水代码如何连接（Glue Code and Assembly）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-15-glue-code-and-assembly.html#背景为什么这章重要",
+    "href": "chapter-15-glue-code-and-assembly.html#背景为什么这章重要",
+    "title": "15  Chapter 15：自写代码、构造件和胶水代码如何连接（Glue Code and Assembly）",
+    "section": "15.2 背景：为什么这章重要",
+    "text": "15.2 背景：为什么这章重要\n胶水代码是连接自写代码和构造件的适配代码。它的职责是让不同来源的代码片段可以协同工作。\n胶水代码不是业务逻辑——它不解决业务问题。胶水代码也不是构造件本身——它只是让构造件在项目中跑起来。\n胶水代码太少：构造件之间不通，数据流断裂。\n胶水代码太多：你的”项目”变成了一个巨大的胶水层，构造件反而成了点缀。\n胶水代码的原则：不多不少，把构造件接通即可。",
+    "crumbs": [
+      "程序组装层",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Chapter 15：自写代码、构造件和胶水代码如何连接（Glue Code and Assembly）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-15-glue-code-and-assembly.html#核心内容",
+    "href": "chapter-15-glue-code-and-assembly.html#核心内容",
+    "title": "15  Chapter 15：自写代码、构造件和胶水代码如何连接（Glue Code and Assembly）",
+    "section": "15.3 核心内容",
+    "text": "15.3 核心内容\n以下代码用于展示胶水代码的结构落地方式，不代表完整生产配置。示例在不影响结构展示的前提下做了简化，不保证所有 async/sync 混用场景可直接运行。\n\n15.3.1 胶水代码的六种类型\n\n15.3.1.1 1. 配置胶水\n让构造件知道项目的基本参数。\n# FastAPI 配置胶水\napp = FastAPI(title=\"Task Manager\", version=\"1.0.0\")\n\n# SQLAlchemy 配置胶水\nDATABASE_URL = \"postgresql+asyncpg://user:pass@localhost:5432/taskmanager\"\nengine = create_async_engine(DATABASE_URL)\nsession = async_sessionmaker(engine)\n\n# Celery 配置胶水\ncelery_app = Celery(\"tasks\", broker=\"redis://localhost:6379/0\")\n\n\n15.3.1.2 2. 路由胶水\n把入口请求导向对应的处理函数。\n# FastAPI 路由胶水\napp.include_router(task_router, prefix=\"/api/tasks\", tags=[\"tasks\"])\napp.include_router(user_router, prefix=\"/api/users\", tags=[\"users\"])\n\n# React Router 路由胶水\nconst router = createBrowserRouter([\n  { path: \"/\", element: &lt;Layout /&gt;, children: [\n    { path: \"tasks\", element: &lt;TaskListPage /&gt; },\n    { path: \"tasks/:id\", element: &lt;TaskDetailPage /&gt; },\n    { path: \"tasks/create\", element: &lt;CreateTaskPage /&gt; },\n  ]}\n]);\n\n\n15.3.1.3 3. 依赖胶水\n让不同层之间可以互相调用。\n# 依赖注入胶水 — 连接 API → Service → Repository\ndef get_task_service() -&gt; TaskService:\n    repo = TaskRepository(session)\n    notifier = NotificationService(email_client)\n    return TaskService(repo=repo, notifier=notifier)\n\n@app.post(\"/tasks\")\ndef create_task(\n    request: TaskCreateRequest,\n    service: TaskService = Depends(get_task_service),\n    current_user: User = Depends(get_current_user),\n):\n    task = service.create(\n        title=request.title,\n        description=request.description,\n        priority=request.priority,\n        due_date=request.due_date,\n        creator_id=current_user.id,\n    )\n    return TaskResponse.from_orm(task)\n\n\n15.3.1.4 4. 数据转换胶水\n在不同的数据格式之间做转换。\n# 数据转换胶水 — Pydantic schema ↔ ORM Model\nclass TaskResponse(BaseModel):\n    id: int\n    title: str\n    status: str\n    assignee_name: str | None = None\n\n    @classmethod\n    def from_orm(cls, task: TaskModel) -&gt; \"TaskResponse\":\n        return cls(\n            id=task.id,\n            title=task.title,\n            status=task.status,\n            assignee_name=task.assignee.name if task.assignee else None,\n        )\n\n# 使用\n@app.get(\"/tasks/{task_id}\")\ndef get_task(task_id: int, service: TaskService = Depends(get_task_service)):\n    task = service.get(task_id)\n    if not task:\n        raise HTTPException(status_code=404)\n    return TaskResponse.from_orm(task)\n\n\n15.3.1.5 5. 适配器胶水\n让自写代码适应构造件的接口约定。\n# 适配器胶水 — 适配外部通知服务\nclass NotificationService:\n    def __init__(self, email_client: EmailClient):\n        self.email_client = email_client\n\n    def notify_assignee(self, task: Task):\n        # 胶水代码：把业务对象适配到外部服务接口\n        if task.assignee and task.assignee.email:\n            self.email_client.send(\n                to=task.assignee.email,\n                subject=f\"新任务: {task.title}\",\n                body=f\"您已被分配任务: {task.title}\",\n            )\n\n\n15.3.1.6 6. 错误处理胶水\n把构造件的异常自写代码的语义。\n# 错误处理胶水 — 把 SQLAlchemy 异常映射到业务错误\nfrom sqlalchemy.exc import IntegrityError, OperationalError\nfrom tenacity import retry, stop_after_attempt, wait_exponential\n\nclass TaskRepository:\n    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1))\n    def create(self, **kwargs) -&gt; Task:\n        try:\n            task = TaskModel(**kwargs)\n            self.session.add(task)\n            self.session.commit()\n            return task\n        except IntegrityError:\n            raise ValidationError(\"数据冲突\")\n        except OperationalError:\n            raise DatabaseError(\"数据库不可用\")\n\n\n\n15.3.2 目录结构中的胶水代码位置\nbackend/\n├── app/\n│   ├── main.py              # 配置胶水 + 路由胶水\n│   ├── config.py            # 配置胶水\n│   ├── api/\n│   │   ├── routers/         # 路由胶水\n│   │   └── schemas/         # 数据转换胶水\n│   ├── services/            # 自写代码（业务逻辑）\n│   ├── repositories/        # 数据转换胶水 + 错误处理胶水\n│   └── adapters/            # 适配器胶水\n\nfrontend/\n├── src/\n│   ├── main.tsx             # 配置胶水\n│   ├── App.tsx              # 路由胶水\n│   ├── routes/              # 路由胶水\n│   ├── api/                 # 数据转换胶水\n│   ├── hooks/               # 数据转换胶水（连接 API → 组件）\n│   ├── stores/              # 状态胶水（连接全局状态 → 组件）\n│   └── components/          # 自写代码（UI 业务逻辑）\n\n\n15.3.3 胶水代码的最小化原则\n胶水代码的原则：能少则少，不能不写。\n减少胶水代码的方法：\n\n选接口兼容的构造件：FastAPI 和 Pydantic 天然兼容，不需要额外适配。Express 和 Mongoose 也天然兼容。\n用脚手架的标准目录：脚手架已经定义了目录结构和规则，减少配置胶水。\n保持构造件版本一致：API 不兼容的升级会增加额外的适配胶水。\n避免过度封装：不要把构造件的 API 再包一层”以防未来要换”——未来大概率不会换。\n\n# ❌ 过度封装（增加无意义的胶水）\nclass MyHttpClient:\n    def get_tasks(self):  # 只是包了一层，没有额外逻辑\n        return requests.get(\"/api/tasks\")\n\n# ✓ 直接使用构造件\n# 直接调用 TanStack Query 的 useQuery\n\n# ✓ 合理的胶水：加入了构造件没有的业务逻辑\nclass TaskRepository:\n    def get_with_validation(self, task_id: int) -&gt; Task:\n        task = self.session.get(TaskModel, task_id)\n        if task and task.status == \"closed\" and datetime.now() - task.closed_at &gt; days(30):\n            task.archived = True  # 业务逻辑：超期的 closed 任务自动归档\n        return task",
+    "crumbs": [
+      "程序组装层",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Chapter 15：自写代码、构造件和胶水代码如何连接（Glue Code and Assembly）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-15-glue-code-and-assembly.html#例子与实践",
+    "href": "chapter-15-glue-code-and-assembly.html#例子与实践",
+    "title": "15  Chapter 15：自写代码、构造件和胶水代码如何连接（Glue Code and Assembly）",
+    "section": "15.4 例子与实践",
+    "text": "15.4 例子与实践\n\n15.4.1 场景：Task Manager 的完整胶水代码\n# config.py — 配置胶水\nfrom pydantic_settings import BaseSettings\n\nclass Settings(BaseSettings):\n    database_url: str = \"postgresql+asyncpg://localhost:5432/taskmanager\"\n    redis_url: str = \"redis://localhost:6379/0\"\n    jwt_secret: str = \"your-secret-key\"\n    email_api_key: str = \"\"\n\nsettings = Settings()  # pydantic-settings 自动读取环境变量\n\n# main.py — 配置胶水 + 路由胶水\nfrom fastapi import FastAPI\nfrom app.api.routers import task_router, user_router\n\napp = FastAPI(title=\"Task Manager API\", version=\"1.0.0\")\napp.include_router(task_router, prefix=\"/api/tasks\")\napp.include_router(user_router, prefix=\"/api/users\")\n\n# repositories/task_repository.py — 数据转换 + 错误处理胶水\nclass TaskRepository:\n    def __init__(self, session: async_sessionmaker):\n        self.session = session\n\n    @retry(stop=stop_after_attempt(3))\n    async def create(self, data: dict) -&gt; TaskModel:\n        async with self.session() as db:\n            task = TaskModel(**data)\n            db.add(task)\n            await db.commit()\n            await db.refresh(task)\n            return task\n\n# api/schemas/task_schema.py — 数据转换胶水\nclass TaskResponse(BaseModel):\n    id: int\n    title: str\n    status: str\n    priority: str\n    assignee_name: str | None = None\n\n    @classmethod\n    def from_orm(cls, task: TaskModel) -&gt; \"TaskResponse\":\n        return cls(\n            id=task.id,\n            title=task.title,\n            status=task.status,\n            priority=task.priority,\n            assignee_name=task.assignee.name if task.assignee else None,\n        )\n\n# api/routers/task_router.py — 路由胶水 + 依赖胶水\nfrom fastapi import APIRouter, Depends\n\nrouter = APIRouter()\n\ndef get_task_service():\n    return TaskService(\n        repo=TaskRepository(session),\n        notifier=NotificationService(email_client),\n    )\n\n@router.post(\"/\", response_model=TaskResponse)\nasync def create_task(\n    request: TaskCreateRequest,\n    service: TaskService = Depends(get_task_service),\n    user: User = Depends(get_current_user),\n):\n    task = await service.create(\n        title=request.title,\n        description=request.description,\n        priority=request.priority,\n        due_date=request.due_date,\n        creator_id=user.id,\n    )\n    return TaskResponse.from_orm(task)\n\n\n15.4.2 胶水代码检查表\n\n\n\n\n\n\n\n\n检查项\n标准\n状态\n\n\n\n\n集中管理所有配置\n所有配置在一个文件\n✓ config.py\n\n\n注册每个 API 组\n在 main.py 用 include_router 注册\n✓\n\n\n注入 Service 依赖\n通过参数传入而非全局变量\n✓\n\n\n转换 ORM → Response 格式\n在 schema 层定义 from_orm\n✓ through from_orm\n\n\n适配外部服务接口\n用 adapter 包装第三方 SDK\n✓ NotificationService\n\n\n映射构造件异常到业务异常\n在 repository 层捕获并重抛\n✓ TaskRepository retry",
+    "crumbs": [
+      "程序组装层",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Chapter 15：自写代码、构造件和胶水代码如何连接（Glue Code and Assembly）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-15-glue-code-and-assembly.html#小结",
+    "href": "chapter-15-glue-code-and-assembly.html#小结",
+    "title": "15  Chapter 15：自写代码、构造件和胶水代码如何连接（Glue Code and Assembly）",
+    "section": "15.5 小结",
+    "text": "15.5 小结\n胶水代码是连接自写代码和构造件的适配代码。六种类型（配置、路由、依赖、数据转换、适配器、错误处理）覆盖了所有连接场景。\n胶水代码的原则：能少则少，不能不写。好的胶水代码让自写代码和构造件各司其职，坏的项目是一大块胶水代码里掺了一点构造件调用。\n有了实现方案（第 14 章）和胶水架构（本章），最后一章做的事：确认系统可运行。",
+    "crumbs": [
+      "程序组装层",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Chapter 15：自写代码、构造件和胶水代码如何连接（Glue Code and Assembly）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-15-glue-code-and-assembly.html#本章产物",
+    "href": "chapter-15-glue-code-and-assembly.html#本章产物",
+    "title": "15  Chapter 15：自写代码、构造件和胶水代码如何连接（Glue Code and Assembly）",
+    "section": "15.6 本章产物",
+    "text": "15.6 本章产物\n完成本章后，你拥有以下可交付产物：\n\n胶水代码架构图，标注每类是哪种胶水代码以及对应的文件位置。\n\n可复用模板见附录 B：结构建模模板（Structure Modeling Templates）中的对应模板。",
+    "crumbs": [
+      "程序组装层",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Chapter 15：自写代码、构造件和胶水代码如何连接（Glue Code and Assembly）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-15-glue-code-and-assembly.html#从业者输出",
+    "href": "chapter-15-glue-code-and-assembly.html#从业者输出",
+    "title": "15  Chapter 15：自写代码、构造件和胶水代码如何连接（Glue Code and Assembly）",
+    "section": "15.7 从业者输出",
+    "text": "15.7 从业者输出\n完成本章后，你能做三件事：\n第一，在项目中识别出胶水代码。你能区分哪些是业务逻辑（自写代码）、哪些是构造件本身、哪些是连接它们的胶水代码。\n第二，判断胶水代码是否过多。如果项目中超过一半代码是配置、路由、数据转换、适配器——胶水太多，考虑换更兼容的构造件。\n第三，为新项目设计胶水代码架构。你知道配置放哪里、路由怎么注册、依赖怎么注入、数据怎么转换、外部服务怎么适配。\n产出物是胶水代码架构图，标注每类是哪种胶水代码以及对应的文件位置。",
+    "crumbs": [
+      "程序组装层",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Chapter 15：自写代码、构造件和胶水代码如何连接（Glue Code and Assembly）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-16-minimum-runnable-system.html",
+    "href": "chapter-16-minimum-runnable-system.html",
+    "title": "16  Chapter 16：形成最小可运行系统（Minimum Runnable System）",
+    "section": "",
+    "text": "16.1 本章问题\n你有了结构规格（Part 3）、构造件选择（Part 4）、实现方案（第 14 章）和胶水代码设计（第 15 章）。现在是时候把所有东西收拢成一个真正可运行的系统。这个系统不一定要功能齐全——它只需要满足最小可运行标准：能启动、能输入、能输出、能运行、能测试、能证明它真的可用。",
+    "crumbs": [
+      "程序组装层",
+      "<span class='chapter-number'>16</span>  <span class='chapter-title'>Chapter 16：形成最小可运行系统（Minimum Runnable System）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-16-minimum-runnable-system.html#背景为什么这章重要",
+    "href": "chapter-16-minimum-runnable-system.html#背景为什么这章重要",
+    "title": "16  Chapter 16：形成最小可运行系统（Minimum Runnable System）",
+    "section": "16.2 背景：为什么这章重要",
+    "text": "16.2 背景：为什么这章重要\n“能运行”是程序从设计进入交付的门槛。前面的所有工作——需求场景、结构建模、构造件选择、实现方案、胶水设计——都是为了这一刻。\n最小可运行系统（Minimum Runnable System）是全书的最终产出。不是”最小可运行程序”——程序是单个单元的代码产出，系统是多层构造件和代码的协同运行结果。\n为什么强调”系统”而不是”程序”： - 程序是一个可执行文件或脚本 - 系统是多个程序、服务、库、框架、数据库、缓存、任务队列的协同整体\n本书的目标不是一个 Python CLI 脚本，而是一个有前端、后端、数据库、API、状态管理、测试的完整系统。",
+    "crumbs": [
+      "程序组装层",
+      "<span class='chapter-number'>16</span>  <span class='chapter-title'>Chapter 16：形成最小可运行系统（Minimum Runnable System）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-16-minimum-runnable-system.html#核心内容",
+    "href": "chapter-16-minimum-runnable-system.html#核心内容",
+    "title": "16  Chapter 16：形成最小可运行系统（Minimum Runnable System）",
+    "section": "16.3 核心内容",
+    "text": "16.3 核心内容\n\n16.3.1 最小可运行系统的六个验收标准\n\n\n\n标准\n含义\nTask Manager 的答案\n\n\n\n\n能启动\n系统可以通过命令启动\ndocker-compose up\n\n\n能输入\n可以向系统输入数据\n通过 API 或 UI 创建任务\n\n\n能输出\n系统能返回结果\nAPI 返回 JSON，UI 展示页面\n\n\n能运行\n核心业务逻辑可执行\n创建→分配→完成→审核可跑通\n\n\n能测试\n系统有自动化测试\npytest + Vitest 测试通过\n\n\n能验收\n能证明系统满足需求\n六要素场景可验证\n\n\n\n以下代码用于展示系统结构的落地形式，不代表完整生产配置。\n\n\n16.3.2 从结构到系统的回收\n主构造链五个关键环节与支撑模块的最终产物在最小可运行系统中回收：\n需求场景层 → 六要素检查表\n程序结构建模层 → 五类结构 + 一个横向切面\n构造件选择层 → 构造件选择表\n胶水代码连接层 → 胶水代码 + 目录结构\n最小可运行系统层 → 可启动的系统\n\n支撑模块（第 3-5 章，贯穿主链）：\n基础代码材料与程序表达 → 低阶代码工具\n\n\n16.3.3 启动入口设计\n系统需要一键启动。\n# docker-compose.yml — 系统启动入口（最小核心路径）\n# 注意：Redis 缓存、Celery worker 等扩展运行结构不在此处，见\"扩展运行结构\"\nversion: \"3.8\"\nservices:\n  db:\n    image: postgres:16\n    environment:\n      POSTGRES_DB: taskmanager\n      POSTGRES_USER: app\n      POSTGRES_PASSWORD: secret\n    ports:\n      - \"5432:5432\"\n\n  backend:\n    build: ./backend\n    environment:\n      DATABASE_URL: postgresql+asyncpg://app:secret@db:5432/taskmanager\n    ports:\n      - \"8000:8000\"\n    depends_on:\n      - db\n\n  frontend:\n    build: ./frontend\n    ports:\n      - \"5173:5173\"\n    depends_on:\n      - backend\n扩展运行结构（非最小核心路径，按需启动）：\n# docker-compose.override.yml\nservices:\n  redis:\n    image: redis:7\n    ports:\n      - \"6379:6379\"\n\n  worker:\n    build: ./backend\n    command: celery -A app.tasks worker\n    depends_on:\n      - redis\n    profiles:\n      - extended\n# 一键启动命令\ndocker-compose up\n\n# 前端访问\nopen http://localhost:5173\n\n# API 文档\nopen http://localhost:8000/docs\n\n\n16.3.4 核心业务流程验证\n确认系统的核心业务路径可运行。\n# 测试：完整业务流程\n@pytest.mark.asyncio\nasync def test_full_task_lifecycle(async_client):\n    # 1. 创建任务\n    response = await async_client.post(\"/api/tasks\", json={\n        \"title\": \"测试任务\",\n        \"priority\": \"high\",\n    })\n    assert response.status_code == 201\n    task = response.json()\n    assert task[\"status\"] == \"open\"\n    task_id = task[\"id\"]\n\n    # 2. 分配任务\n    response = await async_client.put(f\"/api/tasks/{task_id}/assign\", json={\n        \"user_id\": 1,\n    })\n    assert response.status_code == 200\n    assert response.json()[\"status\"] == \"in_progress\"\n\n    # 3. 完成任务\n    response = await async_client.put(f\"/api/tasks/{task_id}/complete\", json={\n        \"note\": \"已完成\",\n    })\n    assert response.status_code == 200\n    assert response.json()[\"status\"] == \"pending_review\"\n\n    # 4. 审核通过\n    response = await async_client.put(f\"/api/tasks/{task_id}/approve\")\n    assert response.status_code == 200\n    assert response.json()[\"status\"] == \"done\"\n\n\n16.3.5 验收检查：需求场景六要素验证\n回到第 1 章的需求场景，验证最小可运行系统是否满足六要素：\n\n\n\n要素\n需求场景\n系统验证\n\n\n\n\n问题\n团队缺乏统一任务追踪\n系统可创建、分配、追踪任务 ✓\n\n\n用户\nMember, Manager, Admin\n角色可创建、分配、审核 ✓\n\n\n动作\n创建、分配、完成、审核\nAPI 和 UI 支持所有核心动作 ✓\n\n\n输入\n标题、描述、优先级、截止日期\n所有输入字段已实现 ✓\n\n\n输出\n任务对象、错误响应\nAPI 返回标准格式 ✓\n\n\n失败\n验证错误、状态冲突、系统失败\n验证、权限、重试已实现 ✓\n\n\n\n\n\n16.3.6 最小可运行系统检查表\n启动检查：\n[✓] 系统可以通过一个命令启动\n[✓] 前端启动成功，可访问\n[✓] 后端启动成功，API 可调用\n[✓] 数据库连接正常\n\n功能检查（核心路径）：\n[✓] 创建任务 → open\n[✓] 分配任务 → in_progress\n[✓] 完成任务 → pending_review\n[✓] 审核任务 → done\n[✓] 查看任务列表\n[✓] 查看任务详情\n\n功能检查（异常路径）：\n[✓] 标题为空 → 400\n[✓] 用户不存在 → 404\n[✓] 状态转移非法 → 409\n[✓] 无权限操作 → 403\n\n测试检查：\n[✓] 后端测试通过（pytest）\n[✓] 前端测试通过（Vitest）\n[✓] 核心业务流程测试通过\n\n系统边界：\n[✓] API 输入验证\n[✓] 统一错误响应格式\n[✓] 数据库连接错误处理\n[✓] 外部服务超时处理\n\n交付物：\n[✓] 完整代码仓库\n[✓] 启动文档\n[✓] API 文档（OpenAPI）\n[✓] 核心流程测试",
+    "crumbs": [
+      "程序组装层",
+      "<span class='chapter-number'>16</span>  <span class='chapter-title'>Chapter 16：形成最小可运行系统（Minimum Runnable System）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-16-minimum-runnable-system.html#例子与实践",
+    "href": "chapter-16-minimum-runnable-system.html#例子与实践",
+    "title": "16  Chapter 16：形成最小可运行系统（Minimum Runnable System）",
+    "section": "16.4 例子与实践",
+    "text": "16.4 例子与实践\n\n16.4.1 场景：Task Manager 的最小可运行系统\n启动方式：\n# 本地开发\n# 终端 1：启动后端\ncd backend && uvicorn app.main:app --reload\n\n# 终端 2：启动前端\ncd frontend && npm run dev\n\n# 终端 3（扩展运行结构）：启动 worker（如果有异步任务需要）\n# cd backend && celery -A app.tasks worker --loglevel=info\n\n# 全栈 Docker 方式\ndocker-compose up\n核心业务路径验证：\n# 1. 创建任务\ncurl -X POST http://localhost:8000/api/tasks \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer &lt;token&gt;\" \\\n  -d '{\"title\": \"实现登录功能\", \"priority\": \"high\"}'\n# → 201 {\"id\": 1, \"title\": \"实现登录功能\", \"status\": \"open\"}\n\n# 2. 分配任务\ncurl -X PUT http://localhost:8000/api/tasks/1/assign \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer &lt;token&gt;\" \\\n  -d '{\"user_id\": 2}'\n# → 200 {\"id\": 1, \"status\": \"in_progress\", \"assignee_id\": 2}\n\n# 3. 完成任务\ncurl -X PUT http://localhost:8000/api/tasks/1/complete \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer &lt;token&gt;\" \\\n  -d '{\"note\": \"已完成登录功能\"}'\n# → 200 {\"id\": 1, \"status\": \"pending_review\"}\n\n# 4. 审核通过\ncurl -X PUT http://localhost:8000/api/tasks/1/approve \\\n  -H \"Authorization: Bearer &lt;token&gt;\"\n# → 200 {\"id\": 1, \"status\": \"done\"}\n\n# 5. 验证：查看任务列表\ncurl http://localhost:8000/api/tasks\n# → {\"tasks\": [{\"id\": 1, \"title\": \"实现登录功能\", \"status\": \"done\", ...}]}\n前端验证：打开 http://localhost:5173，可以： - 看到任务列表页面 - 点击”创建任务”按钮，填写表单，创建新任务 - 点击任务卡片进入详情页 - 在详情页中执行分配、完成、审核操作 - 操作后页面自动刷新显示最新状态\n测试验证：\n# 后端测试\ncd backend && pytest -v\n# → 全部通过\n\n# 前端测试\ncd frontend && vitest run\n# → 全部通过\n\n\n16.4.2 主构造链五个关键环节与支撑模块的总回收\n主构造链五个关键环节：\n\n需求场景层（第 1-2 章）\n  → Task Manager 需求六要素\n  → 五类需求拆解表\n\n程序结构建模层（第 6-9 章）\n  → 领域结构：Task, User, Project 对象卡片\n  → 交互结构：create, assign, complete, approve 动作\n  → 状态结构：open → in_progress → pending_review → done\n  → 边界结构：API 边界、输入输出契约\n  → 组合结构：组件树、后端模块\n  → 可靠性切面：验证、权限、重试\n\n构造件选择层（第 10-13 章）\n  → 前端：Vite + React + MUI + React Router + Zustand + TanStack Query + RHF + Zod\n  → 后端核心路径：FastAPI + SQLAlchemy + pytest\n  → 后端扩展运行结构：Celery + Redis + OpenTelemetry\n  → 脚手架：Vite React TS 模板、FastAPI 项目结构\n\n胶水代码连接层（第 14-15 章）\n  → 实现方案：自写 + 构造件 + 脚手架三分法\n  → 胶水代码：配置、路由、依赖、数据转换、适配器、错误处理\n\n最小可运行系统层（第 16 章）\n  → docker-compose up 一键启动的完整系统\n\n支撑模块（第 3-5 章，贯穿主链）：\n  → 基础代码材料与程序表达\n  → 语法材料分类、表达单元",
+    "crumbs": [
+      "程序组装层",
+      "<span class='chapter-number'>16</span>  <span class='chapter-title'>Chapter 16：形成最小可运行系统（Minimum Runnable System）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-16-minimum-runnable-system.html#小结",
+    "href": "chapter-16-minimum-runnable-system.html#小结",
+    "title": "16  Chapter 16：形成最小可运行系统（Minimum Runnable System）",
+    "section": "16.5 小结",
+    "text": "16.5 小结\n最小可运行系统是全书的最终产出。它不是一个 Python CLI 脚本，而是一个有前端、后端、数据库、API、测试的完整系统。\n六个验收标准：能启动、能输入、能输出、能运行、能测试、能验收。\n主构造链五个关键环节与支撑模块的所有产物最终回收在系统中： - 需求场景决定系统的价值 - 结构建模决定系统的骨架 - 构造件选择决定系统的实现效率 - 胶水代码决定系统各部分如何连接 - 最小可运行系统是这一切的输出\n这本书不是教你从语法堆出程序——而是教你从需求出发，通过结构建模、构造件选择和胶水代码组装，把想法变成可运行系统。",
+    "crumbs": [
+      "程序组装层",
+      "<span class='chapter-number'>16</span>  <span class='chapter-title'>Chapter 16：形成最小可运行系统（Minimum Runnable System）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-16-minimum-runnable-system.html#本章产物",
+    "href": "chapter-16-minimum-runnable-system.html#本章产物",
+    "title": "16  Chapter 16：形成最小可运行系统（Minimum Runnable System）",
+    "section": "16.6 本章产物",
+    "text": "16.6 本章产物\n完成本章后，你拥有以下可交付产物：\n\n一个可运行的系统、一份系统检查表、以及一套可以复用于下一个项目的五层方法。\n\n可复用模板见附录 B：结构建模模板（Structure Modeling Templates）中的对应模板。",
+    "crumbs": [
+      "程序组装层",
+      "<span class='chapter-number'>16</span>  <span class='chapter-title'>Chapter 16：形成最小可运行系统（Minimum Runnable System）</span>"
+    ]
+  },
+  {
+    "objectID": "chapter-16-minimum-runnable-system.html#从业者输出",
+    "href": "chapter-16-minimum-runnable-system.html#从业者输出",
+    "title": "16  Chapter 16：形成最小可运行系统（Minimum Runnable System）",
+    "section": "16.7 从业者输出",
+    "text": "16.7 从业者输出\n完成本章后，你能做六件事：\n第一，启动一个完整的前端+后端系统。你能用一个命令（docker-compose up）启动整个系统，并验证所有服务正常。\n第二，执行核心业务流程。你能通过 API 或 UI 执行完整的业务流程（创建→分配→完成→审核），并验证每个步骤的输出。\n第三，运行自动化测试。你能运行 pytest 和 Vitest 测试，确认测试全部通过。\n第四，使用最小可运行系统检查表验收一个系统。你能逐项检查启动、功能、测试、边界、交付物是否齐全。\n第五，诊断系统启动问题。如果服务启动失败，你能定位是数据库连接问题、配置问题还是依赖缺失问题。\n第六，把书中的五层方法应用到下一个项目。你不再从语法开始，而是从需求场景开始，经过结构建模、构造件选择、胶水代码组装，最终形成最小可运行系统。\n产出物是一个可运行的系统、一份系统检查表、以及一套可以复用于下一个项目的五层方法。",
+    "crumbs": [
+      "程序组装层",
+      "<span class='chapter-number'>16</span>  <span class='chapter-title'>Chapter 16：形成最小可运行系统（Minimum Runnable System）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-a-five-layer-summary.html",
+    "href": "appendix-a-five-layer-summary.html",
+    "title": "附录 A — 附录 A：主构造链总表与支撑模块（Main Chain Summary and Support Module）",
+    "section": "",
+    "text": "A.1 主构造链五个关键环节总表\n本附录汇总主构造链五个关键环节和支撑模块的所有条目。",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>附录 A：主构造链总表与支撑模块（Main Chain Summary and Support Module）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-a-five-layer-summary.html#主构造链五个关键环节总表",
+    "href": "appendix-a-five-layer-summary.html#主构造链五个关键环节总表",
+    "title": "附录 A — 附录 A：主构造链总表与支撑模块（Main Chain Summary and Support Module）",
+    "section": "",
+    "text": "需求场景层\n程序结构建模层\n构造件选择层\n胶水代码连接层\n最小可运行系统层\n\n\n\n\n问题\n领域结构\n前端构造件\n配置胶水\n启动\n\n\n用户\n交互结构\n后端构造件\n路由胶水\n输入\n\n\n动作\n状态结构\n脚手架构造件\n依赖胶水\n输出\n\n\n输入\n边界结构\n—\n数据转换胶水\n运行\n\n\n输出\n组合结构\n—\n适配器胶水\n测试\n\n\n失败\n约束与可靠性切面\n—\n错误处理胶水\n验收",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>附录 A：主构造链总表与支撑模块（Main Chain Summary and Support Module）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-a-five-layer-summary.html#支撑模块",
+    "href": "appendix-a-five-layer-summary.html#支撑模块",
+    "title": "附录 A — 附录 A：主构造链总表与支撑模块（Main Chain Summary and Support Module）",
+    "section": "A.2 支撑模块",
+    "text": "A.2 支撑模块\n\nA.2.1 基础代码材料与程序表达（第 3-5 章）\n说明：支撑模块贯穿主构造链所有层，不参与主链编号。\n\nA.2.1.1 六类代码材料\n\n\n\n类别\n核心构造\n解决的问题\n\n\n\n\n数据材料\n变量、列表、字典、字符串、数字\n存储和表示数据\n\n\n控制材料\nif、for、while、break、continue\n改变执行流程\n\n\n抽象材料\ndef、class、lambda\n包装命名操作集\n\n\n调用材料\n函数调用、方法调用、运算符\n触发已定义的抽象\n\n\n外部交互材料\n文件读写、模块导入、打印输入\n与外部世界交换数据\n\n\n失败处理材料\ntry/except、raise、finally\n异常情况下保持可控\n\n\n\n\n\nA.2.1.2 五类程序表达单元\n\n\n\n类别\n表达单元\n\n\n\n\n数据表示表达\n表示、字段、关系、集合、配置、结果\n\n\n集合处理表达\n遍历、筛选、转换、查找、映射、分组、排序、聚合\n\n\n判断与规则表达\n条件、规则、验证、权限、限制、触发\n\n\n运行推进表达\n状态、状态变化、动作、流程\n\n\n失败与交付表达\n失败、恢复、输出、反馈",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>附录 A：主构造链总表与支撑模块（Main Chain Summary and Support Module）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-a-five-layer-summary.html#按关键环节汇总",
+    "href": "appendix-a-five-layer-summary.html#按关键环节汇总",
+    "title": "附录 A — 附录 A：主构造链总表与支撑模块（Main Chain Summary and Support Module）",
+    "section": "A.3 按关键环节汇总",
+    "text": "A.3 按关键环节汇总\n\nA.3.1 需求场景层（第 1-2 章）\n\n\n\n要素\n描述\nTask Manager 示例\n\n\n\n\n问题\n程序解决什么真实问题\n团队缺乏统一任务追踪\n\n\n用户\n谁用这个系统\nMember, Manager, Admin\n\n\n动作\n每个角色做什么\n创建、分配、完成、审核\n\n\n输入\n系统接收什么数据\ntitle, description, priority, due_date\n\n\n输出\n系统输出什么结果\n任务对象、错误响应\n\n\n失败\n哪些失败必须处理\n验证错误、状态冲突、系统错误\n\n\n\n\n\nA.3.2 程序结构建模层（第 6-9 章）\n\n\n\n\n\n\n\n\n\n结构类别\n解决的问题\n结构规格\n产物形式\n\n\n\n\n领域结构\n程序有什么事物\n对象卡片、字段说明、关系表、生命周期\n结构化定义表\n\n\n交互结构\n谁可以做什么\n用户动作表、系统事件表、命令/查询\n动作规格表\n\n\n状态结构\n什么会变化\n状态拥有者表、状态转移表\n状态转移图\n\n\n边界结构\n数据从哪进出\n边界定义表、输入输出契约\n接口规格表\n\n\n组合结构\n各部分如何组织\n组件树、模块结构、服务结构\n层级结构图\n\n\n约束与可靠性\n哪些限制和保证\n约束表、可靠性策略表\n横向切面检查表\n\n\n\n\n\nA.3.3 构造件选择层（第 10-13 章）\n\n\n\n构造件类别\n构造件\n承接的结构\n\n\n\n\n前端框架\nReact / Vue / Svelte\n组件组合结构\n\n\n组件库\nMUI / Ant Design / shadcn/ui\nUI 展示结构\n\n\n路由库\nReact Router / Vue Router\n页面流转结构\n\n\n状态库\nRedux / Zustand / Pinia\n全局共享状态结构\n\n\n请求库\nTanStack Query / SWR / Apollo\n服务端数据状态结构\n\n\n表单库\nReact Hook Form\n输入交互结构\n\n\n验证库\nZod / Yup / Pydantic\n字段约束结构\n\n\nWeb 框架\nFastAPI / Express / Spring Boot\nAPI 入口结构\n\n\nORM\nSQLAlchemy / Prisma / TypeORM\n数据访问结构\n\n\n任务队列\nCelery / BullMQ\n异步任务结构\n\n\n测试框架\npytest / Vitest / Jest\n测试验证结构\n\n\n脚手架\nVite / Next.js / create-app\n工程壳结构\n\n\n\n\n\nA.3.4 胶水代码连接层（第 14-15 章）\n\n\n\n实现方式\n描述\n胶水代码类型\n\n\n\n\n自写代码\n业务逻辑、领域约束\n配置胶水、路由胶水\n\n\n构造件使用\n通用结构用库/框架承接\n依赖胶水、数据转换胶水\n\n\n脚手架\n项目壳\n适配器胶水、错误处理胶水\n\n\n\n\n\nA.3.5 最小可运行系统层（第 16 章）\n详见附录 F：最小可运行系统检查表。",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>附录 A：主构造链总表与支撑模块（Main Chain Summary and Support Module）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-a-five-layer-summary.html#主构造链递进关系",
+    "href": "appendix-a-five-layer-summary.html#主构造链递进关系",
+    "title": "附录 A — 附录 A：主构造链总表与支撑模块（Main Chain Summary and Support Module）",
+    "section": "A.4 主构造链递进关系",
+    "text": "A.4 主构造链递进关系\n需求场景层               \"做什么\"\n    ↓ 需求拆解\n程序结构建模层           \"有什么结构\"\n    ↓ 结构到构造件映射\n构造件选择层            \"用什么实现\"\n    ↓ 胶水代码连接\n胶水代码连接层          \"怎么组装\"\n    ↓ 启动运行\n最小可运行系统层        \"可运行\"\n\n支撑模块（贯穿主链）：\n基础代码材料与程序表达  \"低阶工具\"",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>附录 A：主构造链总表与支撑模块（Main Chain Summary and Support Module）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-b-structure-modeling-template.html",
+    "href": "appendix-b-structure-modeling-template.html",
+    "title": "附录 B — 附录 B：结构建模模板（Structure Modeling Templates）",
+    "section": "",
+    "text": "B.1 模板 1：需求场景六要素记录表\n本附录提供可重复使用的空白模板表格，供读者在自己的项目中按结构建模层记录程序结构。\n使用方式：复制对应表格，在项目中填写。",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>附录 B：结构建模模板（Structure Modeling Templates）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-b-structure-modeling-template.html#模板-1需求场景六要素记录表",
+    "href": "appendix-b-structure-modeling-template.html#模板-1需求场景六要素记录表",
+    "title": "附录 B — 附录 B：结构建模模板（Structure Modeling Templates）",
+    "section": "",
+    "text": "要素\n内容\n\n\n\n\n问题\n\n\n\n用户（角色）\n\n\n\n动作\n\n\n\n输入\n\n\n\n输出\n\n\n\n失败",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>附录 B：结构建模模板（Structure Modeling Templates）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-b-structure-modeling-template.html#模板-2需求拆解五类表",
+    "href": "appendix-b-structure-modeling-template.html#模板-2需求拆解五类表",
+    "title": "附录 B — 附录 B：结构建模模板（Structure Modeling Templates）",
+    "section": "B.2 模板 2：需求拆解五类表",
+    "text": "B.2 模板 2：需求拆解五类表\n\n\n\n分析维度\n需求中的内容\n提取方式\n结构产物\n\n\n\n\n名词\n\n列出所有业务名词\n对象卡片 / 字段 / 关系\n\n\n动词\n\n列出所有动作\n用户动作 / 系统事件\n\n\n阶段\n\n列出所有状态\n状态定义 / 状态转移\n\n\n交互点\n\n列出所有输入输出点\n边界定义\n\n\n限制\n\n列出所有规则条件\n约束 / 可靠性策略",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>附录 B：结构建模模板（Structure Modeling Templates）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-b-structure-modeling-template.html#模板-3对象卡片",
+    "href": "appendix-b-structure-modeling-template.html#模板-3对象卡片",
+    "title": "附录 B — 附录 B：结构建模模板（Structure Modeling Templates）",
+    "section": "B.3 模板 3：对象卡片",
+    "text": "B.3 模板 3：对象卡片\nObject Card: ____\n职责: ____\n字段:\n  - ____\n关系:\n  - ____\n生命周期: ____",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>附录 B：结构建模模板（Structure Modeling Templates）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-b-structure-modeling-template.html#模板-4字段说明表",
+    "href": "appendix-b-structure-modeling-template.html#模板-4字段说明表",
+    "title": "附录 B — 附录 B：结构建模模板（Structure Modeling Templates）",
+    "section": "B.4 模板 4：字段说明表",
+    "text": "B.4 模板 4：字段说明表\n\n\n\n字段\n类型\n必填\n默认值\n约束\n说明",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>附录 B：结构建模模板（Structure Modeling Templates）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-b-structure-modeling-template.html#模板-5对象关系表",
+    "href": "appendix-b-structure-modeling-template.html#模板-5对象关系表",
+    "title": "附录 B — 附录 B：结构建模模板（Structure Modeling Templates）",
+    "section": "B.5 模板 5：对象关系表",
+    "text": "B.5 模板 5：对象关系表\n\n\n\n关系名\n源对象\n目标对象\n数量\n方向\n生命周期\n说明",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>附录 B：结构建模模板（Structure Modeling Templates）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-b-structure-modeling-template.html#模板-6生命周期表",
+    "href": "appendix-b-structure-modeling-template.html#模板-6生命周期表",
+    "title": "附录 B — 附录 B：结构建模模板（Structure Modeling Templates）",
+    "section": "B.6 模板 6：生命周期表",
+    "text": "B.6 模板 6：生命周期表\n对象: ____\n状态列表: ____\n主路径: ____\n分支路径: ____\n终止状态: ____",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>附录 B：结构建模模板（Structure Modeling Templates）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-b-structure-modeling-template.html#模板-7用户动作表",
+    "href": "appendix-b-structure-modeling-template.html#模板-7用户动作表",
+    "title": "附录 B — 附录 B：结构建模模板（Structure Modeling Templates）",
+    "section": "B.7 模板 7：用户动作表",
+    "text": "B.7 模板 7：用户动作表\n\n\n\n动作名\n角色\n输入\n输出\n前置条件\n后置条件",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>附录 B：结构建模模板（Structure Modeling Templates）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-b-structure-modeling-template.html#模板-8系统事件表",
+    "href": "appendix-b-structure-modeling-template.html#模板-8系统事件表",
+    "title": "附录 B — 附录 B：结构建模模板（Structure Modeling Templates）",
+    "section": "B.8 模板 8：系统事件表",
+    "text": "B.8 模板 8：系统事件表\n\n\n\n事件名\n触发条件\n执行动作\n后置条件",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>附录 B：结构建模模板（Structure Modeling Templates）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-b-structure-modeling-template.html#模板-9状态结构-状态拥有者表",
+    "href": "appendix-b-structure-modeling-template.html#模板-9状态结构-状态拥有者表",
+    "title": "附录 B — 附录 B：结构建模模板（Structure Modeling Templates）",
+    "section": "B.9 模板 9：状态结构 — 状态拥有者表",
+    "text": "B.9 模板 9：状态结构 — 状态拥有者表\n\n\n\n状态拥有者\n状态类型\n状态值集合",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>附录 B：结构建模模板（Structure Modeling Templates）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-b-structure-modeling-template.html#模板-10状态转移表",
+    "href": "appendix-b-structure-modeling-template.html#模板-10状态转移表",
+    "title": "附录 B — 附录 B：结构建模模板（Structure Modeling Templates）",
+    "section": "B.10 模板 10：状态转移表",
+    "text": "B.10 模板 10：状态转移表\n\n\n\n编号\n起始状态\n动作\n目标状态\n约束条件",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>附录 B：结构建模模板（Structure Modeling Templates）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-b-structure-modeling-template.html#模板-11边界定义表",
+    "href": "appendix-b-structure-modeling-template.html#模板-11边界定义表",
+    "title": "附录 B — 附录 B：结构建模模板（Structure Modeling Templates）",
+    "section": "B.11 模板 11：边界定义表",
+    "text": "B.11 模板 11：边界定义表\n\n\n\n边界\n方向\n协议/格式\n输入\n输出(成功)\n输出(失败)",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>附录 B：结构建模模板（Structure Modeling Templates）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-b-structure-modeling-template.html#模板-12组合结构-模块职责表",
+    "href": "appendix-b-structure-modeling-template.html#模板-12组合结构-模块职责表",
+    "title": "附录 B — 附录 B：结构建模模板（Structure Modeling Templates）",
+    "section": "B.12 模板 12：组合结构 — 模块职责表",
+    "text": "B.12 模板 12：组合结构 — 模块职责表\n\n\n\n模块名\n职责\n包含动作/组件\n依赖",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>附录 B：结构建模模板（Structure Modeling Templates）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-b-structure-modeling-template.html#模板-13约束与可靠性切面表",
+    "href": "appendix-b-structure-modeling-template.html#模板-13约束与可靠性切面表",
+    "title": "附录 B — 附录 B：结构建模模板（Structure Modeling Templates）",
+    "section": "B.13 模板 13：约束与可靠性切面表",
+    "text": "B.13 模板 13：约束与可靠性切面表\n\n\n\n所属结构\n约束/可靠性要求\n策略\n测试类型",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>附录 B：结构建模模板（Structure Modeling Templates）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-b-structure-modeling-template.html#模板-14结构到构造件映射表",
+    "href": "appendix-b-structure-modeling-template.html#模板-14结构到构造件映射表",
+    "title": "附录 B — 附录 B：结构建模模板（Structure Modeling Templates）",
+    "section": "B.14 模板 14：结构到构造件映射表",
+    "text": "B.14 模板 14：结构到构造件映射表\n\n\n\n结构需求\n可选构造件\n选择\n理由\n胶水代码",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>附录 B：结构建模模板（Structure Modeling Templates）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-b-structure-modeling-template.html#模板-15实现方案决策表",
+    "href": "appendix-b-structure-modeling-template.html#模板-15实现方案决策表",
+    "title": "附录 B — 附录 B：结构建模模板（Structure Modeling Templates）",
+    "section": "B.15 模板 15：实现方案决策表",
+    "text": "B.15 模板 15：实现方案决策表\n\n\n\n结构元素\n实现方式（自写/构造件/脚手架）\n具体方案\n胶水代码",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>附录 B：结构建模模板（Structure Modeling Templates）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-c-structure-to-asset-mapping.html",
+    "href": "appendix-c-structure-to-asset-mapping.html",
+    "title": "附录 C — 附录 C：结构到构造件映射表（Structure-to-Asset Mapping）",
+    "section": "",
+    "text": "C.1 前端结构到构造件\n本附录汇总每种结构问题对应的可选构造件和需要补的胶水代码。",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>C</span>  <span class='chapter-title'>附录 C：结构到构造件映射表（Structure-to-Asset Mapping）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-c-structure-to-asset-mapping.html#前端结构到构造件",
+    "href": "appendix-c-structure-to-asset-mapping.html#前端结构到构造件",
+    "title": "附录 C — 附录 C：结构到构造件映射表（Structure-to-Asset Mapping）",
+    "section": "",
+    "text": "结构问题\n可选构造件\n胶水代码\n\n\n\n\n需要 UI 组件展示\nMUI / Ant Design / shadcn/ui / Chakra UI\n主题配置、样式覆盖、组件组合\n\n\n需要页面流转\nReact Router / Vue Router / TanStack Router\n路由配置、导航组件、路由守卫\n\n\n需要全局状态\nRedux Toolkit / Zustand / Pinia\nStore 定义、action、reducer\n\n\n需要服务端数据\nTanStack Query / SWR / Apollo / RTK Query\nQuery 定义、缓存配置、loading/error 处理\n\n\n需要表单输入\nReact Hook Form / Formik / Vue Form\n字段注册、验证绑定、提交处理\n\n\n需要输入验证\nZod / Yup / Valibot / Joi\nSchema 定义、错误消息、类型推导\n\n\n需要用户反馈\nnotistack / react-hot-toast / sonner / SweetAlert2\nToast 配置、确认对话框\n\n\n需要图表展示\nECharts / Recharts / D3.js / Chart.js\n图表配置、数据转换、响应式适配\n\n\n需要 UI 测试\nVitest + Testing Library / Jest + Enzyme\n组件渲染测试、交互测试、快照测试\n\n\n需要 E2E 测试\nPlaywright / Cypress\nPage Object 定义、测试用例\n\n\n需要工程壳\nVite / Next.js / Nuxt / create-react-app\n目录结构、构建配置、环境变量",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>C</span>  <span class='chapter-title'>附录 C：结构到构造件映射表（Structure-to-Asset Mapping）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-c-structure-to-asset-mapping.html#后端结构到构造件",
+    "href": "appendix-c-structure-to-asset-mapping.html#后端结构到构造件",
+    "title": "附录 C — 附录 C：结构到构造件映射表（Structure-to-Asset Mapping）",
+    "section": "C.2 后端结构到构造件",
+    "text": "C.2 后端结构到构造件\n\n\n\n\n\n\n\n\n结构问题\n可选构造件\n胶水代码\n\n\n\n\n需要 API 入口\nFastAPI / Express / Spring Boot / Flask / Gin\n路由注册、请求解析、中间件配置\n\n\n需要输入验证\nPydantic / Zod / Joi / class-validator\nSchema 定义、自定义验证、错误格式化\n\n\n需要身份认证\nJWT lib / OAuth2 lib / Passport.js\nToken 签发、验证中间件、session 管理\n\n\n需要权限控制\nAuth middleware / Spring Security / CASL\n角色定义、权限检查、注解/AOP\n\n\n需要数据持久化\nSQLAlchemy / Prisma / TypeORM / Django ORM / Mongoose\n模型定义、迁移脚本、查询封装\n\n\n需要缓存\nRedis / Memcached / cache-manager\n缓存 key 策略、过期配置、缓存更新\n\n\n需要异步任务\nCelery / BullMQ / Sidekiq / RQ\n任务定义、worker 配置、结果存储\n\n\n需要日志观测\nOpenTelemetry / logging / Sentry / Datadog\nSpan 定义、日志格式、导出配置\n\n\n需要接口文档\nOpenAPI / Swagger / GraphQL (Apollo)\nSchema 注释、标签、示例\n\n\n需要容器化\nDocker / Docker Compose / Kubernetes\nDockerfile、compose 文件、k8s manifests\n\n\n需要后端测试\npytest / Jest / JUnit / Mocha\nFixtures、mock 配置、测试用例\n\n\n需要定时任务\nCelery Beat / cron / APScheduler\n任务定义、调度配置",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>C</span>  <span class='chapter-title'>附录 C：结构到构造件映射表（Structure-to-Asset Mapping）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-c-structure-to-asset-mapping.html#脚手架结构到构造件",
+    "href": "appendix-c-structure-to-asset-mapping.html#脚手架结构到构造件",
+    "title": "附录 C — 附录 C：结构到构造件映射表（Structure-to-Asset Mapping）",
+    "section": "C.3 脚手架结构到构造件",
+    "text": "C.3 脚手架结构到构造件\n\n\n\n\n\n\n\n\n项目类型\n可选脚手架\n预制结构\n\n\n\n\n前端 SPA\nVite + React / Vue / Svelte\n构建配置、HMR、TypeScript\n\n\n全栈应用\nNext.js / Nuxt / Remix\n前端+后端、SSR、路由\n\n\n后端 API\nFastAPI 模板 / Express 生成器\n路由结构、中间件、测试配置\n\n\n微服务\nSpring Initializr / Go kit\n服务模板、配置、健康检查\n\n\n全栈 Docker\nDocker Compose 模板\n多服务定义、网络配置、卷挂载",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>C</span>  <span class='chapter-title'>附录 C：结构到构造件映射表（Structure-to-Asset Mapping）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-c-structure-to-asset-mapping.html#胶水代码分类",
+    "href": "appendix-c-structure-to-asset-mapping.html#胶水代码分类",
+    "title": "附录 C — 附录 C：结构到构造件映射表（Structure-to-Asset Mapping）",
+    "section": "C.4 胶水代码分类",
+    "text": "C.4 胶水代码分类\n\n\n\n\n\n\n\n\n胶水类型\n描述\n例子\n\n\n\n\n配置胶水\n构造件的初始化配置\napp = FastAPI() / engine = create_engine()\n\n\n路由胶水\n请求到处理函数的映射\nrouter.include_router(…)\n\n\n依赖胶水\n层与层之间的依赖注入\nDepends(get_task_service)\n\n\n数据转换胶水\n不同数据格式的转换\nfrom_orm / to_dto / map\n\n\n适配器胶水\n适配外部服务接口\nNotificationService.__init__\n\n\n错误处理胶水\n构造件异常到业务异常的映射\nexcept IntegrityError → ValidationError",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>C</span>  <span class='chapter-title'>附录 C：结构到构造件映射表（Structure-to-Asset Mapping）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-d-frontend-asset-catalog.html",
+    "href": "appendix-d-frontend-asset-catalog.html",
+    "title": "附录 D — 附录 D：前端构造件分类表（Frontend Asset Catalog）",
+    "section": "",
+    "text": "D.1 脚手架构造件\n本附录汇总前端开发中常见的构造件分类。按承接的结构分组。",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>D</span>  <span class='chapter-title'>附录 D：前端构造件分类表（Frontend Asset Catalog）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-d-frontend-asset-catalog.html#脚手架构造件",
+    "href": "appendix-d-frontend-asset-catalog.html#脚手架构造件",
+    "title": "附录 D — 附录 D：前端构造件分类表（Frontend Asset Catalog）",
+    "section": "",
+    "text": "名称\n类型\n描述\n承接的结构\n\n\n\n\nVite\n构建工具 + 脚手架\n快速启动、HMR、构建优化\n工程壳结构\n\n\nNext.js\n全栈框架\nReact 全栈、SSR、SSG\n工程壳 + 页面结构\n\n\nNuxt\n全栈框架\nVue 全栈、SSR、SSG\n工程壳 + 页面结构\n\n\ncreate-vite\n脚手架 CLI\n交互式项目创建\n工程壳结构\n\n\ncreate-react-app\n脚手架 CLI\nReact 项目创建\n工程壳结构",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>D</span>  <span class='chapter-title'>附录 D：前端构造件分类表（Frontend Asset Catalog）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-d-frontend-asset-catalog.html#ui-框架构造件",
+    "href": "appendix-d-frontend-asset-catalog.html#ui-框架构造件",
+    "title": "附录 D — 附录 D：前端构造件分类表（Frontend Asset Catalog）",
+    "section": "D.2 UI 框架构造件",
+    "text": "D.2 UI 框架构造件\n\n\n\n名称\n类型\n描述\n承接的结构\n\n\n\n\nReact\nUI 框架\n组件化、声明式、虚拟 DOM\n组件组合结构\n\n\nVue\nUI 框架\n渐进式、模板语法、响应式\n组件组合结构\n\n\nSvelte\nUI 框架\n编译式、零运行时\n组件组合结构\n\n\nSolid\nUI 框架\n细粒度响应式\n组件组合结构",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>D</span>  <span class='chapter-title'>附录 D：前端构造件分类表（Frontend Asset Catalog）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-d-frontend-asset-catalog.html#组件库构造件",
+    "href": "appendix-d-frontend-asset-catalog.html#组件库构造件",
+    "title": "附录 D — 附录 D：前端构造件分类表（Frontend Asset Catalog）",
+    "section": "D.3 组件库构造件",
+    "text": "D.3 组件库构造件\n\n\n\n名称\n类型\n描述\n承接的结构\n\n\n\n\nMUI (Material UI)\n组件库\nMaterial Design 组件\nUI 展示结构\n\n\nAnt Design\n组件库\n企业级中后台组件\nUI 展示结构\n\n\nshadcn/ui\n组件库\n可定制、Tailwind CSS 组件\nUI 展示结构\n\n\nChakra UI\n组件库\n可访问性优先的组件\nUI 展示结构\n\n\nTailwind CSS\n样式框架\n原子化 CSS\n样式结构\n\n\nRadix UI\n无样式组件库\n可访问性、无样式\n组件行为结构",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>D</span>  <span class='chapter-title'>附录 D：前端构造件分类表（Frontend Asset Catalog）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-d-frontend-asset-catalog.html#路由构造件",
+    "href": "appendix-d-frontend-asset-catalog.html#路由构造件",
+    "title": "附录 D — 附录 D：前端构造件分类表（Frontend Asset Catalog）",
+    "section": "D.4 路由构造件",
+    "text": "D.4 路由构造件\n\n\n\n名称\n类型\n描述\n承接的结构\n\n\n\n\nReact Router\n路由库\n声明式路由、嵌套路由\n页面流转结构\n\n\nVue Router\n路由库\nVue 官方路由\n页面流转结构\n\n\nTanStack Router\n路由库\n类型安全、懒加载\n页面流转结构\n\n\nNext.js Router\n框架内置\n文件系统路由\n页面流转结构",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>D</span>  <span class='chapter-title'>附录 D：前端构造件分类表（Frontend Asset Catalog）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-d-frontend-asset-catalog.html#全局状态构造件",
+    "href": "appendix-d-frontend-asset-catalog.html#全局状态构造件",
+    "title": "附录 D — 附录 D：前端构造件分类表（Frontend Asset Catalog）",
+    "section": "D.5 全局状态构造件",
+    "text": "D.5 全局状态构造件\n\n\n\n名称\n类型\n描述\n承接的结构\n\n\n\n\nRedux Toolkit\n状态库\n可预测状态容器\n全局状态结构\n\n\nZustand\n状态库\n轻量、无 boilerplate\n全局状态结构\n\n\nPinia\n状态库\nVue 官方状态管理\n全局状态结构\n\n\nJotai\n状态库\n原子化状态\n全局状态结构\n\n\nValohai\n状态库\n基于 signal 的状态\n全局状态结构",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>D</span>  <span class='chapter-title'>附录 D：前端构造件分类表（Frontend Asset Catalog）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-d-frontend-asset-catalog.html#服务端数据状态构造件",
+    "href": "appendix-d-frontend-asset-catalog.html#服务端数据状态构造件",
+    "title": "附录 D — 附录 D：前端构造件分类表（Frontend Asset Catalog）",
+    "section": "D.6 服务端数据状态构造件",
+    "text": "D.6 服务端数据状态构造件\n\n\n\n\n\n\n\n\n\n名称\n类型\n描述\n承接的结构\n\n\n\n\nTanStack Query\n数据请求库\n缓存、自动刷新、loading\n服务端数据状态\n\n\nSWR\n数据请求库\n优先缓存、stale-while-revalidate\n服务端数据状态\n\n\nApollo Client\nGraphQL 客户端\nGraphQL 数据管理\n服务端数据状态\n\n\nRTK Query\n数据请求库\nRedux Toolkit 内置\n服务端数据状态",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>D</span>  <span class='chapter-title'>附录 D：前端构造件分类表（Frontend Asset Catalog）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-d-frontend-asset-catalog.html#表单构造件",
+    "href": "appendix-d-frontend-asset-catalog.html#表单构造件",
+    "title": "附录 D — 附录 D：前端构造件分类表（Frontend Asset Catalog）",
+    "section": "D.7 表单构造件",
+    "text": "D.7 表单构造件\n\n\n\n名称\n类型\n描述\n承接的结构\n\n\n\n\nReact Hook Form\n表单库\n减少 re-render、验证集成\n输入交互结构\n\n\nFormik\n表单库\n表单状态管理\n输入交互结构\n\n\nVue Form\n表单库\nVue 表单管理\n输入交互结构",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>D</span>  <span class='chapter-title'>附录 D：前端构造件分类表（Frontend Asset Catalog）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-d-frontend-asset-catalog.html#验证构造件",
+    "href": "appendix-d-frontend-asset-catalog.html#验证构造件",
+    "title": "附录 D — 附录 D：前端构造件分类表（Frontend Asset Catalog）",
+    "section": "D.8 验证构造件",
+    "text": "D.8 验证构造件\n\n\n\n名称\n类型\n描述\n承接的结构\n\n\n\n\nZod\n验证库\nTypeScript 优先、类型推导\n字段约束结构\n\n\nYup\n验证库\n链式 API、异步验证\n字段约束结构\n\n\nValibot\n验证库\n模块化、树摇优化\n字段约束结构\n\n\nJoi\n验证库\n丰富的验证规则\n字段约束结构",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>D</span>  <span class='chapter-title'>附录 D：前端构造件分类表（Frontend Asset Catalog）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-d-frontend-asset-catalog.html#反馈构造件",
+    "href": "appendix-d-frontend-asset-catalog.html#反馈构造件",
+    "title": "附录 D — 附录 D：前端构造件分类表（Frontend Asset Catalog）",
+    "section": "D.9 反馈构造件",
+    "text": "D.9 反馈构造件\n\n\n\n名称\n类型\n描述\n承接的结构\n\n\n\n\nnotistack\n通知库\n堆叠通知、Snackbar\n反馈结构\n\n\nreact-hot-toast\n通知库\n轻量 Toast\n反馈结构\n\n\nsonner\n通知库\n简洁 Toast 通知\n反馈结构\n\n\nSweetAlert2\n弹窗库\n美观确认弹窗\n反馈结构",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>D</span>  <span class='chapter-title'>附录 D：前端构造件分类表（Frontend Asset Catalog）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-d-frontend-asset-catalog.html#可视化构造件",
+    "href": "appendix-d-frontend-asset-catalog.html#可视化构造件",
+    "title": "附录 D — 附录 D：前端构造件分类表（Frontend Asset Catalog）",
+    "section": "D.10 可视化构造件",
+    "text": "D.10 可视化构造件\n\n\n\n名称\n类型\n描述\n承接的结构\n\n\n\n\nECharts\n图表库\n丰富图表类型、大数据量\n可视化输出结构\n\n\nRecharts\n图表库\nReact 原生、声明式\n可视化输出结构\n\n\nD3.js\n可视化库\n底层灵活、自定义图表\n可视化输出结构\n\n\nChart.js\n图表库\n简单易用、轻量\n可视化输出结构",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>D</span>  <span class='chapter-title'>附录 D：前端构造件分类表（Frontend Asset Catalog）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-d-frontend-asset-catalog.html#测试构造件",
+    "href": "appendix-d-frontend-asset-catalog.html#测试构造件",
+    "title": "附录 D — 附录 D：前端构造件分类表（Frontend Asset Catalog）",
+    "section": "D.11 测试构造件",
+    "text": "D.11 测试构造件\n\n\n\n名称\n类型\n描述\n承接的结构\n\n\n\n\nVitest\n测试框架\n原生 Vite、兼容 Jest API\n测试验证结构\n\n\nJest\n测试框架\n零配置、Snapshot\n测试验证结构\n\n\nTesting Library\n测试工具\n用户行为测试\n测试验证结构\n\n\nPlaywright\nE2E 框架\n跨浏览器、自动等待\nE2E 测试结构\n\n\nCypress\nE2E 框架\n时间旅行、实时重载\nE2E 测试结构\n\n\nStorybook\n组件开发\n组件隔离开发、文档\n组件文档结构",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>D</span>  <span class='chapter-title'>附录 D：前端构造件分类表（Frontend Asset Catalog）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-e-backend-asset-catalog.html",
+    "href": "appendix-e-backend-asset-catalog.html",
+    "title": "附录 E — 附录 E：后端构造件分类表（Backend Asset Catalog）",
+    "section": "",
+    "text": "E.1 Web 框架构造件\n本附录汇总后端开发中常见的构造件分类。按承接的结构分组。",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>E</span>  <span class='chapter-title'>附录 E：后端构造件分类表（Backend Asset Catalog）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-e-backend-asset-catalog.html#web-框架构造件",
+    "href": "appendix-e-backend-asset-catalog.html#web-框架构造件",
+    "title": "附录 E — 附录 E：后端构造件分类表（Backend Asset Catalog）",
+    "section": "",
+    "text": "名称\n语言\n描述\n承接的结构\n\n\n\n\nFastAPI\nPython\n异步、高性能、自动 OpenAPI\nAPI 入口结构\n\n\nFlask\nPython\n轻量、灵活、扩展丰富\nAPI 入口结构\n\n\nDjango\nPython\n大而全、ORM 内置\nAPI 入口 + 数据访问结构\n\n\nExpress\nNode.js\n最小主义、中间件模式\nAPI 入口结构\n\n\nNestJS\nNode.js\n模块化、装饰器、DI\nAPI 入口结构\n\n\nSpring Boot\nJava\n企业级、AOP、DI 容器\nAPI 入口 + 组合结构\n\n\nGin\nGo\n性能极高、轻量\nAPI 入口结构\n\n\nActix-web\nRust\n性能极高、类型安全\nAPI 入口结构",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>E</span>  <span class='chapter-title'>附录 E：后端构造件分类表（Backend Asset Catalog）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-e-backend-asset-catalog.html#验证构造件后端",
+    "href": "appendix-e-backend-asset-catalog.html#验证构造件后端",
+    "title": "附录 E — 附录 E：后端构造件分类表（Backend Asset Catalog）",
+    "section": "E.2 验证构造件（后端）",
+    "text": "E.2 验证构造件（后端）\n\n\n\n名称\n语言\n描述\n承接的结构\n\n\n\n\nPydantic\nPython\n类型安全、JSON Schema\n输入验证结构\n\n\nZod\nNode.js\nTypeScript 优先、类型推导\n输入验证结构\n\n\nJoi\nNode.js\n丰富的验证规则、链式 API\n输入验证结构\n\n\nclass-validator\nNode.js\n装饰器验证\n输入验证结构\n\n\nJakarta Validation\nJava\nBean Validation 标准\n输入验证结构",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>E</span>  <span class='chapter-title'>附录 E：后端构造件分类表（Backend Asset Catalog）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-e-backend-asset-catalog.html#认证与授权构造件",
+    "href": "appendix-e-backend-asset-catalog.html#认证与授权构造件",
+    "title": "附录 E — 附录 E：后端构造件分类表（Backend Asset Catalog）",
+    "section": "E.3 认证与授权构造件",
+    "text": "E.3 认证与授权构造件\n\n\n\n名称\n语言\n描述\n承接的结构\n\n\n\n\nPyJWT / python-jose\nPython\nJWT 签发与验证\n身份认证结构\n\n\nPassport.js\nNode.js\n策略式认证中间件\n身份认证结构\n\n\nSpring Security\nJava\n完整安全框架\n认证 + 权限结构\n\n\nAuth0 / Firebase Auth\n多语言\n第三方认证服务\n身份认证结构\n\n\nCASL / Ability\nNode.js\n声明式权限管理\n权限结构",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>E</span>  <span class='chapter-title'>附录 E：后端构造件分类表（Backend Asset Catalog）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-e-backend-asset-catalog.html#orm-数据访问构造件",
+    "href": "appendix-e-backend-asset-catalog.html#orm-数据访问构造件",
+    "title": "附录 E — 附录 E：后端构造件分类表（Backend Asset Catalog）",
+    "section": "E.4 ORM / 数据访问构造件",
+    "text": "E.4 ORM / 数据访问构造件\n\n\n\n名称\n语言\n描述\n承接的结构\n\n\n\n\nSQLAlchemy\nPython\n成熟 ORM、async 支持\n数据访问结构\n\n\nPrisma\nNode.js\n类型安全、自动迁移\n数据访问结构\n\n\nTypeORM\nNode.js\n装饰器 ORM、Active Record\n数据访问结构\n\n\nDjango ORM\nPython\n内置 ORM、查询 API\n数据访问结构\n\n\nMongoose\nNode.js\nMongoDB ODM\n数据访问结构（MongoDB）\n\n\nJPA / Hibernate\nJava\nJPA 标准 ORM\n数据访问结构",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>E</span>  <span class='chapter-title'>附录 E：后端构造件分类表（Backend Asset Catalog）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-e-backend-asset-catalog.html#异步任务构造件",
+    "href": "appendix-e-backend-asset-catalog.html#异步任务构造件",
+    "title": "附录 E — 附录 E：后端构造件分类表（Backend Asset Catalog）",
+    "section": "E.5 异步任务构造件",
+    "text": "E.5 异步任务构造件\n\n\n\n名称\n语言\n描述\n承接的结构\n\n\n\n\nCelery\nPython\n分布式任务队列\n异步任务结构\n\n\nRQ\nPython\nRedis 队列、轻量\n异步任务结构\n\n\nBullMQ\nNode.js\nRedis 队列、优先级\n异步任务结构\n\n\nSidekiq\nRuby\nRedis 队列、高效\n异步任务结构\n\n\nSpring Task\nJava\n(Scheduled?)、(Async?)\n异步任务结构",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>E</span>  <span class='chapter-title'>附录 E：后端构造件分类表（Backend Asset Catalog）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-e-backend-asset-catalog.html#缓存构造件",
+    "href": "appendix-e-backend-asset-catalog.html#缓存构造件",
+    "title": "附录 E — 附录 E：后端构造件分类表（Backend Asset Catalog）",
+    "section": "E.6 缓存构造件",
+    "text": "E.6 缓存构造件\n\n\n\n名称\n语言\n描述\n承接的结构\n\n\n\n\nRedis\n多语言\n内存数据库、数据结构丰富\n缓存结构\n\n\naiocache\nPython\nasync 缓存装饰器\n缓存结构\n\n\ncache-manager\nNode.js\n多后端缓存抽象\n缓存结构\n\n\nSpring Cache\nJava\n声明式缓存注解\n缓存结构",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>E</span>  <span class='chapter-title'>附录 E：后端构造件分类表（Backend Asset Catalog）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-e-backend-asset-catalog.html#日志与观测构造件",
+    "href": "appendix-e-backend-asset-catalog.html#日志与观测构造件",
+    "title": "附录 E — 附录 E：后端构造件分类表（Backend Asset Catalog）",
+    "section": "E.7 日志与观测构造件",
+    "text": "E.7 日志与观测构造件\n\n\n\n名称\n语言\n描述\n承接的结构\n\n\n\n\nOpenTelemetry\n多语言\n分布式追踪、指标、日志\n观测结构\n\n\nlogging (stdlib)\nPython\n标准日志库\n日志结构\n\n\nWinston\nNode.js\n多传输日志库\n日志结构\n\n\nSentry\n多语言\n错误追踪\n错误观测结构\n\n\nPrometheus + Grafana\n多语言\n指标采集 + 可视化\n监控结构\n\n\nDatadog\n多语言\nAPM、日志、指标一体\n全栈观测结构",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>E</span>  <span class='chapter-title'>附录 E：后端构造件分类表（Backend Asset Catalog）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-e-backend-asset-catalog.html#api-文档构造件",
+    "href": "appendix-e-backend-asset-catalog.html#api-文档构造件",
+    "title": "附录 E — 附录 E：后端构造件分类表（Backend Asset Catalog）",
+    "section": "E.8 API 文档构造件",
+    "text": "E.8 API 文档构造件\n\n\n\n名称\n语言\n描述\n承接的结构\n\n\n\n\nOpenAPI / Swagger\n多语言\nREST API 文档标准\n接口契约结构\n\n\nGraphQL (Apollo)\n多语言\n查询语言 + 类型系统\n接口契约结构\n\n\nAPI Blueprint\n多语言\nAPI 文档 DSL\n接口契约结构\n\n\nStoplight\n多语言\nAPI 设计 + 文档工具\n接口契约结构",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>E</span>  <span class='chapter-title'>附录 E：后端构造件分类表（Backend Asset Catalog）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-e-backend-asset-catalog.html#部署运行构造件",
+    "href": "appendix-e-backend-asset-catalog.html#部署运行构造件",
+    "title": "附录 E — 附录 E：后端构造件分类表（Backend Asset Catalog）",
+    "section": "E.9 部署运行构造件",
+    "text": "E.9 部署运行构造件\n\n\n\n名称\n类型\n描述\n承接的结构\n\n\n\n\nDocker\n容器\n应用容器化\n部署运行结构\n\n\nDocker Compose\n编排\n多容器编排\n部署运行结构\n\n\nKubernetes\n编排\n容器调度、服务发现\n部署运行结构\n\n\nTerraform\nIaC\n基础设施即代码\n部署运行结构\n\n\nServerless (AWS Lambda)\n无服务器\n事件驱动计算\n部署运行结构",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>E</span>  <span class='chapter-title'>附录 E：后端构造件分类表（Backend Asset Catalog）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-e-backend-asset-catalog.html#测试构造件后端",
+    "href": "appendix-e-backend-asset-catalog.html#测试构造件后端",
+    "title": "附录 E — 附录 E：后端构造件分类表（Backend Asset Catalog）",
+    "section": "E.10 测试构造件（后端）",
+    "text": "E.10 测试构造件（后端）\n\n\n\n名称\n语言\n描述\n承接的结构\n\n\n\n\npytest\nPython\nfixture、参数化、插件\n测试验证结构\n\n\nJest\nNode.js\n零配置、mock、快照\n测试验证结构\n\n\nJUnit\nJava\n单元测试标准\n测试验证结构\n\n\nMocha\nNode.js\n灵活、异步测试\n测试验证结构\n\n\nSupertest\nNode.js\nHTTP 测试\nAPI 测试结构\n\n\nhttpx\nPython\nasync HTTP 客户端\nAPI 测试结构\n\n\nTestcontainers\n多语言\n集成测试容器\n集成测试结构",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>E</span>  <span class='chapter-title'>附录 E：后端构造件分类表（Backend Asset Catalog）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-e-backend-asset-catalog.html#数据库构造件",
+    "href": "appendix-e-backend-asset-catalog.html#数据库构造件",
+    "title": "附录 E — 附录 E：后端构造件分类表（Backend Asset Catalog）",
+    "section": "E.11 数据库构造件",
+    "text": "E.11 数据库构造件\n\n\n\n名称\n类型\n描述\n承接的结构\n\n\n\n\nPostgreSQL\n关系数据库\nACID、JSON、扩展性\n数据存储结构\n\n\nMySQL\n关系数据库\n广泛使用、生态成熟\n数据存储结构\n\n\nSQLite\n内嵌数据库\n零配置、文件存储\n数据存储结构\n\n\nMongoDB\n文档数据库\n灵活 schema\n文档存储结构\n\n\nRedis\n内存数据库\n缓存、消息、数据结构\n缓存 + 消息结构\n\n\nElasticsearch\n搜索引擎\n全文搜索、聚合分析\n搜索结构\n\n\nRabbitMQ\n消息队列\nAMQP、可靠消息\n消息结构\n\n\nKafka\n消息队列\n高吞吐、事件流\n事件流结构",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>E</span>  <span class='chapter-title'>附录 E：后端构造件分类表（Backend Asset Catalog）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-f-minimum-runnable-system-checklist.html",
+    "href": "appendix-f-minimum-runnable-system-checklist.html",
+    "title": "附录 F — 附录 F：最小可运行系统检查表（Minimum Runnable System Checklist）",
+    "section": "",
+    "text": "F.1 启动检查\n本附录提供最小可运行系统的完整验收检查表。",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>F</span>  <span class='chapter-title'>附录 F：最小可运行系统检查表（Minimum Runnable System Checklist）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-f-minimum-runnable-system-checklist.html#启动检查",
+    "href": "appendix-f-minimum-runnable-system-checklist.html#启动检查",
+    "title": "附录 F — 附录 F：最小可运行系统检查表（Minimum Runnable System Checklist）",
+    "section": "",
+    "text": "系统可以通过一个命令启动（npm run dev / docker-compose up / python main.py）\n前端启动成功，可在浏览器访问\n后端启动成功，API 可调用（curl localhost:8000/health 返回 200）\n数据库连接正常（无连接错误日志）\n缓存服务连接正常（Redis ping 成功）\n任务队列 worker 启动正常（Celery / BullMQ 等）\n所有外部依赖服务可用",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>F</span>  <span class='chapter-title'>附录 F：最小可运行系统检查表（Minimum Runnable System Checklist）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-f-minimum-runnable-system-checklist.html#功能检查-核心业务路径",
+    "href": "appendix-f-minimum-runnable-system-checklist.html#功能检查-核心业务路径",
+    "title": "附录 F — 附录 F：最小可运行系统检查表（Minimum Runnable System Checklist）",
+    "section": "F.2 功能检查 — 核心业务路径",
+    "text": "F.2 功能检查 — 核心业务路径\n\n创建数据（POST /resources → 201）\n读取数据（GET /resources/{id} → 200）\n列表数据（GET /resources → 200，支持分页）\n更新数据（PUT /resources/{id} → 200）\n删除数据（DELETE /resources/{id} → 204）\n核心业务流程可执行（创建→推进状态→完成）\n数据变更后查询结果一致",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>F</span>  <span class='chapter-title'>附录 F：最小可运行系统检查表（Minimum Runnable System Checklist）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-f-minimum-runnable-system-checklist.html#功能检查-异常路径",
+    "href": "appendix-f-minimum-runnable-system-checklist.html#功能检查-异常路径",
+    "title": "附录 F — 附录 F：最小可运行系统检查表（Minimum Runnable System Checklist）",
+    "section": "F.3 功能检查 — 异常路径",
+    "text": "F.3 功能检查 — 异常路径\n\n输入验证失败 → 4xx（字段缺失、格式错误）\n资源不存在 → 404\n状态冲突 → 409\n无权限操作 → 403\n未认证请求 → 401\n重复创建 → 适当处理（幂等或冲突）\n边界值输入 → 正确响应（空列表、超大值、特殊字符）",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>F</span>  <span class='chapter-title'>附录 F：最小可运行系统检查表（Minimum Runnable System Checklist）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-f-minimum-runnable-system-checklist.html#前端检查",
+    "href": "appendix-f-minimum-runnable-system-checklist.html#前端检查",
+    "title": "附录 F — 附录 F：最小可运行系统检查表（Minimum Runnable System Checklist）",
+    "section": "F.4 前端检查",
+    "text": "F.4 前端检查\n\n页面可以正常渲染\n数据加载时显示 loading 状态\n数据加载失败时显示错误信息\n空数据时显示空状态\n表单提交有提交中状态\n表单验证有错误提示\n操作成功有反馈（Toast / 跳转）\n操作失败有错误提示\n页面路由正常（前进、后退、刷新）\n响应式布局正常工作（移动端/桌面端）",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>F</span>  <span class='chapter-title'>附录 F：最小可运行系统检查表（Minimum Runnable System Checklist）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-f-minimum-runnable-system-checklist.html#后端检查",
+    "href": "appendix-f-minimum-runnable-system-checklist.html#后端检查",
+    "title": "附录 F — 附录 F：最小可运行系统检查表（Minimum Runnable System Checklist）",
+    "section": "F.5 后端检查",
+    "text": "F.5 后端检查\n\nAPI 返回统一的响应格式\nAPI 返回合适的 HTTP 状态码\n请求日志已记录\n错误日志已记录（含 stack trace）\n数据库迁移已执行\n数据库查询有合理的索引\n环境配置通过环境变量注入\nCORS 配置正确",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>F</span>  <span class='chapter-title'>附录 F：最小可运行系统检查表（Minimum Runnable System Checklist）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-f-minimum-runnable-system-checklist.html#测试检查",
+    "href": "appendix-f-minimum-runnable-system-checklist.html#测试检查",
+    "title": "附录 F — 附录 F：最小可运行系统检查表（Minimum Runnable System Checklist）",
+    "section": "F.6 测试检查",
+    "text": "F.6 测试检查\n\n后端单元测试通过\n后端 API 测试通过\n后端测试覆盖核心业务路径\n前端组件测试通过\n前端测试覆盖核心交互路径\n核心业务流程的集成测试通过\n异常路径测试覆盖主要场景",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>F</span>  <span class='chapter-title'>附录 F：最小可运行系统检查表（Minimum Runnable System Checklist）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-f-minimum-runnable-system-checklist.html#安全检查",
+    "href": "appendix-f-minimum-runnable-system-checklist.html#安全检查",
+    "title": "附录 F — 附录 F：最小可运行系统检查表（Minimum Runnable System Checklist）",
+    "section": "F.7 安全检查",
+    "text": "F.7 安全检查\n\n密码等敏感信息通过环境变量配置\nAPI 端点需要认证\n用户只能操作自己有权限的资源\n输入数据经过验证（无 SQL 注入、XSS 风险）\nCORS 限制在可信来源",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>F</span>  <span class='chapter-title'>附录 F：最小可运行系统检查表（Minimum Runnable System Checklist）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-f-minimum-runnable-system-checklist.html#文档检查",
+    "href": "appendix-f-minimum-runnable-system-checklist.html#文档检查",
+    "title": "附录 F — 附录 F：最小可运行系统检查表（Minimum Runnable System Checklist）",
+    "section": "F.8 文档检查",
+    "text": "F.8 文档检查\n\nREADME 包含启动说明\nAPI 文档可访问（/docs / Swagger UI）\n环境变量说明（.env.example）\n数据库迁移说明",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>F</span>  <span class='chapter-title'>附录 F：最小可运行系统检查表（Minimum Runnable System Checklist）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-f-minimum-runnable-system-checklist.html#交付检查-主构造链五个关键环节与支撑模块回收",
+    "href": "appendix-f-minimum-runnable-system-checklist.html#交付检查-主构造链五个关键环节与支撑模块回收",
+    "title": "附录 F — 附录 F：最小可运行系统检查表（Minimum Runnable System Checklist）",
+    "section": "F.9 交付检查 — 主构造链五个关键环节与支撑模块回收",
+    "text": "F.9 交付检查 — 主构造链五个关键环节与支撑模块回收\n\nF.9.1 需求场景层\n\n需求场景六要素描述完整\n问题定义清晰\n用户角色已列出\n用户动作已列出\n输入规格已定义\n输出规格已定义\n失败场景已列出\n\n\n\nF.9.2 程序结构建模层\n\n领域结构（对象卡片、字段、关系、生命周期）已定义\n交互结构（用户动作、系统事件）已定义\n状态结构（状态拥有者、状态转移）已定义\n边界结构（API 边界、输入输出契约）已定义\n组合结构（组件树、模块结构）已定义\n约束与可靠性切面已定义\n\n\n\nF.9.3 构造件选择层\n\n前端构造件已选择（框架、组件库、路由、状态等）\n后端构造件已选择（Web 框架、ORM、队列等）\n脚手架已选择或创建\n每个构造件的选择理由已记录\n\n\n\nF.9.4 胶水代码连接层\n\n实现方案已决策（自写/构造件/脚手架）\n胶水代码已编写（配置、路由、依赖、数据转换、适配器、错误处理）\n目录结构已确定\n系统可一键启动\n核心业务流程可运行\n自动化测试通过\n\n\n\nF.9.5 最小可运行系统层\n\n系统达到六项验收标准（启动/输入/输出/运行/测试/验收）\n核心业务流程测试通过\n异常路径测试覆盖主要场景\n扩展运行结构（如有）可独立启动",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>F</span>  <span class='chapter-title'>附录 F：最小可运行系统检查表（Minimum Runnable System Checklist）</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-f-minimum-runnable-system-checklist.html#使用说明",
+    "href": "appendix-f-minimum-runnable-system-checklist.html#使用说明",
+    "title": "附录 F — 附录 F：最小可运行系统检查表（Minimum Runnable System Checklist）",
+    "section": "F.10 使用说明",
+    "text": "F.10 使用说明\n\n开发新系统时，逐项检查确保系统达到最小可运行标准\n检查核心业务流程路径（3-5 个关键场景可跑通）比检查所有功能点更重要\n异常路径检查至少覆盖输入验证、资源不存在、状态冲突、无权限 4 类\n测试检查聚焦核心路径，不要求 100% 覆盖率\n每次迭代后重新检查，确保新功能不破坏已有检查项",
+    "crumbs": [
+      "附录",
+      "<span class='chapter-number'>F</span>  <span class='chapter-title'>附录 F：最小可运行系统检查表（Minimum Runnable System Checklist）</span>"
+    ]
+  }
+]

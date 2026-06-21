@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-Hans" xml:lang="zh-Hans"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="拿到一个需求后，如何把它拆成程序可以承接的结构，如何判断哪些部分自己写、哪些部分交给库、框架、组件或脚手架，最后如何组装成一个最小可运行系统。五层递进：需求场景 → 程序结构建模 → 构造件选择 → 胶水代码连接 → 最小可运行系统。">
+
+<title>9&nbsp; Chapter 9：边界结构、组合结构与约束可靠性切面（Boundary, Composition &amp; Reliability） – 程序构造力</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./chapter-10-construction-assets.html" rel="next">
+<link href="./chapter-08-interaction-and-state.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-f418161beb48e0141c760e455f12af2c.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-95edd58b3b27b9774827898c46d4f452.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-8fd8d5ae0c9443bae954c065c7c237ad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-95edd58b3b27b9774827898c46d4f452.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chapter-06-structure-modeling.html">程序结构建模层</a></li><li class="breadcrumb-item"><a href="./chapter-09-boundary-composition-reliability.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Chapter 9：边界结构、组合结构与约束可靠性切面（Boundary, Composition &amp; Reliability）</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">程序构造力</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="切换深色模式"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="切换阅读器模式">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="搜索"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">程序构造的起点：需求场景</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-01-demand-scenario.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Chapter 1：程序不是从语法开始，而是从需求场景开始（Demand Scenario）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-02-demand-to-structure.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Chapter 2：把需求拆成对象、动作、状态、边界和约束（Demand to Structure）</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">支撑模块：基础代码材料与程序表达</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-03-basic-syntax-materials.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Chapter 3：基础语法只是低阶代码材料（Basic Syntax Materials）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-04-syntax-to-expression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Chapter 4：基础语法如何进入程序表达（Syntax to Expression）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-05-expression-unit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Chapter 5：程序表达单元：数据、集合、判断、运行、失败与反馈（Program Expression Units）</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">程序结构建模层</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-06-structure-modeling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Chapter 6：程序结构建模是什么（Program Structure Modeling）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-07-domain-structure.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Chapter 7：领域结构：对象、字段、关系、生命周期与领域约束（Domain Structure）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-08-interaction-and-state.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Chapter 8：交互结构与状态结构（Interaction Structure and State Structure）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-boundary-composition-reliability.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Chapter 9：边界结构、组合结构与约束可靠性切面（Boundary, Composition &amp; Reliability）</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">构造件层</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-10-construction-assets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Chapter 10：构造件是什么：库、框架、组件、SDK 与脚手架（Construction Assets）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-11-frontend-assets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Chapter 11：前端构造件：组件库、路由、状态、表单、请求与反馈（Frontend Assets）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-12-backend-assets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Chapter 12：后端构造件：API、数据访问、权限、任务、缓存与观测（Backend Assets）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-13-scaffold.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Chapter 13：脚手架：把结构规格变成项目壳（Scaffold）</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">程序组装层</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-14-structure-to-implementation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Chapter 14：从结构模型到实现方案（From Structure Model to Implementation Plan）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-15-glue-code-and-assembly.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Chapter 15：自写代码、构造件和胶水代码如何连接（Glue Code and Assembly）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-16-minimum-runnable-system.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Chapter 16：形成最小可运行系统（Minimum Runnable System）</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">附录</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./appendix-a-five-layer-summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">附录 A：主构造链总表与支撑模块（Main Chain Summary and Support Module）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./appendix-b-structure-modeling-template.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">附录 B：结构建模模板（Structure Modeling Templates）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./appendix-c-structure-to-asset-mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">附录 C：结构到构造件映射表（Structure-to-Asset Mapping）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./appendix-d-frontend-asset-catalog.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">附录 D：前端构造件分类表（Frontend Asset Catalog）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./appendix-e-backend-asset-catalog.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">E</span>&nbsp; <span class="chapter-title">附录 E：后端构造件分类表（Backend Asset Catalog）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./appendix-f-minimum-runnable-system-checklist.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">F</span>&nbsp; <span class="chapter-title">附录 F：最小可运行系统检查表（Minimum Runnable System Checklist）</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目录</h2>
+   
+  <ul>
+  <li><a href="#本章问题" id="toc-本章问题" class="nav-link active" data-scroll-target="#本章问题"><span class="header-section-number">9.1</span> 本章问题</a></li>
+  <li><a href="#背景为什么这章重要" id="toc-背景为什么这章重要" class="nav-link" data-scroll-target="#背景为什么这章重要"><span class="header-section-number">9.2</span> 背景：为什么这章重要</a></li>
+  <li><a href="#核心内容" id="toc-核心内容" class="nav-link" data-scroll-target="#核心内容"><span class="header-section-number">9.3</span> 核心内容</a>
+  <ul class="collapse">
+  <li><a href="#边界结构boundary-structure" id="toc-边界结构boundary-structure" class="nav-link" data-scroll-target="#边界结构boundary-structure"><span class="header-section-number">9.3.1</span> 边界结构（Boundary Structure）</a></li>
+  <li><a href="#组合结构composition-structure" id="toc-组合结构composition-structure" class="nav-link" data-scroll-target="#组合结构composition-structure"><span class="header-section-number">9.3.2</span> 组合结构（Composition Structure）</a></li>
+  <li><a href="#约束与可靠性切面constraint-reliability-slice" id="toc-约束与可靠性切面constraint-reliability-slice" class="nav-link" data-scroll-target="#约束与可靠性切面constraint-reliability-slice"><span class="header-section-number">9.3.3</span> 约束与可靠性切面（Constraint &amp; Reliability Slice）</a></li>
+  <li><a href="#可靠性策略分类" id="toc-可靠性策略分类" class="nav-link" data-scroll-target="#可靠性策略分类"><span class="header-section-number">9.3.4</span> 可靠性策略分类</a></li>
+  </ul></li>
+  <li><a href="#例子与实践" id="toc-例子与实践" class="nav-link" data-scroll-target="#例子与实践"><span class="header-section-number">9.4</span> 例子与实践</a>
+  <ul class="collapse">
+  <li><a href="#场景task-manager-的边界组合与可靠性" id="toc-场景task-manager-的边界组合与可靠性" class="nav-link" data-scroll-target="#场景task-manager-的边界组合与可靠性"><span class="header-section-number">9.4.1</span> 场景：Task Manager 的边界、组合与可靠性</a></li>
+  </ul></li>
+  <li><a href="#小结" id="toc-小结" class="nav-link" data-scroll-target="#小结"><span class="header-section-number">9.5</span> 小结</a></li>
+  <li><a href="#本章产物" id="toc-本章产物" class="nav-link" data-scroll-target="#本章产物"><span class="header-section-number">9.6</span> 本章产物</a></li>
+  <li><a href="#从业者输出" id="toc-从业者输出" class="nav-link" data-scroll-target="#从业者输出"><span class="header-section-number">9.7</span> 从业者输出</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chapter-06-structure-modeling.html">程序结构建模层</a></li><li class="breadcrumb-item"><a href="./chapter-09-boundary-composition-reliability.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Chapter 9：边界结构、组合结构与约束可靠性切面（Boundary, Composition &amp; Reliability）</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Chapter 9：边界结构、组合结构与约束可靠性切面（Boundary, Composition &amp; Reliability）</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="本章问题" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="本章问题"><span class="header-section-number">9.1</span> 本章问题</h2>
+<p>领域结构定义了有什么事物，交互结构定义了谁做什么，状态结构定义了什么会变化。但还有三个关键问题没有回答：数据从哪些边界进出系统？系统的各部分如何组织在一起？哪些约束必须保证、失败了怎么办？边界结构、组合结构和约束可靠性切面回答的就是这三个问题。</p>
+</section>
+<section id="背景为什么这章重要" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="背景为什么这章重要"><span class="header-section-number">9.2</span> 背景：为什么这章重要</h2>
+<p>边界结构（Boundary Structure）、组合结构（Composition Structure）和约束与可靠性切面（Constraint &amp; Reliability Slice）是结构建模层的最后三个组成部分。</p>
+<p><strong>边界结构</strong>定义数据从哪进、从哪出。没有边界结构，你不知道程序的输入格式是什么、输出格式是什么、错误怎么返回。</p>
+<p><strong>组合结构</strong>定义各部分如何组织。没有组合结构，你不知道页面、组件、模块、服务之间的关系。</p>
+<p><strong>约束与可靠性切面</strong>是横向切面——它不是第五类结构，而是贯穿前五类结构的质量保证层。每个结构都有约束和可靠性要求。</p>
+<p>注意和旧模型的区别： - 旧模型把”实现结构”（数据结构说明、函数规格、模块职责）放在结构建模层 - 新模型把实现结构移到 Part 5 组装层——结构建模层只回答”长什么样”，不回答”怎么实现” - 旧模型把”可靠性结构”作为一个独立类别（异常处理、恢复、输出、反馈、测试） - 新模型把可靠性作为横向切面——它不从属于任何一个结构，而是每个结构都派生可靠性要求 - 旧模型把”配置结构”和”结果结构”放在领域结构 - 新模型把它们移到边界结构——配置是运行环境边界，结果是输出边界</p>
+</section>
+<section id="核心内容" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="核心内容"><span class="header-section-number">9.3</span> 核心内容</h2>
+<section id="边界结构boundary-structure" class="level3" data-number="9.3.1">
+<h3 data-number="9.3.1" class="anchored" data-anchor-id="边界结构boundary-structure"><span class="header-section-number">9.3.1</span> 边界结构（Boundary Structure）</h3>
+<p>边界结构定义程序与外部世界的所有交互点。</p>
+<section id="api-边界api-boundary" class="level4" data-number="9.3.1.1">
+<h4 data-number="9.3.1.1" class="anchored" data-anchor-id="api-边界api-boundary"><span class="header-section-number">9.3.1.1</span> API 边界（API Boundary）</h4>
+<p>程序对外暴露的接口。</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>边界</th>
+<th>方向</th>
+<th>协议</th>
+<th>格式</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>REST API</td>
+<td>双向</td>
+<td>HTTP</td>
+<td>JSON</td>
+<td>POST /tasks, GET /tasks/{id}</td>
+</tr>
+<tr class="even">
+<td>WebSocket</td>
+<td>双向</td>
+<td>WS</td>
+<td>JSON</td>
+<td>实时通知</td>
+</tr>
+</tbody>
+</table>
+<p>API 边界规格表：</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 15%">
+<col style="width: 15%">
+<col style="width: 28%">
+<col style="width: 28%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>API</th>
+<th>方法</th>
+<th>输入</th>
+<th>输出(成功)</th>
+<th>输出(失败)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>POST /tasks</td>
+<td>Create</td>
+<td>{title, description?, priority, due_date?}</td>
+<td>{task}</td>
+<td>{error, message, violations?}</td>
+</tr>
+<tr class="even">
+<td>PUT /tasks/{id}/assign</td>
+<td>Assign</td>
+<td>{user_id}</td>
+<td>{task}</td>
+<td>{error, message}</td>
+</tr>
+<tr class="odd">
+<td>PUT /tasks/{id}/complete</td>
+<td>Complete</td>
+<td>{note}</td>
+<td>{task}</td>
+<td>{error, message}</td>
+</tr>
+<tr class="even">
+<td>GET /tasks</td>
+<td>List</td>
+<td>?status=&amp;priority=</td>
+<td>{tasks: []}</td>
+<td>{error, message}</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="ui-边界ui-boundary" class="level4" data-number="9.3.1.2">
+<h4 data-number="9.3.1.2" class="anchored" data-anchor-id="ui-边界ui-boundary"><span class="header-section-number">9.3.1.2</span> UI 边界（UI Boundary）</h4>
+<p>用户界面接收的输入和展示的输出。</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 22%">
+<col style="width: 22%">
+<col style="width: 22%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>UI 元素</th>
+<th>输入</th>
+<th>输出</th>
+<th>约束</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>创建任务表单</td>
+<td>title, description, priority, due_date</td>
+<td>JSON 请求体</td>
+<td>标题必填，1-200 字</td>
+</tr>
+<tr class="even">
+<td>任务列表</td>
+<td>-</td>
+<td>任务卡片列表</td>
+<td>分页参数</td>
+</tr>
+<tr class="odd">
+<td>任务详情</td>
+<td>task_id</td>
+<td>完整任务信息</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="数据边界data-boundary" class="level4" data-number="9.3.1.3">
+<h4 data-number="9.3.1.3" class="anchored" data-anchor-id="数据边界data-boundary"><span class="header-section-number">9.3.1.3</span> 数据边界（Data Boundary）</h4>
+<p>程序与存储系统之间的边界。</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>存储类型</th>
+<th>操作</th>
+<th>输入</th>
+<th>输出</th>
+<th>技术选择</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>关系数据库</td>
+<td>CRUD</td>
+<td>查询参数</td>
+<td>数据行</td>
+<td>SQLAlchemy / Prisma</td>
+</tr>
+<tr class="even">
+<td>缓存</td>
+<td>读写</td>
+<td>键值对</td>
+<td>缓存值</td>
+<td>Redis</td>
+</tr>
+<tr class="odd">
+<td>文件系统</td>
+<td>读写</td>
+<td>文件路径</td>
+<td>文件内容</td>
+<td>文件 API</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="外部服务边界external-service-boundary" class="level4" data-number="9.3.1.4">
+<h4 data-number="9.3.1.4" class="anchored" data-anchor-id="外部服务边界external-service-boundary"><span class="header-section-number">9.3.1.4</span> 外部服务边界（External Service Boundary）</h4>
+<p>程序与外部服务的交互。</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>服务</th>
+<th>交互方式</th>
+<th>协议</th>
+<th>失败策略</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>邮件服务</td>
+<td>调用 API</td>
+<td>SMTP / HTTP</td>
+<td>重试 3 次，失败降级</td>
+</tr>
+<tr class="even">
+<td>日志服务</td>
+<td>写入</td>
+<td>stdout / 文件</td>
+<td>不阻断主流程</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="输入输出契约inputoutput-contract" class="level4" data-number="9.3.1.5">
+<h4 data-number="9.3.1.5" class="anchored" data-anchor-id="输入输出契约inputoutput-contract"><span class="header-section-number">9.3.1.5</span> 输入输出契约（Input/Output Contract）</h4>
+<p>每个边界的输入输出格式定义。</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 创建任务 API 契约</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="at">POST /tasks</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">输入</span><span class="kw">:</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">title</span><span class="kw">:</span><span class="at"> string (1-200, required)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">description</span><span class="kw">:</span><span class="at"> string (0-2000, optional)</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">priority</span><span class="kw">:</span><span class="at"> enum (low/medium/high/urgent, required)</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">due_date</span><span class="kw">:</span><span class="at"> string (ISO date, optional)</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">输出(200)</span><span class="kw">:</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">task</span><span class="kw">:</span><span class="at"> Task 对象</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">输出(400)</span><span class="kw">:</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">error</span><span class="kw">:</span><span class="at"> </span><span class="st">"VALIDATION_ERROR"</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">message</span><span class="kw">:</span><span class="at"> string</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">violations</span><span class="kw">:</span><span class="at"> </span><span class="kw">[{</span><span class="at">field</span><span class="kw">,</span><span class="at"> message</span><span class="kw">}]</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">输出(500)</span><span class="kw">:</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">error</span><span class="kw">:</span><span class="at"> </span><span class="st">"INTERNAL_ERROR"</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">message</span><span class="kw">:</span><span class="at"> string</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</section>
+<section id="组合结构composition-structure" class="level3" data-number="9.3.2">
+<h3 data-number="9.3.2" class="anchored" data-anchor-id="组合结构composition-structure"><span class="header-section-number">9.3.2</span> 组合结构（Composition Structure）</h3>
+<p>组合结构定义系统的各部分如何组织在一起。</p>
+<section id="组件树component-tree" class="level4" data-number="9.3.2.1">
+<h4 data-number="9.3.2.1" class="anchored" data-anchor-id="组件树component-tree"><span class="header-section-number">9.3.2.1</span> 组件树（Component Tree）</h4>
+<p>前端 UI 的层级结构。</p>
+<pre class="text"><code>App
+├── Layout
+│   ├── Sidebar
+│   └── MainContent
+├── TaskListPage
+│   ├── FilterBar
+│   ├── TaskCard[]
+│   └── Pagination
+├── TaskDetailPage
+│   ├── TaskInfo
+│   ├── StatusActions
+│   └── CommentSection
+├── CreateTaskPage
+│   └── TaskForm
+└── LoginPage
+    └── LoginForm</code></pre>
+</section>
+<section id="模块结构module-structure" class="level4" data-number="9.3.2.2">
+<h4 data-number="9.3.2.2" class="anchored" data-anchor-id="模块结构module-structure"><span class="header-section-number">9.3.2.2</span> 模块结构（Module Structure）</h4>
+<p>后端代码的层级组织。</p>
+<pre class="text"><code>src/
+├── api/
+│   ├── routers/
+│   │   ├── task_router.py
+│   │   ├── user_router.py
+│   │   └── project_router.py
+│   └── schemas/
+│       ├── task_schema.py
+│       └── user_schema.py
+├── services/
+│   ├── task_service.py
+│   ├── user_service.py
+│   └── notification_service.py
+├── repositories/
+│   ├── task_repository.py
+│   └── user_repository.py
+├── models/
+│   ├── task.py
+│   └── user.py
+└── config.py</code></pre>
+</section>
+<section id="服务结构service-structure" class="level4" data-number="9.3.2.3">
+<h4 data-number="9.3.2.3" class="anchored" data-anchor-id="服务结构service-structure"><span class="header-section-number">9.3.2.3</span> 服务结构（Service Structure）</h4>
+<p>后端服务的职责划分。</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>服务</th>
+<th>职责</th>
+<th>依赖</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>TaskService</td>
+<td>任务 CRUD 和状态管理</td>
+<td>TaskRepository, NotificationService</td>
+</tr>
+<tr class="even">
+<td>UserService</td>
+<td>用户管理</td>
+<td>UserRepository</td>
+</tr>
+<tr class="odd">
+<td>NotificationService</td>
+<td>通知发送</td>
+<td>邮件客户端</td>
+</tr>
+<tr class="even">
+<td>ValidationService</td>
+<td>输入校验</td>
+<td>无</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="适配器结构adapter-structure" class="level4" data-number="9.3.2.4">
+<h4 data-number="9.3.2.4" class="anchored" data-anchor-id="适配器结构adapter-structure"><span class="header-section-number">9.3.2.4</span> 适配器结构（Adapter Structure）</h4>
+<p>连接不同层的适配代码。</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>适配器</th>
+<th>连接</th>
+<th>职责</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>API Router</td>
+<td>HTTP → Service</td>
+<td>解析请求、调用服务、格式化响应</td>
+</tr>
+<tr class="even">
+<td>Repository</td>
+<td>Service → Database</td>
+<td>CRUD 操作、ORM 映射</td>
+</tr>
+<tr class="odd">
+<td>Schema</td>
+<td>HTTP body → Python dict</td>
+<td>输入验证和序列化</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="约束与可靠性切面constraint-reliability-slice" class="level3" data-number="9.3.3">
+<h3 data-number="9.3.3" class="anchored" data-anchor-id="约束与可靠性切面constraint-reliability-slice"><span class="header-section-number">9.3.3</span> 约束与可靠性切面（Constraint &amp; Reliability Slice）</h3>
+<p>约束与可靠性不是一个独立的第五类结构，而是贯穿前五类结构的<strong>横向切面</strong>。</p>
+<p>每个结构都派生特定的约束和可靠性要求。</p>
+<section id="从领域结构派生" class="level4" data-number="9.3.3.1">
+<h4 data-number="9.3.3.1" class="anchored" data-anchor-id="从领域结构派生"><span class="header-section-number">9.3.3.1</span> 从领域结构派生</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>领域元素</th>
+<th>约束</th>
+<th>可靠性要求</th>
+<th>测试类型</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>字段</td>
+<td>必填、长度、取值范围</td>
+<td>验证失败返回明确错误</td>
+<td>字段边界测试</td>
+</tr>
+<tr class="even">
+<td>关系</td>
+<td>数量约束、生命周期</td>
+<td>关系断裂时一致处理</td>
+<td>关系测试</td>
+</tr>
+<tr class="odd">
+<td>生命周期</td>
+<td>合法状态序列</td>
+<td>非法转移被拒绝</td>
+<td>生命周期测试</td>
+</tr>
+</tbody>
+</table>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 领域结构派生的约束</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> validate_task_title(title: <span class="bu">str</span>):</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> title <span class="kw">or</span> <span class="bu">len</span>(title) <span class="op">&gt;</span> <span class="dv">200</span>:</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> ValidationError(<span class="st">"title 1-200 characters"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="从交互结构派生" class="level4" data-number="9.3.3.2">
+<h4 data-number="9.3.3.2" class="anchored" data-anchor-id="从交互结构派生"><span class="header-section-number">9.3.3.2</span> 从交互结构派生</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>交互元素</th>
+<th>约束</th>
+<th>可靠性要求</th>
+<th>测试类型</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>用户动作</td>
+<td>前置条件</td>
+<td>前置条件不满足时拒绝</td>
+<td>用例测试</td>
+</tr>
+<tr class="even">
+<td>系统事件</td>
+<td>触发条件</td>
+<td>触发条件不满足时跳过</td>
+<td>事件测试</td>
+</tr>
+<tr class="odd">
+<td>权限</td>
+<td>角色限制</td>
+<td>无权限时返回 403</td>
+<td>权限测试</td>
+</tr>
+</tbody>
+</table>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 交互结构派生的权限约束</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> can_complete_task(user: User, task: Task):</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> user.<span class="bu">id</span> <span class="op">!=</span> task.assignee_id:</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">PermissionError</span>(<span class="st">"只有负责人可以完成任务"</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> task.status <span class="op">!=</span> <span class="st">"in_progress"</span>:</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> StateError(<span class="st">"任务不在执行状态"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="从状态结构派生" class="level4" data-number="9.3.3.3">
+<h4 data-number="9.3.3.3" class="anchored" data-anchor-id="从状态结构派生"><span class="header-section-number">9.3.3.3</span> 从状态结构派生</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 17%">
+<col style="width: 31%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>状态元素</th>
+<th>约束</th>
+<th>可靠性要求</th>
+<th>测试类型</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>状态转移</td>
+<td>合法转移路径</td>
+<td>非法转移被拒绝</td>
+<td>状态转移测试</td>
+</tr>
+<tr class="even">
+<td>并发状态</td>
+<td>同一对象不能被两个操作同时修改</td>
+<td>乐观锁或悲观锁</td>
+<td>并发测试</td>
+</tr>
+</tbody>
+</table>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 状态结构派生的转移约束</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> validate_transition(task: Task, target_status: <span class="bu">str</span>):</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    allowed <span class="op">=</span> {</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">"open"</span>: [<span class="st">"in_progress"</span>, <span class="st">"closed"</span>],</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"in_progress"</span>: [<span class="st">"pending_review"</span>, <span class="st">"failed"</span>, <span class="st">"closed"</span>],</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"pending_review"</span>: [<span class="st">"done"</span>, <span class="st">"in_progress"</span>],</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"done"</span>: [<span class="st">"closed"</span>, <span class="st">"open"</span>],</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"closed"</span>: [<span class="st">"open"</span>],</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"failed"</span>: [<span class="st">"in_progress"</span>, <span class="st">"closed"</span>],</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> target_status <span class="kw">not</span> <span class="kw">in</span> allowed[task.status]:</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> StateError(<span class="ss">f"不能从 </span><span class="sc">{</span>task<span class="sc">.</span>status<span class="sc">}</span><span class="ss"> 转移到 </span><span class="sc">{</span>target_status<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="从边界结构派生" class="level4" data-number="9.3.3.4">
+<h4 data-number="9.3.3.4" class="anchored" data-anchor-id="从边界结构派生"><span class="header-section-number">9.3.3.4</span> 从边界结构派生</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>边界元素</th>
+<th>约束</th>
+<th>可靠性要求</th>
+<th>测试类型</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>输入校验</td>
+<td>格式、范围、必填</td>
+<td>非法输入返回 400</td>
+<td>输入测试</td>
+</tr>
+<tr class="even">
+<td>输出格式</td>
+<td>统一响应结构</td>
+<td>所有输出遵循同一格式</td>
+<td>输出契约测试</td>
+</tr>
+<tr class="odd">
+<td>外部服务</td>
+<td>超时、重试</td>
+<td>超时重试、熔断</td>
+<td>集成测试</td>
+</tr>
+</tbody>
+</table>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 边界结构派生的超时重试策略</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> call_with_retry(func, max_retries<span class="op">=</span><span class="dv">3</span>, timeout<span class="op">=</span><span class="dv">5</span>):</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> attempt <span class="kw">in</span> <span class="bu">range</span>(max_retries):</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> func(timeout<span class="op">=</span>timeout)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">TimeoutError</span>:</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> attempt <span class="op">==</span> max_retries <span class="op">-</span> <span class="dv">1</span>:</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>                <span class="cf">raise</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">continue</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="从组合结构派生" class="level4" data-number="9.3.3.5">
+<h4 data-number="9.3.3.5" class="anchored" data-anchor-id="从组合结构派生"><span class="header-section-number">9.3.3.5</span> 从组合结构派生</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>组合元素</th>
+<th>约束</th>
+<th>可靠性要求</th>
+<th>测试类型</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>服务依赖</td>
+<td>依赖不为空</td>
+<td>依赖缺失时快速失败</td>
+<td>集成测试</td>
+</tr>
+<tr class="even">
+<td>组件接口</td>
+<td>接口契约</td>
+<td>接口变更时通知所有使用者</td>
+<td>契约测试</td>
+</tr>
+<tr class="odd">
+<td>目录结构</td>
+<td>命名规范</td>
+<td>结构清晰可扩展</td>
+<td>代码审查</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="可靠性策略分类" class="level3" data-number="9.3.4">
+<h3 data-number="9.3.4" class="anchored" data-anchor-id="可靠性策略分类"><span class="header-section-number">9.3.4</span> 可靠性策略分类</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>策略</th>
+<th>适用场景</th>
+<th>实现方式</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>验证</td>
+<td>输入到达边界时</td>
+<td>if + raise, schema validation</td>
+</tr>
+<tr class="even">
+<td>重试</td>
+<td>临时性失败（网络、数据库）</td>
+<td>retry decorator, 指数退避</td>
+</tr>
+<tr class="odd">
+<td>降级</td>
+<td>非关键路径失败</td>
+<td>跳过、写日志</td>
+</tr>
+<tr class="even">
+<td>熔断</td>
+<td>外部服务持续失败</td>
+<td>暂停请求、快速失败</td>
+</tr>
+<tr class="odd">
+<td>超时</td>
+<td>外部服务响应慢</td>
+<td>timeout 参数</td>
+</tr>
+<tr class="even">
+<td>回滚</td>
+<td>部分写入成功</td>
+<td>事务、补偿操作</td>
+</tr>
+<tr class="odd">
+<td>日志</td>
+<td>所有异常情况</td>
+<td>logging, structured log</td>
+</tr>
+<tr class="even">
+<td>通知</td>
+<td>需要人工介入的失败</td>
+<td>报警、通知</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="例子与实践" class="level2" data-number="9.4">
+<h2 data-number="9.4" class="anchored" data-anchor-id="例子与实践"><span class="header-section-number">9.4</span> 例子与实践</h2>
+<section id="场景task-manager-的边界组合与可靠性" class="level3" data-number="9.4.1">
+<h3 data-number="9.4.1" class="anchored" data-anchor-id="场景task-manager-的边界组合与可靠性"><span class="header-section-number">9.4.1</span> 场景：Task Manager 的边界、组合与可靠性</h3>
+<p><strong>边界结构：API 边界</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 29%">
+<col style="width: 29%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>API</th>
+<th>输入校验</th>
+<th>输出格式</th>
+<th>错误码</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>POST /tasks</td>
+<td>title 必填, priority 枚举</td>
+<td>TaskResponse</td>
+<td>400, 500</td>
+</tr>
+<tr class="even">
+<td>PUT /tasks/{id}/assign</td>
+<td>task_id 存在, user_id 存在</td>
+<td>TaskResponse</td>
+<td>400, 404, 409, 500</td>
+</tr>
+<tr class="odd">
+<td>PUT /tasks/{id}/complete</td>
+<td>task_id 存在, note 可选</td>
+<td>TaskResponse</td>
+<td>400, 404, 409, 403, 500</td>
+</tr>
+</tbody>
+</table>
+<p><strong>组合结构：组件树</strong></p>
+<pre class="text"><code>App
+├── TaskListPage          → 列表页
+├── TaskDetailPage        → 详情页
+├── CreateTaskPage        → 创建页
+├── LoginPage            → 登录页
+└── Layout               → 布局壳
+    ├── Header
+    ├── Sidebar
+    └── MainContent</code></pre>
+<p><strong>组合结构：后端模块</strong></p>
+<pre class="text"><code>app/
+├── api/                  → 边界层
+│   ├── routers/
+│   └── schemas/
+├── services/             → 业务层
+├── repositories/         → 数据层
+└── models/               → 领域层</code></pre>
+<p><strong>可靠性切面：各结构的可靠性要求</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>所属结构</th>
+<th>可靠性要求</th>
+<th>策略</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>领域 - Task.title</td>
+<td>不能为空，不超长</td>
+<td>输入验证</td>
+</tr>
+<tr class="even">
+<td>交互 - assign_task</td>
+<td>只有 Manager 可做</td>
+<td>权限校验</td>
+</tr>
+<tr class="odd">
+<td>状态 - status</td>
+<td>只能按合法路径转移</td>
+<td>转移验证</td>
+</tr>
+<tr class="even">
+<td>边界 - POST /tasks</td>
+<td>非 JSON 格式拒绝</td>
+<td>格式校验</td>
+</tr>
+<tr class="odd">
+<td>边界 - 数据库</td>
+<td>写入失败重试</td>
+<td>重试 3 次</td>
+</tr>
+<tr class="even">
+<td>组合 - 通知服务</td>
+<td>发送失败不阻断主流程</td>
+<td>降级 + 日志</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="小结" class="level2" data-number="9.5">
+<h2 data-number="9.5" class="anchored" data-anchor-id="小结"><span class="header-section-number">9.5</span> 小结</h2>
+<p>边界结构、组合结构和约束可靠性切面完成了结构建模层的最后三个组成部分。</p>
+<p>边界结构回答”数据从哪进、从哪出”——API 边界、UI 边界、数据库边界、外部服务边界、输入输出契约。</p>
+<p>组合结构回答”各部分如何组织”——组件树、模块结构、服务结构、适配器结构。</p>
+<p>约束与可靠性切面是横向贯穿前五类结构的质量保证层——每个结构都派生约束和可靠性要求，而不是把它们当作一个独立的结构类别。</p>
+<p>至此，五类结构与一个横向切面全部定义完成。下一章进入 Part 4 构造件层——把结构规格映射到具体的库、框架、组件和脚手架。</p>
+</section>
+<section id="本章产物" class="level2" data-number="9.6">
+<h2 data-number="9.6" class="anchored" data-anchor-id="本章产物"><span class="header-section-number">9.6</span> 本章产物</h2>
+<p>完成本章后，你拥有以下可交付产物：</p>
+<ul>
+<li>边界定义表、组合结构图、可靠性切面检查表。</li>
+</ul>
+<p>可复用模板见附录 B：结构建模模板（Structure Modeling Templates）中的对应模板。</p>
+</section>
+<section id="从业者输出" class="level2" data-number="9.7">
+<h2 data-number="9.7" class="anchored" data-anchor-id="从业者输出"><span class="header-section-number">9.7</span> 从业者输出</h2>
+<p>完成本章后，你能做四件事：</p>
+<p>第一，为一个系统列出所有边界点，并为每个边界点定义输入输出契约。你做出来的契约应该精确到字段级别：每个字段的类型、格式、必填/可选、取值范围。</p>
+<p>第二，画出一个系统的组合结构图。你至少能画出组件树（前端层级）、模块结构（后端目录）、服务结构（职责划分）。</p>
+<p>第三，为每一类结构派生可靠性要求。你看到”title 字段”时能想到”需要验证”；看到”状态转移”时能想到”需要约束检查”；看到”外部服务调用”时能想到”需要超时和重试”。</p>
+<p>第四，区分”可靠性结构”和”可靠性切面”。你知道可靠性不是一个独立的代码模块——它是渗透在所有代码中的约束、验证、重试和降级逻辑。</p>
+<p>产出物是边界定义表、组合结构图、可靠性切面检查表。这三份产物加上前三章的产物，构成完整的结构规格包，可以直接进入构造件选择和组装阶段。</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "已复制");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "已复制");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./chapter-08-interaction-and-state.html" class="pagination-link" aria-label="Chapter 8：交互结构与状态结构（Interaction Structure and State Structure）">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Chapter 8：交互结构与状态结构（Interaction Structure and State Structure）</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./chapter-10-construction-assets.html" class="pagination-link" aria-label="Chapter 10：构造件是什么：库、框架、组件、SDK 与脚手架（Construction Assets）">
+        <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Chapter 10：构造件是什么：库、框架、组件、SDK 与脚手架（Construction Assets）</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
