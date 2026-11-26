@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 360" width="960" height="360" role="img" aria-label="程序构造力五层主构造链与支撑模块全景图">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#eef2ff"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#4f46e5"/>
+    </marker>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0f172a" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <rect width="960" height="360" rx="14" fill="url(#bg)"/>
+  <text x="480" y="34" text-anchor="middle" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="700" fill="#0f172a">《程序构造力》主构造链五个关键环节与支撑模块</text>
+  <text x="480" y="54" text-anchor="middle" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="12" fill="#475569">起点是需求场景，终点是最小可运行系统；基础语法与程序表达作为支撑模块贯穿全程</text>
+
+  <!-- 5 Main Chain Cards -->
+  <!-- 1 -->
+  <g filter="url(#shadow)">
+    <rect x="24" y="78" width="160" height="148" rx="12" fill="#ffffff" stroke="#4f46e5" stroke-width="2"/>
+    <rect x="24" y="78" width="160" height="32" rx="10" fill="#4f46e5"/>
+    <rect x="24" y="98" width="160" height="12" fill="#4f46e5"/>
+    <text x="104" y="99" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="12" font-weight="700" fill="#ffffff">环节 1 · 第 1–2 章</text>
+    <text x="104" y="132" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="15" font-weight="700" fill="#1e293b">需求场景层</text>
+    <text x="104" y="152" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11" fill="#4f46e5" font-weight="600">回答“做什么”</text>
+    <text x="104" y="176" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11" fill="#475569">六要素场景描述</text>
+    <text x="104" y="194" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11" fill="#475569">五类需求拆解表</text>
+    <text x="104" y="212" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="10.5" fill="#64748b">问题·用户·动作·边界·失败</text>
+  </g>
+
+  <line x1="184" y1="152" x2="210" y2="152" stroke="#4f46e5" stroke-width="2.2" marker-end="url(#arrow)"/>
+
+  <!-- 2 -->
+  <g filter="url(#shadow)">
+    <rect x="212" y="78" width="160" height="148" rx="12" fill="#ffffff" stroke="#0891b2" stroke-width="2"/>
+    <rect x="212" y="78" width="160" height="32" rx="10" fill="#0891b2"/>
+    <rect x="212" y="98" width="160" height="12" fill="#0891b2"/>
+    <text x="292" y="99" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="12" font-weight="700" fill="#ffffff">环节 2 · 第 6–9 章</text>
+    <text x="292" y="132" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="15" font-weight="700" fill="#1e293b">程序结构建模层</text>
+    <text x="292" y="152" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11" fill="#0891b2" font-weight="600">回答“有什么结构”</text>
+    <text x="292" y="176" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11" fill="#475569">领域 · 交互 · 状态</text>
+    <text x="292" y="194" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11" fill="#475569">边界 · 组合结构</text>
+    <text x="292" y="212" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="10.5" fill="#64748b">+ 约束与可靠性横向切面</text>
+  </g>
+
+  <line x1="372" y1="152" x2="398" y2="152" stroke="#4f46e5" stroke-width="2.2" marker-end="url(#arrow)"/>
+
+  <!-- 3 -->
+  <g filter="url(#shadow)">
+    <rect x="400" y="78" width="160" height="148" rx="12" fill="#ffffff" stroke="#059669" stroke-width="2"/>
+    <rect x="400" y="78" width="160" height="32" rx="10" fill="#059669"/>
+    <rect x="400" y="98" width="160" height="12" fill="#059669"/>
+    <text x="480" y="99" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="12" font-weight="700" fill="#ffffff">环节 3 · 第 10–13 章</text>
+    <text x="480" y="132" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="15" font-weight="700" fill="#1e293b">构造件选择层</text>
+    <text x="480" y="152" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11" fill="#059669" font-weight="600">回答“用什么承接”</text>
+    <text x="480" y="176" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11" fill="#475569">前端构造件 · 后端构造件</text>
+    <text x="480" y="194" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11" fill="#475569">脚手架项目壳</text>
+    <text x="480" y="212" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="10.5" fill="#64748b">六步动作链 + 缺口标注</text>
+  </g>
+
+  <line x1="560" y1="152" x2="586" y2="152" stroke="#4f46e5" stroke-width="2.2" marker-end="url(#arrow)"/>
+
+  <!-- 4 -->
+  <g filter="url(#shadow)">
+    <rect x="588" y="78" width="160" height="148" rx="12" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+    <rect x="588" y="78" width="160" height="32" rx="10" fill="#d97706"/>
+    <rect x="588" y="98" width="160" height="12" fill="#d97706"/>
+    <text x="668" y="99" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="12" font-weight="700" fill="#ffffff">环节 4 · 第 14–15 章</text>
+    <text x="668" y="132" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="15" font-weight="700" fill="#1e293b">胶水代码连接层</text>
+    <text x="668" y="152" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11" fill="#d97706" font-weight="600">回答“怎么组装”</text>
+    <text x="668" y="176" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11" fill="#475569">实现方案三分法</text>
+    <text x="668" y="194" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11" fill="#475569">六类胶水代码连接</text>
+    <text x="668" y="212" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="10.5" fill="#64748b">自写 · 构造件 · 脚手架协同</text>
+  </g>
+
+  <line x1="748" y1="152" x2="774" y2="152" stroke="#4f46e5" stroke-width="2.2" marker-end="url(#arrow)"/>
+
+  <!-- 5 -->
+  <g filter="url(#shadow)">
+    <rect x="776" y="78" width="160" height="148" rx="12" fill="#ffffff" stroke="#e11d48" stroke-width="2"/>
+    <rect x="776" y="78" width="160" height="32" rx="10" fill="#e11d48"/>
+    <rect x="776" y="98" width="160" height="12" fill="#e11d48"/>
+    <text x="856" y="99" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="12" font-weight="700" fill="#ffffff">环节 5 · 第 16 章</text>
+    <text x="856" y="132" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="15" font-weight="700" fill="#1e293b">最小可运行系统</text>
+    <text x="856" y="152" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11" fill="#e11d48" font-weight="600">回答“可运行交付”</text>
+    <text x="856" y="176" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11" fill="#475569">一键启动 · 核心跑通</text>
+    <text x="856" y="194" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11" fill="#475569">自动化测试 · 六要素验收</text>
+    <text x="856" y="212" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="10.5" fill="#64748b">前端+后端+数据库协同</text>
+  </g>
+
+  <!-- Support Module Base Bar -->
+  <g filter="url(#shadow)">
+    <rect x="24" y="254" width="912" height="82" rx="12" fill="#f1f5f9" stroke="#64748b" stroke-width="1.6" stroke-dasharray="6,4"/>
+    <rect x="40" y="268" width="144" height="24" rx="6" fill="#334155"/>
+    <text x="112" y="284" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11.5" font-weight="700" fill="#ffffff">支撑模块 · 第 3–5 章</text>
+    <text x="200" y="285" font-family="PingFang SC, sans-serif" font-size="14" font-weight="700" fill="#0f172a">基础代码材料与程序表达（贯穿所有环节的低阶工具，不属于主链层级）</text>
+    <text x="42" y="314" font-family="PingFang SC, sans-serif" font-size="12" fill="#475569">六类代码材料（数据 · 控制 · 抽象 · 调用 · 外部交互 · 失败处理）  →  五类程序表达单元（数据表示 · 集合处理 · 判断规则 · 运行推进 · 失败交付）</text>
+  </g>
+
+  <!-- Upward dashed connectors from support module -->
+  <line x1="104" y1="254" x2="104" y2="232" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="3,3"/>
+  <line x1="292" y1="254" x2="292" y2="232" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="3,3"/>
+  <line x1="480" y1="254" x2="480" y2="232" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="3,3"/>
+  <line x1="668" y1="254" x2="668" y2="232" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="3,3"/>
+  <line x1="856" y1="254" x2="856" y2="232" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="3,3"/>
+</svg>

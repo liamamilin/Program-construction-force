@@ -1,0 +1,15 @@
+# 延伸阅读与参考资料 {.unnumbered}
+
+本书强调从需求结构出发，通过构造件与胶水代码组装可运行系统。以下经典著作与官方文档为各环节的理论基础与工程实践提供了进一步延伸：
+
+## 软件构造与设计思想
+
+- **领域建模与业务语言**：Eric Evans, *Domain-Driven Design: Tackling Complexity in the Heart of Software* [@evans2003ddd] —— 深入理解如何从业务需求中提炼领域对象、边界上下文与生命周期。
+- **架构边界与分层组合**：Robert C. Martin, *Clean Architecture* [@martin2017clean] —— 探讨依赖倒置、适配器边界与核心业务逻辑的隔离原则。
+- **系统可靠性与数据密集型工程**：Martin Kleppmann, *Designing Data-Intensive Applications* [@kleppmann2017ddia] —— 系统讲解数据存储边界、异步任务、缓存一致性与容错可靠性。
+- **代码表达与构造实践**：Steve McConnell, *Code Complete* (2nd Ed.) [@mcconnell2004code] —— 关于局部程序表达、防御性验证与代码可读性的工程经典。
+
+## 参考书目
+
+::: {#refs}
+:::

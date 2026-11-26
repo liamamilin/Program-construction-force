@@ -1,0 +1,84 @@
+project:
+  type: book
+  output-dir: _book
+  resources:
+    - assets/toys/*.js
+    - assets/diagrams/*.svg
+
+lang: zh
+
+book:
+  title: "程序构造力"
+  subtitle: "从需求结构到构造件组装，把想法变成可运行系统"
+  author: "Lin.MI"
+  date: today
+  description: "拿到一个需求后，如何把它拆成程序可以承接的结构，如何判断哪些部分自己写、哪些部分交给库、框架、组件或脚手架，最后如何组装成一个最小可运行系统。五层递进：需求场景 → 程序结构建模 → 构造件选择 → 胶水代码连接 → 最小可运行系统。"
+  chapters:
+    - index.qmd
+    - part: "程序构造的起点：需求场景"
+      chapters:
+        - chapter-01-demand-scenario.qmd
+        - chapter-02-demand-to-structure.qmd
+    - part: "支撑模块：基础代码材料与程序表达"
+      chapters:
+        - chapter-03-basic-syntax-materials.qmd
+        - chapter-04-syntax-to-expression.qmd
+        - chapter-05-expression-unit.qmd
+    - part: "程序结构建模层"
+      chapters:
+        - chapter-06-structure-modeling.qmd
+        - chapter-07-domain-structure.qmd
+        - chapter-08-interaction-and-state.qmd
+        - chapter-09-boundary-composition-reliability.qmd
+    - part: "构造件层"
+      chapters:
+        - chapter-10-construction-assets.qmd
+        - chapter-11-frontend-assets.qmd
+        - chapter-12-backend-assets.qmd
+        - chapter-13-scaffold.qmd
+    - part: "程序组装层"
+      chapters:
+        - chapter-14-structure-to-implementation.qmd
+        - chapter-15-glue-code-and-assembly.qmd
+        - chapter-16-minimum-runnable-system.qmd
+    - references.qmd
+  appendices:
+    - appendix-a-five-layer-summary.qmd
+    - appendix-b-structure-modeling-template.qmd
+    - appendix-c-structure-to-asset-mapping.qmd
+    - appendix-d-frontend-asset-catalog.qmd
+    - appendix-e-backend-asset-catalog.qmd
+    - appendix-f-minimum-runnable-system-checklist.qmd
+  search: true
+  page-navigation: true
+  reader-mode: true
+
+bibliography: references.bib
+
+format:
+  html:
+    theme:
+      light: cosmo
+      dark: darkly
+    css:
+      - assets/custom.css
+      - assets/toys.css
+    include-after-body: assets/toys-loader.html
+    toc: true
+    toc-depth: 3
+    toc-title: "本页目录"
+    number-sections: true
+    code-copy: true
+    code-overflow: wrap
+    smooth-scroll: true
+    anchor-sections: true
+    link-external-newwindow: true
+    fig-cap-location: bottom
+    tbl-cap-location: top
+  pdf:
+    documentclass: scrreprt
+    toc: true
+    number-sections: true
+    colorlinks: true
+
+editor: visual

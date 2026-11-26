@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 340" width="920" height="340" role="img" aria-label="自写代码、构造件、脚手架与胶水代码组装成最小可运行系统拓扑图">
+  <defs>
+    <linearGradient id="bg8" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#fef2f2"/>
+    </linearGradient>
+    <marker id="arr8" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#d97706"/>
+    </marker>
+    <filter id="sh8" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <rect width="920" height="340" rx="14" fill="url(#bg8)"/>
+  <text x="460" y="32" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="17" font-weight="700" fill="#0f172a">程序组装全景：三分法 + 六类胶水代码 → 最小可运行系统</text>
+  <text x="460" y="52" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="12" fill="#475569">最终交付不是单个脚本，而是前端、后端、数据库与自动化测试协同运行的系统</text>
+
+  <!-- Left 3 Sources -->
+  <g filter="url(#sh8)">
+    <rect x="26" y="76" width="220" height="70" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.8"/>
+    <text x="136" y="102" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="13" font-weight="700" fill="#3730a3">自写代码（Write）</text>
+    <text x="136" y="124" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11" fill="#475569">领域规则 · 状态机 · 权限 · 业务组件</text>
+  </g>
+
+  <g filter="url(#sh8)">
+    <rect x="26" y="158" width="220" height="70" rx="10" fill="#ffffff" stroke="#059669" stroke-width="1.8"/>
+    <text x="136" y="184" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="13" font-weight="700" fill="#047857">构造件（Use）</text>
+    <text x="136" y="206" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11" fill="#475569">React/MUI/Query · FastAPI/SQLAlchemy</text>
+  </g>
+
+  <g filter="url(#sh8)">
+    <rect x="26" y="240" width="220" height="70" rx="10" fill="#ffffff" stroke="#0284c7" stroke-width="1.8"/>
+    <text x="136" y="266" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="13" font-weight="700" fill="#0369a1">脚手架（Scaffold）</text>
+    <text x="136" y="288" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11" fill="#475569">Vite 模板 · FastAPI 目录壳 · Compose</text>
+  </g>
+
+  <!-- Arrows into Glue -->
+  <path d="M 246 111 C 280 111, 286 155, 316 165" fill="none" stroke="#d97706" stroke-width="2" marker-end="url(#arr8)"/>
+  <line x1="246" y1="193" x2="316" y2="193" stroke="#d97706" stroke-width="2" marker-end="url(#arr8)"/>
+  <path d="M 246 275 C 280 275, 286 230, 316 220" fill="none" stroke="#d97706" stroke-width="2" marker-end="url(#arr8)"/>
+
+  <!-- Middle: 6 Glue Code Types -->
+  <g filter="url(#sh8)">
+    <rect x="320" y="76" width="250" height="234" rx="12" fill="#fffbeb" stroke="#d97706" stroke-width="2.2"/>
+    <rect x="320" y="76" width="250" height="34" rx="10" fill="#d97706"/>
+    <rect x="320" y="98" width="250" height="12" fill="#d97706"/>
+    <text x="445" y="98" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="13" font-weight="700" fill="#ffffff">六类胶水代码（不多不少）</text>
+
+    <text x="340" y="136" font-family="PingFang SC, sans-serif" font-size="12" fill="#78350f">1. <tspan font-weight="700">配置胶水</tspan>：config / env / DB</text>
+    <text x="340" y="164" font-family="PingFang SC, sans-serif" font-size="12" fill="#78350f">2. <tspan font-weight="700">路由胶水</tspan>：include_router / Router</text>
+    <text x="340" y="192" font-family="PingFang SC, sans-serif" font-size="12" fill="#78350f">3. <tspan font-weight="700">依赖胶水</tspan>：Depends / DI 注入</text>
+    <text x="340" y="220" font-family="PingFang SC, sans-serif" font-size="12" fill="#78350f">4. <tspan font-weight="700">转换胶水</tspan>：ORM ↔ Schema DTO</text>
+    <text x="340" y="248" font-family="PingFang SC, sans-serif" font-size="12" fill="#78350f">5. <tspan font-weight="700">适配胶水</tspan>：外部 SDK / 通知包装</text>
+    <text x="340" y="276" font-family="PingFang SC, sans-serif" font-size="12" fill="#78350f">6. <tspan font-weight="700">错误胶水</tspan>：库异常 → 业务错误</text>
+  </g>
+
+  <line x1="570" y1="193" x2="624" y2="193" stroke="#e11d48" stroke-width="2.4" marker-end="url(#arr8)"/>
+
+  <!-- Right: Minimum Runnable System -->
+  <g filter="url(#sh8)">
+    <rect x="628" y="76" width="266" height="234" rx="12" fill="#ffffff" stroke="#e11d48" stroke-width="2.2"/>
+    <rect x="628" y="76" width="266" height="34" rx="10" fill="#e11d48"/>
+    <rect x="628" y="98" width="266" height="12" fill="#e11d48"/>
+    <text x="761" y="98" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="13" font-weight="700" fill="#ffffff">最小可运行系统（6 项验收）</text>
+
+    <rect x="646" y="124" width="110" height="36" rx="7" fill="#fff1f2" stroke="#fda4af"/>
+    <text x="701" y="146" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11.5" font-weight="700" fill="#be123c">① 一键启动</text>
+
+    <rect x="766" y="124" width="110" height="36" rx="7" fill="#fff1f2" stroke="#fda4af"/>
+    <text x="821" y="146" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11.5" font-weight="700" fill="#be123c">② 可输入</text>
+
+    <rect x="646" y="170" width="110" height="36" rx="7" fill="#fff1f2" stroke="#fda4af"/>
+    <text x="701" y="192" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11.5" font-weight="700" fill="#be123c">③ 可输出</text>
+
+    <rect x="766" y="170" width="110" height="36" rx="7" fill="#fff1f2" stroke="#fda4af"/>
+    <text x="821" y="192" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11.5" font-weight="700" fill="#be123c">④ 路径可跑通</text>
+
+    <rect x="646" y="216" width="110" height="36" rx="7" fill="#fff1f2" stroke="#fda4af"/>
+    <text x="701" y="238" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11.5" font-weight="700" fill="#be123c">⑤ 自动化测试</text>
+
+    <rect x="766" y="216" width="110" height="36" rx="7" fill="#fff1f2" stroke="#fda4af"/>
+    <text x="821" y="238" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11.5" font-weight="700" fill="#be123c">⑥ 六要素验收</text>
+
+    <text x="761" y="284" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600" fill="#475569">docker compose up → :5173 &amp; :8000</text>
+  </g>
+</svg>

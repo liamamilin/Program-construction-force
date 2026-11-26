@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 340" width="920" height="340" role="img" aria-label="Task Manager 任务对象生命周期与状态转移图">
+  <defs>
+    <linearGradient id="bg5" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#fffbeb"/>
+    </linearGradient>
+    <marker id="arr5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#334155"/>
+    </marker>
+    <marker id="arr5r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#e11d48"/>
+    </marker>
+    <marker id="arr5g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#059669"/>
+    </marker>
+    <filter id="sh5" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <rect width="920" height="340" rx="14" fill="url(#bg5)"/>
+  <text x="460" y="32" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="17" font-weight="700" fill="#0f172a">Task 对象生命周期与合法状态转移图</text>
+  <text x="460" y="52" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="12" fill="#475569">全书贯穿案例 Task Manager 的统一 6 状态机：主路径、驳回回路、失败重试与取消归档</text>
+
+  <!-- Main horizontal nodes -->
+  <!-- open -->
+  <g filter="url(#sh5)">
+    <rect x="40" y="118" width="128" height="58" rx="12" fill="#eef2ff" stroke="#4f46e5" stroke-width="2.2"/>
+    <text x="104" y="143" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13.5" font-weight="700" fill="#3730a3">open</text>
+    <text x="104" y="163" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11.5" fill="#4338ca">待分配</text>
+  </g>
+
+  <!-- in_progress -->
+  <g filter="url(#sh5)">
+    <rect x="228" y="118" width="140" height="58" rx="12" fill="#e0f2fe" stroke="#0284c7" stroke-width="2.2"/>
+    <text x="298" y="143" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700" fill="#0369a1">in_progress</text>
+    <text x="298" y="163" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11.5" fill="#0284c7">执行中</text>
+  </g>
+
+  <!-- pending_review -->
+  <g filter="url(#sh5)">
+    <rect x="434" y="118" width="154" height="58" rx="12" fill="#fef3c7" stroke="#d97706" stroke-width="2.2"/>
+    <text x="511" y="143" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12.5" font-weight="700" fill="#b45309">pending_review</text>
+    <text x="511" y="163" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11.5" fill="#d97706">待审核</text>
+  </g>
+
+  <!-- done -->
+  <g filter="url(#sh5)">
+    <rect x="650" y="118" width="106" height="58" rx="12" fill="#dcfce7" stroke="#059669" stroke-width="2.2"/>
+    <text x="703" y="143" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13.5" font-weight="700" fill="#047857">done</text>
+    <text x="703" y="163" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11.5" fill="#059669">已完成</text>
+  </g>
+
+  <!-- closed -->
+  <g filter="url(#sh5)">
+    <rect x="804" y="118" width="94" height="58" rx="12" fill="#f1f5f9" stroke="#475569" stroke-width="2.2"/>
+    <text x="851" y="143" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700" fill="#1e293b">closed</text>
+    <text x="851" y="163" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11.5" fill="#475569">已关闭</text>
+  </g>
+
+  <!-- failed (below in_progress) -->
+  <g filter="url(#sh5)">
+    <rect x="234" y="252" width="128" height="54" rx="12" fill="#ffe4e6" stroke="#e11d48" stroke-width="2.2"/>
+    <text x="298" y="276" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700" fill="#be123c">failed</text>
+    <text x="298" y="295" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11.5" fill="#e11d48">执行失败</text>
+  </g>
+
+  <!-- Main path arrows -->
+  <line x1="168" y1="147" x2="225" y2="147" stroke="#334155" stroke-width="2" marker-end="url(#arr5)"/>
+  <text x="196" y="139" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="10.5" fill="#334155">assign</text>
+
+  <line x1="368" y1="147" x2="431" y2="147" stroke="#334155" stroke-width="2" marker-end="url(#arr5)"/>
+  <text x="399" y="139" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="10.5" fill="#334155">complete</text>
+
+  <line x1="588" y1="147" x2="647" y2="147" stroke="#059669" stroke-width="2" marker-end="url(#arr5g)"/>
+  <text x="617" y="139" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="10.5" font-weight="600" fill="#059669">approve</text>
+
+  <line x1="756" y1="147" x2="801" y2="147" stroke="#334155" stroke-width="2" marker-end="url(#arr5)"/>
+  <text x="778" y="139" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="10.5" fill="#334155">archive</text>
+
+  <!-- Reject loop: pending_review -> in_progress (top curve) -->
+  <path d="M 495 118 C 480 76, 330 76, 315 116" fill="none" stroke="#d97706" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#arr5)"/>
+  <text x="405" y="84" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="10.5" font-weight="600" fill="#b45309">reject（驳回重做）</text>
+
+  <!-- Reopen loop: closed/done -> open (top outer curve) -->
+  <path d="M 851 118 C 840 62, 120 62, 104 115" fill="none" stroke="#4f46e5" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arr5)"/>
+  <text x="690" y="74" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="10.5" fill="#4f46e5">reopen（30 天内重开）</text>
+
+  <!-- Fail & retry between in_progress and failed -->
+  <path d="M 278 176 L 278 249" fill="none" stroke="#e11d48" stroke-width="1.8" marker-end="url(#arr5r)"/>
+  <text x="256" y="218" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="10.5" fill="#be123c">fail</text>
+
+  <path d="M 318 252 L 318 179" fill="none" stroke="#059669" stroke-width="1.8" marker-end="url(#arr5g)"/>
+  <text x="364" y="218" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="10.5" fill="#047857">retry (&lt;3次)</text>
+
+  <!-- Cancel paths to closed -->
+  <path d="M 104 176 C 104 236, 851 236, 851 179" fill="none" stroke="#64748b" stroke-width="1.4" stroke-dasharray="4,4" marker-end="url(#arr5)"/>
+  <text x="545" y="232" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="10.5" fill="#64748b">cancel / auto_close（open · in_progress · failed 均可取消关闭）</text>
+</svg>

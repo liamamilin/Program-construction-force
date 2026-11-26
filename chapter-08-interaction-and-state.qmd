@@ -1,0 +1,279 @@
+---
+title: "交互结构与状态结构（Interaction Structure and State Structure）"
+---
+
+## 本章问题
+
+领域结构定义了有什么事物，但程序不是静态的事物集合。用户要创建任务、分配任务、完成任务——这些都是交互。任务的状态从 open 变成 in_progress 再到 done——这是状态变化。交互结构和状态结构回答的是"事物之间怎么相互作用"和"什么会变化、怎么变"。
+
+## 背景：为什么这章重要
+
+交互结构（Interaction Structure）和状态结构（State Structure）是程序结构建模层的动态维度。
+
+**交互结构**描述谁可以做什么——用户动作、系统事件、命令、查询、交互流程。它对应需求拆解中的**动词**。
+
+**状态结构**描述什么会变化——状态拥有者、业务状态、UI 状态、请求状态、缓存状态、异步任务状态、状态转移。它对应需求拆解中的**阶段**。
+
+这两类结构一起覆盖了程序的动态行为。没有它们，领域结构只是静态的数据定义——你不知道谁操作这些数据、数据怎么变化。
+
+这一章还建立了从结构到前端/后端构造件的第一座桥梁。状态结构中的不同状态类型直接映射到不同的前端状态库——这是第 11 章的基础。
+
+## 核心内容
+
+### 交互结构
+
+交互结构（Interaction Structure）解决"谁能做什么"的问题。
+
+#### 用户动作（User Action）
+
+用户通过界面或 API 发起的操作。
+
+**解决什么问题**：需求中的"用户创建任务"需要精确化——谁触发、输入什么、输出什么、前置条件是什么。
+
+用户动作表模板：
+
+| 动作名 | 角色 | 输入 | 输出 | 前置条件 | 后置条件 |
+|--------|------|------|------|---------|---------|
+| create_task | Member | title, desc, priority, due_date | Task | - | Task 进入 open 状态 |
+| assign_task | Manager | task_id, user_id | Task | task.status == open | Task 进入 in_progress |
+| complete_task | Member | task_id, note | Task | task.status == in_progress, 当前用户是 assignee | Task 进入 pending_review |
+| approve_task | Manager | task_id | Task | task.status == pending_review, 当前用户不是 assignee | Task 进入 done |
+
+#### 系统事件（System Event）
+
+系统自动执行的操作，不需要用户触发。
+
+| 事件名 | 触发条件 | 执行动作 | 后置条件 |
+|--------|---------|---------|---------|
+| auto_close | task 超过 30 天未处理 | 将 task 标记为 closed | Task 进入 closed |
+| send_notification | task 状态变化 | 通知相关人员 | 通知记录写入日志 |
+| retry_failed_task | task 执行失败且重试次数未超限 | 重新执行 task | Task 重回 in_progress |
+
+#### 命令与查询（Command & Query）
+
+区分写操作（命令）和读操作（查询）。这是 CQRS（Command Query Responsibility Segregation）的基本思想。
+
+| 类型 | 名称 | 输入 | 输出 | 副作用 |
+|------|------|------|------|--------|
+| Command | CreateTask | TaskCreateRequest | Task | 写入数据库 |
+| Command | AssignTask | AssignRequest | Task | 更新数据和状态 |
+| Query | GetTask | task_id | Task | 无 |
+| Query | ListTasks | filters | list[Task] | 无 |
+| Query | GetUserTasks | user_id | list[Task] | 无 |
+
+#### 交互流程（Interaction Flow）
+
+多个动作按顺序执行形成一个完整的用户使用场景。
+
+```text
+创建任务流程:
+  1. Member 填写表单（输入 title, desc, priority, due_date）
+  2. 系统验证输入
+  3. 系统创建 Task（status = open）
+  4. 系统通知创建者
+  5. 页面跳转到任务详情
+
+分配任务流程:
+  1. Manager 选择任务 + 负责人
+  2. 系统验证 task 状态为 open
+  3. 系统验证 user 存在
+  4. 系统分配（status = in_progress）
+  5. 系统通知 assignee
+```
+
+### 状态结构
+
+状态结构（State Structure）解决"什么会变化"的问题。
+
+#### 状态拥有者（State Owner）
+
+每个状态的承载对象。
+
+| 状态拥有者 | 状态类型 | 状态值集合 |
+|-----------|---------|-----------|
+| Task | 业务状态 | open, in_progress, pending_review, done, closed, failed |
+| 页面 | UI 状态 | loading, loaded, empty, error |
+| 表单 | UI 状态 | idle, submitting, submitted, error |
+| API 请求 | 请求状态 | pending, success, error |
+| 缓存 | 缓存状态 | fresh, stale, expired |
+
+#### 业务状态（Business State）
+
+领域相关的状态，通常由 status 字段表示。
+
+```python
+class TaskStatus(Enum):
+    OPEN = "open"
+    IN_PROGRESS = "in_progress"
+    PENDING_REVIEW = "pending_review"
+    DONE = "done"
+    CLOSED = "closed"
+    FAILED = "failed"
+```
+
+#### UI 状态（UI State）
+
+界面交互过程中的临时状态。这些状态不写入数据库，只存在于前端运行时。
+
+| UI 状态 | 含义 | 在 Task Manager 中的例子 |
+|---------|------|------------------------|
+| loading | 数据加载中 | 任务列表加载时显示骨架屏 |
+| loaded | 数据已加载 | 任务列表显示正常内容 |
+| empty | 数据为空 | 没有任务时显示"暂无任务" |
+| error | 加载失败 | 请求错误时显示错误提示 |
+| submitting | 提交中 | 创建任务时按钮显示 loading |
+| idle | 初始状态 | 表单空白等待输入 |
+
+#### 请求状态（Request State）
+
+网络请求的生命周期。
+
+```text
+idle → pending → success
+  ↓       ↓
+error   timeout
+```
+
+每一个 API 调用都有这三个或四个状态。它们不需要写入数据库，但前端必须追踪。
+
+#### 缓存状态（Cache State）
+
+缓存数据的有效期。
+
+| 缓存状态 | 含义 | 处理方式 |
+|---------|------|---------|
+| fresh | 数据是最新的 | 直接使用 |
+| stale | 数据可能过时了 | 显示旧数据，后台刷新 |
+| expired | 数据过期 | 重新获取 |
+
+#### 状态转移（State Transition）
+
+状态之间合法转移的定义。
+
+状态转移表模板：
+
+| 编号 | 起始状态 | 动作 | 目标状态 | 约束 |
+|------|---------|------|---------|------|
+| S01 | open | assign_task | in_progress | assignee 存在 |
+| S02 | in_progress | complete_task | pending_review | 当前用户是 assignee |
+| S03 | pending_review | approve_task | done | 当前用户不是 assignee |
+| S04 | pending_review | reject_task | in_progress | 填写驳回原因 |
+| S05 | done | reopen_task | open | 30 天内 |
+| S06 | in_progress | fail_task | failed | 记录失败原因 |
+| S07 | failed | retry_task | in_progress | retry_count < max_retries |
+| S08 | open | cancel_task | closed | - |
+| S09 | in_progress | cancel_task | closed | - |
+| S10 | done | archive_task | closed | - |
+
+::: {.content-visible when-format="html"}
+<div class="pcf-toy" data-toy="ch8-state-machine"></div>
+:::
+
+#### 反馈动作（Feedback Action）
+
+状态变化之后的系统反馈——通知、日志、提示。
+
+| 状态变化 | 反馈动作 | 反馈对象 |
+|---------|---------|---------|
+| open → in_progress | 通知 assignee | assignee |
+| in_progress → pending_review | 通知 creator | creator |
+| pending_review → done | 通知 assignee + creator | assignee, creator |
+| pending_review → in_progress | 通知 assignee（驳回原因） | assignee |
+
+### 状态到构造件的映射（预览）
+
+不同状态类型对应不同的前端构造件。这是第 11 章的预览：
+
+| 状态类型 | 对应的前端构造件 | 说明 |
+|---------|----------------|------|
+| UI 局部状态 | useState, useReducer | React 内置钩子 |
+| 全局共享状态 | Redux, Zustand, Pinia | 跨组件共享 |
+| 服务端数据状态 | TanStack Query, SWR, Apollo | 与 API 同步 |
+| 表单状态 | React Hook Form | 表单输入追踪 |
+| 路由状态 | React Router, Vue Router | URL 导航状态 |
+
+这个映射说明：状态结构不仅是设计工具，它还直接指明实现所需的构造件。
+
+::: {.content-visible when-format="html"}
+<div class="pcf-toy" data-toy="ch8-state-to-asset"></div>
+:::
+
+## 例子与实践
+
+### 场景：Task Manager 的交互与状态结构
+
+**交互结构：用户动作表**
+
+| 动作 | 角色 | 前置条件 | 后置条件 |
+|------|------|---------|---------|
+| create_task | Member | - | Task(open) |
+| assign_task | Manager | Task(open) | Task(in_progress) |
+| complete_task | Member | Task(in_progress), is_assignee | Task(pending_review) |
+| approve_task | Manager | Task(pending_review), not_assignee | Task(done) |
+| reject_task | Manager | Task(pending_review), not_assignee | Task(in_progress) |
+| cancel_task | Member | Task(open/in_progress) | Task(closed) |
+| add_comment | Member | - | Comment added |
+| reopen_task | Manager | Task(done/closed), within_30_days | Task(open) |
+
+**交互结构：系统事件表**
+
+| 事件 | 触发条件 | 动作 |
+|------|---------|------|
+| task_created | create_task 成功 | send_notification(creator) |
+| task_assigned | assign_task 成功 | send_notification(assignee) |
+| task_completed | complete_task 成功 | send_notification(manager) |
+| task_overdue | due_date < today, status == open | send_notification(assignee) |
+| task_auto_close | 超过 30 天未处理 | 自动 cancel |
+
+**状态结构：状态拥有者**
+
+| 状态拥有者 | 状态集 |
+|-----------|--------|
+| Task (业务) | open, in_progress, pending_review, done, closed, failed |
+| 任务列表页 (UI) | loading, loaded, empty, error |
+| 创建任务表单 (UI) | idle, submitting, submitted, error |
+| 任务详情 API (请求) | pending, success, error |
+
+**状态结构：状态转移表**
+
+| 起始 | 动作 | 目标 | 额外条件 |
+|------|------|------|---------|
+| open | assign | in_progress | assignee != null |
+| in_progress | complete | pending_review | user == assignee |
+| pending_review | approve | done | user != assignee |
+| pending_review | reject | in_progress | user != assignee |
+| in_progress | fail | failed | - |
+| failed | retry | in_progress | retry_count < 3 |
+| open | cancel | closed | - |
+| done | reopen | open | within 30 days |
+
+## 小结
+
+交互结构和状态结构覆盖了程序的动态行为。交互结构定义谁能做什么（用户动作、系统事件、命令、查询、交互流程），状态结构定义什么会变化（业务状态、UI 状态、请求状态、缓存状态、状态转移）。
+
+这两类结构合在一起，可以回答一个完整的问题：谁在什么时候做什么、做完后什么发生了变化、变化后有什么反馈。
+
+下一章进入剩下的两类结构：边界结构（数据从哪进出）、组合结构（各部分如何组织），以及贯穿所有结构的约束与可靠性切面。
+
+## 本章产物
+
+完成本章后，你拥有以下可交付产物：
+
+- **四张动态结构表**（用户动作表、系统事件表、状态拥有者表、状态转移表）与**状态到构造件映射预览**。
+
+可复用模板见[附录 B · 模板 7–10](appendix-b-structure-modeling-template.qmd#模板-7用户动作表)。
+
+
+## 从业者输出
+
+完成本章后，你能做四件事：
+
+第一，为一个需求写出一份完整的交互结构表。你列出所有用户动作、系统事件、命令和查询，以及它们的前置条件和后置条件。
+
+第二，为一个核心对象画出一份完整的**状态转移表**。你列出所有合法转移路径，标注每个转移的前置条件。
+
+第三，区分**业务状态**和**UI 状态**。你知道 Task.status 是业务状态（需要写入数据库），而"表单正在提交"是 UI 状态（只在前端生效）。
+
+第四，看到项目中使用的状态库（Redux、Zustand、TanStack Query 等）时，能说出它承接了什么类型的状态结构——而不是只说"这是个状态管理库"。
+
+产出物是四张表（用户动作表、系统事件表、状态拥有者表、状态转移表）和一份状态到构造件的映射预览。

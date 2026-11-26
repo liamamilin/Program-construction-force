@@ -1,0 +1,229 @@
+/* ==========================================================================
+   《程序构造力》全书视觉与排版样式表 (Light & Dark Adaptive)
+   ========================================================================== */
+
+:root {
+  --pcf-accent: #4f46e5;
+  --pcf-accent-soft: rgba(79, 70, 229, 0.08);
+  --pcf-accent-border: rgba(79, 70, 229, 0.25);
+  --pcf-cyan: #0891b2;
+  --pcf-emerald: #059669;
+  --pcf-amber: #d97706;
+  --pcf-rose: #e11d48;
+  --pcf-surface: #ffffff;
+  --pcf-surface-alt: #f8fafc;
+  --pcf-border: #e2e8f0;
+  --pcf-text: #1e293b;
+  --pcf-text-muted: #64748b;
+  --pcf-code-bg: #f1f5f9;
+  --pcf-radius: 10px;
+  --pcf-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+}
+
+body.quarto-dark {
+  --pcf-accent: #818cf8;
+  --pcf-accent-soft: rgba(129, 140, 248, 0.14);
+  --pcf-accent-border: rgba(129, 140, 248, 0.35);
+  --pcf-cyan: #22d3ee;
+  --pcf-emerald: #34d399;
+  --pcf-amber: #fbbf24;
+  --pcf-rose: #fb7185;
+  --pcf-surface: #1e2430;
+  --pcf-surface-alt: #161b24;
+  --pcf-border: #2e3748;
+  --pcf-text: #e2e8f0;
+  --pcf-text-muted: #94a3b8;
+  --pcf-code-bg: #11161f;
+  --pcf-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+/* 基础字体与中文阅读舒适度 */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "Noto Sans CJK SC", "Inter", system-ui, sans-serif;
+  line-height: 1.82;
+  letter-spacing: 0.01em;
+  text-rendering: optimizeLegibility;
+}
+
+code, pre, kbd, samp {
+  font-family: "JetBrains Mono", "Fira Code", "SF Mono", Menlo, Monaco, Consolas, monospace;
+}
+
+/* 标题层级与节奏 */
+#quarto-document-content h1.title {
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.32;
+  padding-bottom: 0.55rem;
+  border-bottom: 2px solid var(--pcf-accent-border);
+  margin-bottom: 1.4rem;
+}
+
+#quarto-document-content h2 {
+  font-weight: 750;
+  margin-top: 2.3rem;
+  margin-bottom: 0.9rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--pcf-border);
+  font-size: 1.45rem;
+}
+
+#quarto-document-content h3 {
+  font-weight: 700;
+  margin-top: 1.75rem;
+  margin-bottom: 0.65rem;
+  font-size: 1.18rem;
+}
+
+#quarto-document-content h4 {
+  font-weight: 650;
+  margin-top: 1.3rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.04rem;
+  color: var(--pcf-accent);
+}
+
+/* 段落与列表 */
+#quarto-document-content p {
+  margin-bottom: 1.05rem;
+}
+
+#quarto-document-content ul,
+#quarto-document-content ol {
+  margin-bottom: 1.1rem;
+  padding-left: 1.45rem;
+}
+
+#quarto-document-content li {
+  margin-bottom: 0.35rem;
+}
+
+/* 引用块 */
+#quarto-document-content blockquote {
+  border-left: 4px solid var(--pcf-accent);
+  background: var(--pcf-accent-soft);
+  padding: 0.85rem 1.15rem;
+  border-radius: 0 var(--pcf-radius) var(--pcf-radius) 0;
+  margin: 1.25rem 0;
+  color: inherit;
+}
+
+#quarto-document-content blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* 表格优化 */
+#quarto-document-content table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 1.35rem 0;
+  font-size: 0.93rem;
+  border: 1px solid var(--pcf-border);
+  border-radius: var(--pcf-radius);
+  overflow: hidden;
+  box-shadow: var(--pcf-shadow);
+}
+
+#quarto-document-content thead th {
+  background: var(--pcf-surface-alt);
+  font-weight: 700;
+  padding: 0.68rem 0.9rem;
+  border-bottom: 2px solid var(--pcf-border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+#quarto-document-content tbody td {
+  padding: 0.62rem 0.9rem;
+  border-bottom: 1px solid var(--pcf-border);
+  vertical-align: top;
+}
+
+#quarto-document-content tbody tr:last-child td {
+  border-bottom: none;
+}
+
+#quarto-document-content tbody tr:hover {
+  background: var(--pcf-accent-soft);
+}
+
+/* 代码块与行内代码 */
+#quarto-document-content pre {
+  border-radius: var(--pcf-radius);
+  border: 1px solid var(--pcf-border);
+  padding: 0.95rem 1.1rem;
+  font-size: 0.88rem;
+  line-height: 1.62;
+}
+
+#quarto-document-content :not(pre) > code {
+  background: var(--pcf-code-bg);
+  color: var(--pcf-accent);
+  padding: 0.14rem 0.38rem;
+  border-radius: 5px;
+  font-size: 0.87em;
+  font-weight: 500;
+}
+
+/* SVG 架构图容器 */
+.pcf-diagram-figure,
+#quarto-document-content figure.figure {
+  margin: 1.6rem 0;
+  text-align: center;
+}
+
+#quarto-document-content img[src$=".svg"] {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--pcf-radius);
+  border: 1px solid var(--pcf-border);
+  background: #ffffff;
+  padding: 0.6rem;
+  box-shadow: var(--pcf-shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+body.quarto-dark #quarto-document-content img[src$=".svg"] {
+  background: #f8fafc;
+  border-color: var(--pcf-border);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+}
+
+#quarto-document-content figcaption.figure-caption,
+#quarto-document-content .figure-caption {
+  margin-top: 0.55rem;
+  font-size: 0.88rem;
+  color: var(--pcf-text-muted);
+}
+
+/* Callout 美化 */
+.callout {
+  border-radius: var(--pcf-radius) !important;
+  box-shadow: var(--pcf-shadow);
+  margin: 1.35rem 0 !important;
+}
+
+/* 侧边栏与目录微调 */
+.sidebar nav[role="doc-toc"] ul > li > a.active {
+  font-weight: 650;
+  border-left-color: var(--pcf-accent);
+  color: var(--pcf-accent);
+}
+
+.sidebar-item-text.active {
+  font-weight: 650;
+}
+
+/* 移动端表格自适应 */
+@media (max-width: 768px) {
+  #quarto-document-content table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  #quarto-document-content thead th {
+    white-space: normal;
+  }
+}

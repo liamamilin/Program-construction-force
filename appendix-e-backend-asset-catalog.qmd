@@ -1,0 +1,123 @@
+---
+title: "后端构造件分类表（Backend Asset Catalog）"
+---
+
+本附录汇总后端开发中常见的构造件分类。按承接的结构分组。
+
+## Web 框架构造件
+
+| 名称 | 语言 | 描述 | 承接的结构 |
+|------|------|------|-----------|
+| FastAPI | Python | 异步、高性能、自动 OpenAPI | API 入口结构 |
+| Flask | Python | 轻量、灵活、扩展丰富 | API 入口结构 |
+| Django | Python | 大而全、ORM 内置 | API 入口 + 数据访问结构 |
+| Express | Node.js | 最小主义、中间件模式 | API 入口结构 |
+| NestJS | Node.js | 模块化、装饰器、DI | API 入口结构 |
+| Spring Boot | Java | 企业级、AOP、DI 容器 | API 入口 + 组合结构 |
+| Gin | Go | 性能极高、轻量 | API 入口结构 |
+| Actix-web | Rust | 性能极高、类型安全 | API 入口结构 |
+
+## 验证构造件（后端）
+
+| 名称 | 语言 | 描述 | 承接的结构 |
+|------|------|------|-----------|
+| Pydantic | Python | 类型安全、JSON Schema | 输入验证结构 |
+| Zod | Node.js | TypeScript 优先、类型推导 | 输入验证结构 |
+| Joi | Node.js | 丰富的验证规则、链式 API | 输入验证结构 |
+| class-validator | Node.js | 装饰器验证 | 输入验证结构 |
+| Jakarta Validation | Java | Bean Validation 标准 | 输入验证结构 |
+
+## 认证与授权构造件
+
+| 名称 | 语言 | 描述 | 承接的结构 |
+|------|------|------|-----------|
+| PyJWT / python-jose | Python | JWT 签发与验证 | 身份认证结构 |
+| Passport.js | Node.js | 策略式认证中间件 | 身份认证结构 |
+| Spring Security | Java | 完整安全框架 | 认证 + 权限结构 |
+| Auth0 / Firebase Auth | 多语言 | 第三方认证服务 | 身份认证结构 |
+| CASL / Ability | Node.js | 声明式权限管理 | 权限结构 |
+
+## ORM / 数据访问构造件
+
+| 名称 | 语言 | 描述 | 承接的结构 |
+|------|------|------|-----------|
+| SQLAlchemy | Python | 成熟 ORM、async 支持 | 数据访问结构 |
+| Prisma | Node.js | 类型安全、自动迁移 | 数据访问结构 |
+| TypeORM | Node.js | 装饰器 ORM、Active Record | 数据访问结构 |
+| Django ORM | Python | 内置 ORM、查询 API | 数据访问结构 |
+| Mongoose | Node.js | MongoDB ODM | 数据访问结构（MongoDB） |
+| JPA / Hibernate | Java | JPA 标准 ORM | 数据访问结构 |
+
+## 异步任务构造件
+
+| 名称 | 语言 | 描述 | 承接的结构 |
+|------|------|------|-----------|
+| Celery | Python | 分布式任务队列 | 异步任务结构 |
+| RQ | Python | Redis 队列、轻量 | 异步任务结构 |
+| BullMQ | Node.js | Redis 队列、优先级 | 异步任务结构 |
+| Sidekiq | Ruby | Redis 队列、高效 | 异步任务结构 |
+| Spring Task | Java | @Scheduled、@Async | 异步任务结构 |
+
+## 缓存构造件
+
+| 名称 | 语言 | 描述 | 承接的结构 |
+|------|------|------|-----------|
+| Redis | 多语言 | 内存数据库、数据结构丰富 | 缓存结构 |
+| aiocache | Python | async 缓存装饰器 | 缓存结构 |
+| cache-manager | Node.js | 多后端缓存抽象 | 缓存结构 |
+| Spring Cache | Java | 声明式缓存注解 | 缓存结构 |
+
+## 日志与观测构造件
+
+| 名称 | 语言 | 描述 | 承接的结构 |
+|------|------|------|-----------|
+| OpenTelemetry | 多语言 | 分布式追踪、指标、日志 | 观测结构 |
+| logging (stdlib) | Python | 标准日志库 | 日志结构 |
+| Winston | Node.js | 多传输日志库 | 日志结构 |
+| Sentry | 多语言 | 错误追踪 | 错误观测结构 |
+| Prometheus + Grafana | 多语言 | 指标采集 + 可视化 | 监控结构 |
+| Datadog | 多语言 | APM、日志、指标一体 | 全栈观测结构 |
+
+## API 文档构造件
+
+| 名称 | 语言 | 描述 | 承接的结构 |
+|------|------|------|-----------|
+| OpenAPI / Swagger | 多语言 | REST API 文档标准 | 接口契约结构 |
+| GraphQL (Apollo) | 多语言 | 查询语言 + 类型系统 | 接口契约结构 |
+| API Blueprint | 多语言 | API 文档 DSL | 接口契约结构 |
+| Stoplight | 多语言 | API 设计 + 文档工具 | 接口契约结构 |
+
+## 部署运行构造件
+
+| 名称 | 类型 | 描述 | 承接的结构 |
+|------|------|------|-----------|
+| Docker | 容器 | 应用容器化 | 部署运行结构 |
+| Docker Compose | 编排 | 多容器编排 | 部署运行结构 |
+| Kubernetes | 编排 | 容器调度、服务发现 | 部署运行结构 |
+| Terraform | IaC | 基础设施即代码 | 部署运行结构 |
+| Serverless (AWS Lambda) | 无服务器 | 事件驱动计算 | 部署运行结构 |
+
+## 测试构造件（后端）
+
+| 名称 | 语言 | 描述 | 承接的结构 |
+|------|------|------|-----------|
+| pytest | Python | fixture、参数化、插件 | 测试验证结构 |
+| Jest | Node.js | 零配置、mock、快照 | 测试验证结构 |
+| JUnit | Java | 单元测试标准 | 测试验证结构 |
+| Mocha | Node.js | 灵活、异步测试 | 测试验证结构 |
+| Supertest | Node.js | HTTP 测试 | API 测试结构 |
+| httpx | Python | async HTTP 客户端 | API 测试结构 |
+| Testcontainers | 多语言 | 集成测试容器 | 集成测试结构 |
+
+## 数据库构造件
+
+| 名称 | 类型 | 描述 | 承接的结构 |
+|------|------|------|-----------|
+| PostgreSQL | 关系数据库 | ACID、JSON、扩展性 | 数据存储结构 |
+| MySQL | 关系数据库 | 广泛使用、生态成熟 | 数据存储结构 |
+| SQLite | 内嵌数据库 | 零配置、文件存储 | 数据存储结构 |
+| MongoDB | 文档数据库 | 灵活 schema | 文档存储结构 |
+| Redis | 内存数据库 | 缓存、消息、数据结构 | 缓存 + 消息结构 |
+| Elasticsearch | 搜索引擎 | 全文搜索、聚合分析 | 搜索结构 |
+| RabbitMQ | 消息队列 | AMQP、可靠消息 | 消息结构 |
+| Kafka | 消息队列 | 高吞吐、事件流 | 事件流结构 |

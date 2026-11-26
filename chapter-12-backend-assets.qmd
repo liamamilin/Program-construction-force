@@ -1,0 +1,364 @@
+---
+title: "后端构造件：API、数据访问、权限、任务、缓存与观测（Backend Assets）"
+---
+
+## 本章问题
+
+后端也有构造件。只是后端构造件通常不表现为视觉组件，而是表现为入口、边界、权限、数据、任务、缓存、错误和观测结构。如果你不知道后端构造件承接什么结构，你就会遇到两个问题：要么从零写一切（低效），要么装了一堆库但不知道怎么组合它们。
+
+## 背景：为什么这章重要
+
+后端构造件和前端构造件一样，都是结构建模层的承接物。区别在于后端构造件不处理 UI 展示，而是处理**数据、状态、边界和流程**。
+
+后端构造件层次清晰：
+
+- **入口层**：Web 框架承接 API 入口结构
+- **边界层**：验证库承接输入边界结构
+- **业务层**：服务代码承载业务逻辑
+- **数据层**：ORM 承接数据访问结构
+- **基础设施层**：队列、缓存、观测承接非功能结构
+
+后端构造件的选择逻辑和前端一样：**结构决定构造件。** 先有结构建模，再选构造件，最后补胶水代码。
+
+## 核心内容
+
+### 十类后端结构到构造件映射
+
+#### 1. API 入口结构 → Web 框架
+
+**结构描述**：程序通过 HTTP API 对外提供服务，需要路由、请求解析、响应格式化。
+
+**构造件**：FastAPI / Express / Spring Boot / Flask / Gin
+
+**胶水代码**：路由注册、请求模型、响应模型、中间件。
+
+```python
+# FastAPI 承接 API 入口结构
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+
+app = FastAPI()
+
+class TaskCreateRequest(BaseModel):
+    title: str
+    description: str | None = None
+    priority: str = "medium"
+
+@app.post("/tasks")
+def create_task(request: TaskCreateRequest):
+    # 胶水代码：连接 API 到业务层
+    task = task_service.create(request)
+    return task
+
+@app.get("/tasks/{task_id}")
+def get_task(task_id: int):
+    task = task_service.get(task_id)
+    if not task:
+        raise HTTPException(status_code=404)
+    return task
+```
+
+#### 2. 输入验证结构 → 验证库
+
+**结构描述**：到达 API 的数据需要校验格式、类型、约束。
+
+**构造件**：Pydantic / Zod (Node.js) / Joi (Node.js) / Validation (Spring)
+
+**胶水代码**：schema 定义、自定义验证器、错误消息格式化。
+
+```python
+# Pydantic v2 风格承接输入验证结构
+from pydantic import BaseModel, Field, field_validator
+
+class TaskCreateRequest(BaseModel):
+    title: str = Field(..., min_length=1, max_length=200)
+    description: str | None = Field(None, max_length=2000)
+    priority: str = Field(default="medium")
+    due_date: str | None = None
+
+    @field_validator("priority")
+    @classmethod
+    def validate_priority(cls, v):
+        allowed = {"low", "medium", "high", "urgent"}
+        if v not in allowed:
+            raise ValueError(f"priority 必须是 {allowed}")
+        return v
+```
+
+#### 3. 权限结构 → 认证与授权构造件
+
+**结构描述**：API 需要验证用户身份、检查操作权限。
+
+**构造件**：Auth middleware / Spring Security / Passport.js / JWT lib
+
+**胶水代码**：认证策略、权限检查、角色配置。
+
+```python
+# FastAPI 的认证与授权
+from fastapi import Depends, HTTPException
+from fastapi.security import HTTPBearer
+
+security = HTTPBearer()
+
+def get_current_user(token: str = Depends(security)) -> User:
+    payload = verify_jwt(token.credentials)
+    return user_service.get(payload["user_id"])
+
+def require_role(role: str):
+    def checker(current_user: User = Depends(get_current_user)):
+        if current_user.role != role and current_user.role != "admin":
+            raise HTTPException(status_code=403)
+        return current_user
+    return checker
+
+@app.put("/tasks/{task_id}/assign")
+def assign_task(task_id: int, request: AssignRequest,
+                current_user: User = Depends(require_role("manager"))):
+    return task_service.assign(task_id, request.user_id)
+```
+
+#### 4. 数据访问结构 → ORM / 数据库库
+
+**结构描述**：程序需要将领域对象持久化到数据库，支持 CRUD、查询、关联。
+
+**构造件**：SQLAlchemy / Prisma / TypeORM / Django ORM / Mongoose
+
+**胶水代码**：模型定义、迁移、查询封装。
+
+```python
+# SQLAlchemy 承接数据访问结构
+from datetime import datetime, timezone
+from sqlalchemy import Column, Integer, String, Enum, ForeignKey, DateTime
+from sqlalchemy.orm import relationship, declarative_base
+
+Base = declarative_base()
+
+class TaskModel(Base):
+    __tablename__ = "tasks"
+
+    id = Column(Integer, primary_key=True)
+    title = Column(String(200), nullable=False)
+    status = Column(
+        Enum("open", "in_progress", "pending_review", "done", "closed", "failed", name="task_status"),
+        default="open",
+    )
+    assignee_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    creator_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+
+    assignee = relationship("UserModel", foreign_keys=[assignee_id])
+    creator = relationship("UserModel", foreign_keys=[creator_id])
+```
+
+#### 5. 异步任务结构 → 任务队列
+
+**结构描述**：耗时的操作（通知发送、数据导出、定期清理）需要异步执行。
+
+**构造件**：Celery / BullMQ (Node.js) / Sidekiq (Ruby) / RQ / Task (Spring)
+
+**胶水代码**：任务定义、worker 配置、结果存储。
+
+```python
+# Celery 承接异步任务结构
+from celery import Celery
+
+celery_app = Celery("tasks", broker="redis://localhost:6379/0")
+
+@celery_app.task
+def send_notification(user_id: int, message: str):
+    user = user_service.get(user_id)
+    email_client.send(user.email, message)
+```
+
+#### 6. 缓存结构 → 缓存层
+
+**结构描述**：频繁读取但变化较少的数据需要缓存以减少数据库负载。
+
+**构造件**：Redis / Memcached / cache decorator
+
+**胶水代码**：缓存 key 策略、过期时间、缓存更新策略。
+
+```python
+# 缓存结构（使用现代 redis.asyncio 客户端）
+import redis.asyncio as redis
+
+cache = redis.from_url("redis://localhost:6379/1")
+
+async def get_task_cached(task_id: int) -> Task | None:
+    key = f"task:{task_id}"
+    cached = await cache.get(key)
+    if cached:
+        return Task.model_validate_json(cached)
+    task = await task_repository.get(task_id)
+    if task:
+        await cache.setex(key, 300, task.model_dump_json())  # 5 分钟过期
+    return task
+```
+
+::: {.content-visible when-format="html"}
+<div class="pcf-toy" data-toy="ch12-cache-aside-sim"></div>
+:::
+
+#### 7. 日志观测结构 → 观测系统
+
+**结构描述**：程序需要记录运行状态、追踪错误、监控性能。
+
+**构造件**：logging (stdlib) / OpenTelemetry / Sentry / Datadog / Prometheus + Grafana
+
+**胶水代码**：日志配置、span 定义、指标采集。
+
+```python
+# OpenTelemetry 承接观测结构
+from opentelemetry import trace
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+
+tracer = trace.get_tracer(__name__)
+
+app = FastAPI()
+FastAPIInstrumentor.instrument_app(app)
+
+@app.post("/tasks")
+def create_task(request: TaskCreateRequest):
+    with tracer.start_as_current_span("create_task") as span:
+        span.set_attribute("task.title", request.title)
+        result = task_service.create(request)
+        span.set_attribute("task.id", result.id)
+        return result
+```
+
+#### 8. 接口契约结构 → 文档生成
+
+**结构描述**：API 需要有文档和客户端可以消费的契约。
+
+**构造件**：OpenAPI / Swagger / GraphQL (Apollo)
+
+**胶水代码**：文档配置、schema 注释。
+
+```python
+# FastAPI 自动生成 OpenAPI 文档
+app = FastAPI(
+    title="Task Manager API",
+    description="任务管理系统 API",
+    version="1.0.0",
+)
+# 访问 /docs 即可查看 Swagger UI
+```
+
+#### 9. 部署运行结构 → 容器化
+
+**结构描述**：程序需要在一致的环境中运行、部署、扩展。
+
+**构造件**：Docker / Docker Compose / Kubernetes / Serverless
+
+**胶水代码**：Dockerfile, docker-compose.yml, k8s manifests
+
+```dockerfile
+# Dockerfile
+FROM python:3.12-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+```
+
+#### 10. 测试验证结构 → 测试框架
+
+**结构描述**：后端需要测试 API 逻辑、业务规则、数据访问。
+
+**构造件**：pytest / Jest (Node.js) / JUnit (Java)
+
+**胶水代码**：fixtures、mock 配置、测试用例。
+
+```python
+# pytest 承接测试结构
+import pytest
+from unittest.mock import Mock
+
+def test_create_task_success():
+    service = TaskService(repository=Mock())
+    request = TaskCreateRequest(title="测试任务", priority="high")
+    result = service.create(request)
+    assert result.title == "测试任务"
+    assert result.status == "open"
+```
+
+### 后端构造件选择动作链
+
+```text
+识别 API 入口结构，选择 Web 框架承接：FastAPI / Express / Spring Boot
+识别输入验证结构，选择验证库承接：Pydantic / Zod / Joi
+识别权限控制结构，选择认证与授权构造件承接：Auth middleware / Spring Security / Passport
+识别数据访问结构，选择 ORM 承接：SQLAlchemy / Prisma / TypeORM
+识别异步任务结构，选择队列承接：Celery / BullMQ
+识别缓存结构，选择缓存层承接：Redis / Memcached
+识别日志观测结构，选择观测库承接：OpenTelemetry / Sentry / logging
+识别接口契约结构，选择文档生成工具承接：OpenAPI / Swagger
+识别部署运行结构，选择容器化方案承接：Docker / Compose / k8s
+识别测试验证结构，选择测试框架承接：pytest / Jest / JUnit
+```
+
+## 例子与实践
+
+### 场景：Task Manager 的后端构造件选择
+
+| 结构 | 构造件 | 胶水代码 |
+|------|--------|---------|
+| API 入口 | FastAPI | app 定义、路由注册 |
+| 输入验证 | Pydantic | Request/Response schema |
+| 权限 | JWT + middleware | token 验证、角色检查 |
+| 数据访问 | SQLAlchemy + asyncpg | 模型定义、迁移脚本 |
+| 异步任务 | Celery + Redis | 任务定义、worker |
+| 缓存 | Redis | 缓存 key 策略、过期配置 |
+| 日志 | OpenTelemetry | span 定义、导出配置 |
+| 接口文档 | OpenAPI (FastAPI 内置) | schema 注释、标签 |
+| 容器化 | Docker + Compose | Dockerfile + compose |
+| 测试 | pytest | fixtures、mock 配置 |
+
+### 后端构造件的核心原则
+
+后端也有构造件——只是它们不表现为视觉组件：
+
+- Web 框架承接 API 入口结构
+- 验证库承接输入边界结构
+- 权限构造件承接权限结构
+- ORM 承接数据访问结构
+- 任务队列承接异步任务结构
+- 缓存库承接缓存结构
+- 观测库承接日志观测结构
+- OpenAPI 承接接口契约结构
+- Docker 承接部署运行结构
+- 测试库承接可靠性结构
+
+## 小结
+
+后端构造件和前端构造件遵循同样的逻辑：**结构决定构造件。** 先有结构建模，再选构造件，最后补胶水代码。
+
+后端构造件的特殊性在于它们不处理 UI，而是处理数据的输入、存储、处理、输出和观测。但核心原则一样：库不是少写代码，库是稳定结构的可复用承接物。
+
+下一章进入最后一类构造件：脚手架——把结构规格变成可运行的项目壳。
+
+::: {.content-visible when-format="html"}
+<div class="pcf-toy" data-toy="ch12-backend-pipeline"></div>
+:::
+
+## 本章产物
+
+完成本章后，你拥有以下可交付产物：
+
+- **后端结构到构造件映射表**（标注每个结构选用的构造件与所需胶水代码）
+
+完整分类参考[附录 E：后端构造件分类表](appendix-e-backend-asset-catalog.qmd)。
+
+
+## 从业者输出
+
+完成本章后，你能做三件事：
+
+第一，对一个后端项目，说出每个使用的库承接了什么程序结构。用了 FastAPI？承接 API 入口结构。用了 SQLAlchemy？承接数据访问结构。
+
+第二，使用后端构造件选择决策树，为一个新后端项目选择合适的构造件组合。
+
+第三，区分"后端框架"和"后端构造件"。你知道 FastAPI 是框架（承接多个结构），而 Pydantic 是库（承接验证结构）。
+
+产出物是后端结构到构造件映射表，标注每个结构选择了什么构造件以及需要补的胶水代码。

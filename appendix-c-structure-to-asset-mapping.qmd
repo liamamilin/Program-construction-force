@@ -1,0 +1,59 @@
+---
+title: "结构到构造件映射表（Structure-to-Asset Mapping）"
+---
+
+本附录汇总每种结构问题对应的可选构造件和需要补的胶水代码。
+
+## 前端结构到构造件
+
+| 结构问题 | 可选构造件 | 胶水代码 |
+|---------|-----------|---------|
+| 需要 UI 组件展示 | MUI / Ant Design / shadcn/ui / Chakra UI | 主题配置、样式覆盖、组件组合 |
+| 需要页面流转 | React Router / Vue Router / TanStack Router | 路由配置、导航组件、路由守卫 |
+| 需要全局状态 | Redux Toolkit / Zustand / Pinia | Store 定义、action、reducer |
+| 需要服务端数据 | TanStack Query / SWR / Apollo / RTK Query | Query 定义、缓存配置、loading/error 处理 |
+| 需要表单输入 | React Hook Form / Formik / Vue Form | 字段注册、验证绑定、提交处理 |
+| 需要输入验证 | Zod / Yup / Valibot / Joi | Schema 定义、错误消息、类型推导 |
+| 需要用户反馈 | notistack / react-hot-toast / sonner / SweetAlert2 | Toast 配置、确认对话框 |
+| 需要图表展示 | ECharts / Recharts / D3.js / Chart.js | 图表配置、数据转换、响应式适配 |
+| 需要 UI 测试 | Vitest + Testing Library / Jest + Testing Library | 组件渲染测试、交互测试、快照测试 |
+| 需要 E2E 测试 | Playwright / Cypress | Page Object 定义、测试用例 |
+| 需要工程壳 | Vite / Next.js / Nuxt / Rsbuild | 目录结构、构建配置、环境变量 |
+
+## 后端结构到构造件
+
+| 结构问题 | 可选构造件 | 胶水代码 |
+|---------|-----------|---------|
+| 需要 API 入口 | FastAPI / Express / Spring Boot / Flask / Gin | 路由注册、请求解析、中间件配置 |
+| 需要输入验证 | Pydantic / Zod / Joi / class-validator | Schema 定义、自定义验证、错误格式化 |
+| 需要身份认证 | JWT lib / OAuth2 lib / Passport.js | Token 签发、验证中间件、session 管理 |
+| 需要权限控制 | Auth middleware / Spring Security / CASL | 角色定义、权限检查、注解/AOP |
+| 需要数据持久化 | SQLAlchemy / Prisma / TypeORM / Django ORM / Mongoose | 模型定义、迁移脚本、查询封装 |
+| 需要缓存 | Redis / Memcached / cache-manager | 缓存 key 策略、过期配置、缓存更新 |
+| 需要异步任务 | Celery / BullMQ / Sidekiq / RQ | 任务定义、worker 配置、结果存储 |
+| 需要日志观测 | OpenTelemetry / logging / Sentry / Datadog | Span 定义、日志格式、导出配置 |
+| 需要接口文档 | OpenAPI / Swagger / GraphQL (Apollo) | Schema 注释、标签、示例 |
+| 需要容器化 | Docker / Docker Compose / Kubernetes | Dockerfile、compose 文件、k8s manifests |
+| 需要后端测试 | pytest / Jest / JUnit / Mocha | Fixtures、mock 配置、测试用例 |
+| 需要定时任务 | Celery Beat / cron / APScheduler | 任务定义、调度配置 |
+
+## 脚手架结构到构造件
+
+| 项目类型 | 可选脚手架 | 预制结构 |
+|---------|-----------|---------|
+| 前端 SPA | Vite + React / Vue / Svelte | 构建配置、HMR、TypeScript |
+| 全栈应用 | Next.js / Nuxt / Remix | 前端+后端、SSR、路由 |
+| 后端 API | FastAPI 模板 / Express 生成器 | 路由结构、中间件、测试配置 |
+| 微服务 | Spring Initializr / Go kit | 服务模板、配置、健康检查 |
+| 全栈 Docker | Docker Compose 模板 | 多服务定义、网络配置、卷挂载 |
+
+## 胶水代码分类
+
+| 胶水类型 | 描述 | 例子 |
+|---------|------|------|
+| 配置胶水 | 构造件的初始化配置 | app = FastAPI() / engine = create_engine() |
+| 路由胶水 | 请求到处理函数的映射 | router.include_router(...) |
+| 依赖胶水 | 层与层之间的依赖注入 | Depends(get_task_service) |
+| 数据转换胶水 | 不同数据格式的转换 | model_validate / to_dto / map |
+| 适配器胶水 | 适配外部服务接口 | NotificationService.__init__ |
+| 错误处理胶水 | 构造件异常到业务异常的映射 | except IntegrityError → ValidationError |

@@ -1,0 +1,259 @@
+---
+title: "脚手架：把结构规格变成项目壳（Scaffold）"
+---
+
+## 本章问题
+
+选择完构造件之后，你不能从零写目录结构、配置文件、构建脚本。你需要一个起点——一个已经把工程壳搭好的项目骨架。这个骨架就是脚手架。问题不是你用不用脚手架，而是什么样的脚手架适合你的结构规格。
+
+## 背景：为什么这章重要
+
+脚手架（Scaffold）是构造件层的最后一类。它不是单个库或框架，而是一组结构规格的**默认落地形态**。
+
+脚手架不解决具体业务，但解决：
+- 目录结构在哪里
+- 入口文件在哪里
+- 配置放在哪里
+- 依赖怎么管理
+- 构建和运行命令是什么
+- 测试放在哪里
+- 扩展位置在哪里
+
+选择脚手架的时机：当结构规格中的大部分结构有稳定构造件承接时，脚手架是最快的起点。
+
+## 核心内容
+
+### 脚手架的定义
+
+脚手架是一组结构规格的默认落地形态。它提供：
+- 目录结构（约定文件位置）
+- 入口文件（启动点）
+- 配置文件（环境、构建、部署）
+- 依赖声明（package.json / requirements.txt）
+- 构建脚本（build / dev / test 命令）
+- 基础代码（空壳组件、空服务）
+- 测试配置（test runner 设置）
+
+| 维度 | 说明 |
+|------|------|
+| 解决的问题 | 每次从零搭项目壳的重复劳动 |
+| 输入 | 结构规格 + 构造件选择 |
+| 输出 | 可运行的项目壳 |
+| 边界 | 不包含业务逻辑 |
+| 取舍 | 脚手架越定制，启动越快；越通用，灵活性越低 |
+
+### 前端脚手架：Vite + React
+
+以 Vite + React + TypeScript 为例，看脚手架落地了什么结构。
+
+```text
+project/
+├── index.html              # 入口 HTML
+├── package.json            # 依赖管理
+├── tsconfig.json           # TypeScript 配置
+├── vite.config.ts          # 构建配置
+├── src/
+│   ├── main.tsx            # React 入口
+│   ├── App.tsx             # 根组件
+│   ├── routes/             # 路由结构
+│   │   └── index.tsx
+│   ├── pages/              # 页面组件
+│   │   ├── TaskListPage.tsx
+│   │   ├── TaskDetailPage.tsx
+│   │   └── CreateTaskPage.tsx
+│   ├── components/         # 通用组件
+│   │   ├── Layout.tsx
+│   │   ├── TaskCard.tsx
+│   │   └── StatusBadge.tsx
+│   ├── hooks/              # 自定义钩子
+│   │   ├── useTasks.ts
+│   │   └── useAuth.ts
+│   ├── stores/             # 全局状态
+│   │   ├── authStore.ts
+│   │   └── uiStore.ts
+│   ├── api/                # API 客户端
+│   │   └── taskApi.ts
+│   ├── schemas/            # 验证 schema
+│   │   └── taskSchema.ts
+│   ├── types/              # 类型定义
+│   │   └── task.ts
+│   └── tests/              # 测试
+│       ├── components/
+│       └── pages/
+```
+
+脚手架中的每个目录对应一个结构：
+
+| 目录 | 承接的结构 | 构造件 |
+|------|-----------|--------|
+| routes/ | 页面流转结构 | React Router |
+| pages/ | 页面结构 | React |
+| components/ | 组件组合结构 | React + MUI |
+| hooks/ | 服务端数据状态 | TanStack Query |
+| stores/ | 全局共享状态 | Zustand |
+| api/ | API 边界结构 | fetch / axios |
+| schemas/ | 字段约束结构 | Zod |
+| types/ | 类型结构 | TypeScript |
+| tests/ | 测试结构 | Vitest |
+
+### 后端脚手架：FastAPI + SQLAlchemy
+
+```text
+project/
+├── requirements.txt        # 依赖管理
+├── alembic.ini             # 数据库迁移配置
+├── Dockerfile              # 容器化
+├── docker-compose.yml      # 本地开发环境
+├── app/
+│   ├── __init__.py
+│   ├── main.py             # FastAPI 入口
+│   ├── config.py           # 配置项
+│   ├── api/                # API 边界层
+│   │   ├── __init__.py
+│   │   ├── routers/
+│   │   │   ├── task_router.py
+│   │   │   └── user_router.py
+│   │   └── schemas/
+│   │       ├── task_schema.py
+│   │       └── user_schema.py
+│   ├── services/           # 业务逻辑层
+│   │   ├── __init__.py
+│   │   ├── task_service.py
+│   │   └── notification_service.py
+│   ├── repositories/       # 数据访问层
+│   │   ├── __init__.py
+│   │   └── task_repository.py
+│   ├── models/             # 数据模型层
+│   │   ├── __init__.py
+│   │   ├── task.py
+│   │   └── user.py
+│   ├── tasks/              # 异步任务
+│   │   ├── __init__.py
+│   │   └── notifications.py
+│   └── tests/              # 测试
+│       ├── __init__.py
+│       ├── test_api/
+│       ├── test_services/
+│       └── test_repositories/
+```
+
+::: {.content-visible when-format="html"}
+<div class="pcf-toy" data-toy="ch13-scaffold-explorer"></div>
+:::
+
+### 脚手架选择检查表
+
+| 检查项 | 核验动作 | 满足条件 |
+|--------|---------|---------|
+| 目录结构 | 对照结构规格核验项目目录层级 | 前端具备 `pages/components/routes/hooks` |
+| 入口配置 | 核验运行入口与构建配置完整可用 | 具备 `package.json`/`vite.config.ts`/`tsconfig.json` |
+| 构造件集成 | 确认已预装或易于接入选中构造件 | 预装或零冲突接入 React Router / MUI / Zustand |
+| 测试配置 | 核验测试运行器配置开箱即用 | 具备 `vitest.config.ts` / `pytest.ini` |
+| 运行命令 | 执行启动命令验证本地热重载 | `npm run dev` / `uvicorn app.main:app` |
+| 扩展位置 | 确认新增业务代码的目录归属 | 各层职责与命名约定清晰 |
+
+### 脚手架 vs 从零搭建
+
+| 维度 | 从零搭建 | 脚手架 |
+|------|---------|--------|
+| 时间 | 30-60 分钟搭项目壳 | 1 分钟 |
+| 控制力 | 完全控制 | 受限于脚手架约定 |
+| 一致性 | 依赖个人经验 | 团队约定一致 |
+| 最佳实践 | 可能遗漏 | 已内置最佳实践 |
+| 学习成本 | 需要自己决定结构 | 学习脚手架约定即可 |
+
+## 例子与实践
+
+### 场景：Task Manager 的脚手架选择
+
+**选择**：前端用 Vite + React 脚手架，后端用 FastAPI 项目模板。
+
+**前端脚手架**：`npm create vite@latest task-manager -- --template react-ts`
+
+```bash
+# 安装构造件
+npm install react-router-dom @mui/material @emotion/react @emotion/styled
+npm install @tanstack/react-query zustand react-hook-form zod
+npm install notistack
+npm install -D vitest @testing-library/react @testing-library/jest-dom
+```
+
+**后端脚手架**：从 FastAPI 模板开始
+
+```bash
+# 创建项目结构和安装依赖
+mkdir task-manager-api && cd task-manager-api
+pip install fastapi uvicorn sqlalchemy asyncpg alembic
+pip install pydantic pydantic-settings celery redis
+pip install opentelemetry-api opentelemetry-sdk
+pip install pytest pytest-asyncio httpx
+```
+
+**脚手架落地后的目录结构**：
+
+```text
+task-manager/
+├── frontend/                  # Vite + React
+│   ├── src/
+│   │   ├── pages/             # 页面：列表、详情、创建
+│   │   ├── components/        # 通用组件
+│   │   ├── hooks/             # TanStack Query hooks
+│   │   ├── stores/            # Zustand stores
+│   │   ├── api/               # API 客户端
+│   │   ├── schemas/           # Zod schemas
+│   │   └── tests/             # Vitest 测试
+│   └── package.json
+├── backend/                   # FastAPI + SQLAlchemy
+│   ├── app/
+│   │   ├── api/               # 路由 + schema
+│   │   ├── services/          # 业务逻辑
+│   │   ├── repositories/      # 数据访问
+│   │   ├── models/            # ORM 模型
+│   │   └── tests/             # pytest 测试
+│   ├── Dockerfile
+│   └── requirements.txt
+└── docker-compose.yml         # 前端 + 后端 + 数据库 + Redis
+```
+
+### 脚手架使用建议
+
+1. **先用结构规格评估**：如果结构规格简单（5 个以下 API，3 个以下页面），选择简单的脚手架。结构复杂时选择更完整的脚手架。
+2. **脚手架是起点不是终点**：随着开发推进，目录结构会扩展。脚手架只负责最初的壳。
+3. **团队统一脚手架**：团队内使用统一的脚手架声明，确保所有项目结构一致。
+4. **自定义脚手架**：如果团队长期做类似项目，可以创建自己的脚手架模板。
+
+## 小结
+
+脚手架是构造件层的最后一类。它是结构规格的默认落地形态——不解决业务，但解决项目壳。
+
+脚手架的选择时机：当结构规格中的大部分结构有稳定构造件承接时，脚手架是最快的起点。
+
+脚手架不决定业务逻辑，它决定：代码放哪里、怎么启动、怎么构建、怎么测试。
+
+下一章进入 Part 5 程序组装层——把结构规格、构造件选择和胶水代码连接成可运行系统。
+
+::: {.content-visible when-format="html"}
+<div class="pcf-toy" data-toy="ch13-scaffold-chooser"></div>
+:::
+
+## 本章产物
+
+完成本章后，你拥有以下可交付产物：
+
+- **脚手架目录结构图**（标注每个目录对应的结构与构造件）
+- **脚手架选择检查表**
+
+脚手架速查见[附录 C：结构到构造件映射表](appendix-c-structure-to-asset-mapping.qmd#脚手架结构到构造件)。
+
+
+## 从业者输出
+
+完成本章后，你能做三件事：
+
+第一，为一个新项目选择合适的脚手架。你知道什么时候用 Vite（前端）、什么时候用 Next.js（全栈）、什么时候用 FastAPI 模板（后端）。
+
+第二，检查现有项目的脚手架完整性。逐一对照标准目录结构，标记缺失项（如 tests/、hooks/、schemas/ 等目录）。
+
+第三，为一个结构规格设计对应的脚手架目录结构。你知道每个目录对应什么结构、放什么代码。
+
+产出物是脚手架目录结构图，标注每个目录对应的结构和构造件。

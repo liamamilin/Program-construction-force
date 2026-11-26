@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 340" width="920" height="340" role="img" aria-label="需求场景六要素到五类程序结构的拆解映射图">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#ecfeff"/>
+    </linearGradient>
+    <marker id="arr2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#0891b2"/>
+    </marker>
+    <filter id="sh2" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <rect width="920" height="340" rx="14" fill="url(#bg2)"/>
+  <text x="460" y="32" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="17" font-weight="700" fill="#0f172a">从业务需求到程序结构的五个出口</text>
+  <text x="460" y="52" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="12" fill="#475569">用词性抽取法把模糊业务语言翻译为 Part 3 结构建模层可直接消费的结构产物</text>
+
+  <!-- Left Box: Demand Scenario -->
+  <g filter="url(#sh2)">
+    <rect x="28" y="80" width="215" height="226" rx="12" fill="#ffffff" stroke="#4f46e5" stroke-width="2"/>
+    <rect x="28" y="80" width="215" height="36" rx="10" fill="#4f46e5"/>
+    <rect x="28" y="104" width="215" height="12" fill="#4f46e5"/>
+    <text x="135" y="103" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="13.5" font-weight="700" fill="#ffffff">需求场景六要素</text>
+    <text x="46" y="142" font-family="PingFang SC, sans-serif" font-size="12.5" font-weight="600" fill="#1e293b">1. 问题（Problem）</text>
+    <text x="46" y="168" font-family="PingFang SC, sans-serif" font-size="12.5" font-weight="600" fill="#1e293b">2. 用户（User）</text>
+    <text x="46" y="194" font-family="PingFang SC, sans-serif" font-size="12.5" font-weight="600" fill="#1e293b">3. 动作（Action）</text>
+    <text x="46" y="220" font-family="PingFang SC, sans-serif" font-size="12.5" font-weight="600" fill="#1e293b">4. 输入（Input）</text>
+    <text x="46" y="246" font-family="PingFang SC, sans-serif" font-size="12.5" font-weight="600" fill="#1e293b">5. 输出（Output）</text>
+    <text x="46" y="272" font-family="PingFang SC, sans-serif" font-size="12.5" font-weight="600" fill="#1e293b">6. 失败（Failure）</text>
+    <text x="46" y="295" font-family="PingFang SC, sans-serif" font-size="10.5" fill="#64748b">纯业务语言 · 不含代码与技术选型</text>
+  </g>
+
+  <!-- Middle Pills (Extraction Lenses) & Right Boxes -->
+  <!-- Row 1 -->
+  <path d="M 243 128 C 285 128, 290 98, 330 98" fill="none" stroke="#0891b2" stroke-width="1.8" marker-end="url(#arr2)"/>
+  <rect x="334" y="78" width="126" height="40" rx="20" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5"/>
+  <text x="397" y="103" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="12.5" font-weight="700" fill="#0369a1">提取 [名词]</text>
+  <line x1="460" y1="98" x2="508" y2="98" stroke="#0891b2" stroke-width="1.8" marker-end="url(#arr2)"/>
+  <g filter="url(#sh2)">
+    <rect x="512" y="78" width="380" height="40" rx="10" fill="#ffffff" stroke="#0284c7" stroke-width="1.5"/>
+    <text x="528" y="103" font-family="PingFang SC, sans-serif" font-size="13" font-weight="700" fill="#0f172a">领域结构</text>
+    <text x="602" y="103" font-family="PingFang SC, sans-serif" font-size="11.5" fill="#475569">→ 对象卡片（Task/User/Project）、字段、关系</text>
+  </g>
+
+  <!-- Row 2 -->
+  <path d="M 243 170 C 285 170, 290 146, 330 146" fill="none" stroke="#0891b2" stroke-width="1.8" marker-end="url(#arr2)"/>
+  <rect x="334" y="126" width="126" height="40" rx="20" fill="#dcfce7" stroke="#059669" stroke-width="1.5"/>
+  <text x="397" y="151" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="12.5" font-weight="700" fill="#047857">提取 [动词]</text>
+  <line x1="460" y1="146" x2="508" y2="146" stroke="#0891b2" stroke-width="1.8" marker-end="url(#arr2)"/>
+  <g filter="url(#sh2)">
+    <rect x="512" y="126" width="380" height="40" rx="10" fill="#ffffff" stroke="#059669" stroke-width="1.5"/>
+    <text x="528" y="151" font-family="PingFang SC, sans-serif" font-size="13" font-weight="700" fill="#0f172a">交互结构</text>
+    <text x="602" y="151" font-family="PingFang SC, sans-serif" font-size="11.5" fill="#475569">→ 用户动作（create/assign）、系统事件、命令查询</text>
+  </g>
+
+  <!-- Row 3 -->
+  <line x1="243" y1="194" x2="330" y2="194" stroke="#0891b2" stroke-width="1.8" marker-end="url(#arr2)"/>
+  <rect x="334" y="174" width="126" height="40" rx="20" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+  <text x="397" y="199" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="12.5" font-weight="700" fill="#b45309">提取 [阶段]</text>
+  <line x1="460" y1="194" x2="508" y2="194" stroke="#0891b2" stroke-width="1.8" marker-end="url(#arr2)"/>
+  <g filter="url(#sh2)">
+    <rect x="512" y="174" width="380" height="40" rx="10" fill="#ffffff" stroke="#d97706" stroke-width="1.5"/>
+    <text x="528" y="199" font-family="PingFang SC, sans-serif" font-size="13" font-weight="700" fill="#0f172a">状态结构</text>
+    <text x="602" y="199" font-family="PingFang SC, sans-serif" font-size="11.5" fill="#475569">→ 状态拥有者、合法状态集与状态转移路径</text>
+  </g>
+
+  <!-- Row 4 -->
+  <path d="M 243 230 C 285 230, 290 242, 330 242" fill="none" stroke="#0891b2" stroke-width="1.8" marker-end="url(#arr2)"/>
+  <rect x="334" y="222" width="126" height="40" rx="20" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="397" y="247" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="12.5" font-weight="700" fill="#6d28d9">提取 [交互点]</text>
+  <line x1="460" y1="242" x2="508" y2="242" stroke="#0891b2" stroke-width="1.8" marker-end="url(#arr2)"/>
+  <g filter="url(#sh2)">
+    <rect x="512" y="222" width="380" height="40" rx="10" fill="#ffffff" stroke="#7c3aed" stroke-width="1.5"/>
+    <text x="528" y="247" font-family="PingFang SC, sans-serif" font-size="13" font-weight="700" fill="#0f172a">边界结构</text>
+    <text x="602" y="247" font-family="PingFang SC, sans-serif" font-size="11.5" fill="#475569">→ 表单 UI、REST API、数据库、外部通知契约</text>
+  </g>
+
+  <!-- Row 5 -->
+  <path d="M 243 268 C 285 268, 290 290, 330 290" fill="none" stroke="#0891b2" stroke-width="1.8" marker-end="url(#arr2)"/>
+  <rect x="334" y="270" width="126" height="40" rx="20" fill="#ffe4e6" stroke="#e11d48" stroke-width="1.5"/>
+  <text x="397" y="295" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="12.5" font-weight="700" fill="#be123c">提取 [限制]</text>
+  <line x1="460" y1="290" x2="508" y2="290" stroke="#0891b2" stroke-width="1.8" marker-end="url(#arr2)"/>
+  <g filter="url(#sh2)">
+    <rect x="512" y="270" width="380" height="40" rx="10" fill="#ffffff" stroke="#e11d48" stroke-width="1.5"/>
+    <text x="528" y="295" font-family="PingFang SC, sans-serif" font-size="13" font-weight="700" fill="#0f172a">约束与可靠性</text>
+    <text x="626" y="295" font-family="PingFang SC, sans-serif" font-size="11.5" fill="#475569">→ 字段校验、权限限制、重试与降级策略</text>
+  </g>
+</svg>

@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 310" width="920" height="310" role="img" aria-label="低阶语法材料到程序表达单元的转换关系图">
+  <defs>
+    <linearGradient id="bg3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#f0fdf4"/>
+    </linearGradient>
+    <marker id="arr3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#059669"/>
+    </marker>
+    <filter id="sh3" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <rect width="920" height="310" rx="14" fill="url(#bg3)"/>
+  <text x="460" y="32" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="17" font-weight="700" fill="#0f172a">支撑模块：从低阶代码材料到局部程序表达单元</text>
+  <text x="460" y="52" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="12" fill="#475569">语法材料本身不携带业务语义，组合后形成稳定局部表达，服务于上层程序结构</text>
+
+  <!-- Left: 6 Materials -->
+  <g filter="url(#sh3)">
+    <rect x="28" y="76" width="248" height="206" rx="12" fill="#ffffff" stroke="#64748b" stroke-width="1.8"/>
+    <rect x="28" y="76" width="248" height="34" rx="10" fill="#334155"/>
+    <rect x="28" y="98" width="248" height="12" fill="#334155"/>
+    <text x="152" y="98" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="13" font-weight="700" fill="#ffffff">六类低阶代码材料（第 3 章）</text>
+    <text x="46" y="133" font-family="PingFang SC, sans-serif" font-size="12" fill="#1e293b">• 数据材料：变量 / list / dict / str</text>
+    <text x="46" y="157" font-family="PingFang SC, sans-serif" font-size="12" fill="#1e293b">• 控制材料：if / elif / for / while</text>
+    <text x="46" y="181" font-family="PingFang SC, sans-serif" font-size="12" fill="#1e293b">• 抽象材料：def / class / lambda</text>
+    <text x="46" y="205" font-family="PingFang SC, sans-serif" font-size="12" fill="#1e293b">• 调用材料：func() / obj.method()</text>
+    <text x="46" y="229" font-family="PingFang SC, sans-serif" font-size="12" fill="#1e293b">• 外部交互：open / import / I/O</text>
+    <text x="46" y="253" font-family="PingFang SC, sans-serif" font-size="12" fill="#1e293b">• 失败处理：try / except / raise</text>
+  </g>
+
+  <!-- Arrow 1 -->
+  <line x1="276" y1="179" x2="330" y2="179" stroke="#059669" stroke-width="2.2" marker-end="url(#arr3)"/>
+  <text x="303" y="168" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11" font-weight="600" fill="#059669">语法组合</text>
+
+  <!-- Middle: 5 Expression Units -->
+  <g filter="url(#sh3)">
+    <rect x="334" y="76" width="290" height="206" rx="12" fill="#ffffff" stroke="#059669" stroke-width="2"/>
+    <rect x="334" y="76" width="290" height="34" rx="10" fill="#059669"/>
+    <rect x="334" y="98" width="290" height="12" fill="#059669"/>
+    <text x="479" y="98" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="13" font-weight="700" fill="#ffffff">五类程序表达单元（第 4–5 章）</text>
+    <text x="352" y="136" font-family="PingFang SC, sans-serif" font-size="12" fill="#1e293b"><tspan font-weight="700" fill="#047857">1. 数据表示</tspan>：表示 · 字段 · 关系 · 配置</text>
+    <text x="352" y="164" font-family="PingFang SC, sans-serif" font-size="12" fill="#1e293b"><tspan font-weight="700" fill="#047857">2. 集合处理</tspan>：筛选 · 转换 · 查找 · 聚合</text>
+    <text x="352" y="192" font-family="PingFang SC, sans-serif" font-size="12" fill="#1e293b"><tspan font-weight="700" fill="#047857">3. 判断规则</tspan>：条件 · 规则 · 验证 · 权限</text>
+    <text x="352" y="220" font-family="PingFang SC, sans-serif" font-size="12" fill="#1e293b"><tspan font-weight="700" fill="#047857">4. 运行推进</tspan>：状态 · 状态变化 · 动作 · 流程</text>
+    <text x="352" y="248" font-family="PingFang SC, sans-serif" font-size="12" fill="#1e293b"><tspan font-weight="700" fill="#047857">5. 失败交付</tspan>：失败 · 恢复 · 输出 · 反馈</text>
+  </g>
+
+  <!-- Arrow 2 -->
+  <line x1="624" y1="179" x2="678" y2="179" stroke="#4f46e5" stroke-width="2.2" stroke-dasharray="5,3" marker-end="url(#arr3)"/>
+  <text x="651" y="168" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11" font-weight="600" fill="#4f46e5">局部实现</text>
+
+  <!-- Right: Note about Boundary -->
+  <g filter="url(#sh3)">
+    <rect x="682" y="76" width="210" height="206" rx="12" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.8"/>
+    <text x="787" y="110" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="14" font-weight="700" fill="#3730a3">关键边界</text>
+    <line x1="712" y1="124" x2="862" y2="124" stroke="#c7d2fe" stroke-width="1.5"/>
+    <text x="787" y="152" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="12" fill="#1e293b">表达单元是“局部语义”</text>
+    <text x="787" y="176" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="12" fill="#1e293b">它帮助读懂和编写片段，</text>
+    <text x="787" y="200" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="12" font-weight="700" fill="#4f46e5">但不是程序结构的来源。</text>
+    <rect x="704" y="222" width="166" height="40" rx="8" fill="#ffffff" stroke="#a5b4fc"/>
+    <text x="787" y="246" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="11.5" font-weight="600" fill="#3730a3">程序结构来自需求抽取</text>
+  </g>
+</svg>

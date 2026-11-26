@@ -1,0 +1,331 @@
+---
+title: "前端构造件：组件库、路由、状态、表单、请求与反馈（Frontend Assets）"
+---
+
+## 本章问题
+
+前端开发在近十年经历了爆炸式的构造件增长。React、Vue、MUI、React Router、Redux、Zustand、TanStack Query、React Hook Form、Zod、Next.js、Vite——这些不是零散的工具集合。它们每一个都承接了一个特定的前端结构。如果不知道每个构造件承接什么结构，前端开发就变成了"装了一堆库但不知道怎么组织"。
+
+## 背景：为什么这章重要
+
+前端构造件是结构建模层中**界面结构、交互结构、状态结构、边界结构**的现成承接物。
+
+**前端库不是帮你少写代码，而是帮你承接已经稳定化的界面结构、交互结构、状态结构、边界结构和反馈结构。**
+
+这句话是本章的核心。本章不做前端工具大全，而是做结构到构造件的映射。
+
+前端构造件出现在结构建模之后——你有了页面结构、交互流程、状态结构，再去选构造件，而不是反过来先装一堆库再想怎么用。
+
+## 核心内容
+
+### 十类前端结构到构造件映射
+
+#### 1. 页面结构 → 路由构造件
+
+**结构描述**：程序有多个页面，页面之间通过 URL 切换。
+
+**构造件**：React Router / Vue Router / Next.js Router / TanStack Router
+
+**胶水代码**：路由配置、页面组件、导航链接、路由守卫。
+
+```typescript
+// 路由构造件承接页面流转结构
+const router = createBrowserRouter([
+  { path: "/", element: <Layout />, children: [
+    { path: "tasks", element: <TaskListPage /> },
+    { path: "tasks/:id", element: <TaskDetailPage /> },
+    { path: "tasks/create", element: <CreateTaskPage /> },
+    { path: "login", element: <LoginPage /> },
+  ]},
+]);
+```
+
+#### 2. 组件组合结构 → UI 框架
+
+**结构描述**：UI 由组件树组成，组件之间通过 props/events 通信。
+
+**构造件**：React / Vue / Svelte
+
+**胶水代码**：组件定义、props 接口、事件处理、条件渲染。
+
+```typescript
+// React 承接组件组合结构
+function TaskCard({ task, onStatusChange }: TaskCardProps) {
+  return (
+    <Card>
+      <CardContent>
+        <Typography variant="h6">{task.title}</Typography>
+        <StatusBadge status={task.status} />
+      </CardContent>
+      <CardActions>
+        <Button onClick={() => onStatusChange(task.id, "pending_review")}>
+          提交完成
+        </Button>
+      </CardActions>
+    </Card>
+  );
+}
+```
+
+#### 3. UI 展示结构 → 组件库
+
+**结构描述**：需要按钮、卡片、表单输入、表格、对话框、导航栏等 UI 元素。
+
+**构造件**：MUI / Ant Design / shadcn/ui / Chakra UI / Tailwind CSS
+
+**胶水代码**：主题配置、样式覆盖、布局组合。
+
+```typescript
+// MUI 承接 UI 展示结构
+<Table>
+  <TableHead>
+    <TableRow>
+      <TableCell>标题</TableCell>
+      <TableCell>状态</TableCell>
+      <TableCell>优先级</TableCell>
+      <TableCell>操作</TableCell>
+    </TableRow>
+  </TableHead>
+  <TableBody>
+    {tasks.map(task => (
+      <TableRow key={task.id}>
+        <TableCell>{task.title}</TableCell>
+        <TableCell><Chip label={task.status} /></TableCell>
+        <TableCell><PriorityBadge priority={task.priority} /></TableCell>
+        <TableCell><Button>操作</Button></TableCell>
+      </TableRow>
+    ))}
+  </TableBody>
+</Table>
+```
+
+#### 4. 表单交互结构 → 表单库
+
+**结构描述**：用户填写表单，字段注册、输入追踪、验证触发、提交处理。
+
+**构造件**：React Hook Form / Formik / Vue Form
+
+**胶水代码**：字段注册、验证规则、提交处理。
+
+```typescript
+// React Hook Form + MUI 简化示例
+// 注意：MUI 的 Select、DatePicker 等受控组件在生产中通常通过 <Controller>
+// 包装来与 React Hook Form 集成。本示例简化了该细节以聚焦结构展示。
+function TaskForm({ onSubmit }: TaskFormProps) {
+  const { register, handleSubmit, formState: { errors } } = useForm<TaskInput>();
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <TextField {...register("title", { required: "标题必填", maxLength: 200 })} />
+      {errors.title && <ErrorText>{errors.title.message}</ErrorText>}
+      <Select {...register("priority")}>
+        <option value="low">低</option>
+        <option value="medium">中</option>
+        <option value="high">高</option>
+        <option value="urgent">紧急</option>
+      </Select>
+      <DatePicker {...register("due_date")} />
+      <Button type="submit">创建</Button>
+    </form>
+  );
+}
+```
+
+#### 5. 字段约束结构 → 验证库
+
+**结构描述**：输入数据需要类型校验、格式校验、范围校验。
+
+**构造件**：Zod / Yup / Valibot / Joi
+
+**胶水代码**：schema 定义、错误消息、类型推导。
+
+```typescript
+// Zod 承接字段约束结构
+const TaskSchema = z.object({
+  title: z.string().min(1, "标题必填").max(200, "标题最长 200 字"),
+  description: z.string().max(2000).optional(),
+  priority: z.enum(["low", "medium", "high", "urgent"]),
+  due_date: z.string().date().optional(),
+});
+
+type TaskInput = z.infer<typeof TaskSchema>; // 自动推导类型
+```
+
+#### 6. 服务端数据状态结构 → 请求库
+
+**结构描述**：前端需要从后端获取数据、缓存、自动刷新、处理 loading/error 状态。
+
+**构造件**：TanStack Query / SWR / Apollo Client / RTK Query
+
+**胶水代码**：查询定义、缓存配置、数据转换。
+
+```typescript
+// TanStack Query 承接服务端数据状态
+function useTasks(filters: TaskFilters) {
+  return useQuery({
+    queryKey: ["tasks", filters],
+    queryFn: () => {
+      const qs = new URLSearchParams(filters as Record<string, string>).toString();
+      return fetch(`/api/tasks?${qs}`).then(res => res.json());
+    },
+    staleTime: 30_000, // 30 秒内不重新请求
+  });
+}
+
+// 使用时自动获得 loading / error / data 状态
+function TaskList() {
+  const { data, isLoading, error } = useTasks({ status: "open" });
+  if (isLoading) return <Skeleton />;
+  if (error) return <ErrorAlert />;
+  return data.map(task => <TaskCard key={task.id} task={task} />);
+}
+```
+
+::: {.content-visible when-format="html"}
+<div class="pcf-toy" data-toy="ch11-query-cache-sim"></div>
+:::
+
+#### 7. 全局状态结构 → 状态库
+
+**结构描述**：多个组件需要共享同一份状态（用户信息、主题设置、当前项目）。
+
+**构造件**：Redux Toolkit / Zustand / Pinia / Jotai
+
+**胶水代码**：store 定义、状态切片、action。
+
+```typescript
+// Zustand 承接全局共享状态
+interface AuthState {
+  user: User | null;
+  token: string | null;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
+}
+
+const useAuthStore = create<AuthState>((set) => ({
+  user: null,
+  token: null,
+  login: async (email, password) => {
+    const { user, token } = await authApi.login(email, password);
+    set({ user, token });
+  },
+  logout: () => set({ user: null, token: null }),
+}));
+```
+
+#### 8. 反馈结构 → 通知组件库
+
+**结构描述**：操作完成后需要给用户反馈——成功提示、错误提示、确认对话框。
+
+**构造件**：notistack / react-hot-toast / sonner / MUI Snackbar / SweetAlert2
+
+**胶水代码**：反馈配置、toast 调用。
+
+```typescript
+// 反馈结构 → Toast 通知
+function TaskActions({ task }: { task: Task }) {
+  const { enqueueSnackbar } = useSnackbar();
+
+  const handleComplete = async () => {
+    try {
+      await completeTask(task.id);
+      enqueueSnackbar("任务已完成", { variant: "success" });
+    } catch (error) {
+      enqueueSnackbar("操作失败: " + error.message, { variant: "error" });
+    }
+  };
+
+  return <Button onClick={handleComplete}>完成任务</Button>;
+}
+```
+
+#### 9. 可视化输出结构 → 图表库
+
+**结构描述**：需要图表展示统计数据、趋势、分布。
+
+**构造件**：ECharts / Recharts / D3.js / Chart.js
+
+#### 10. 测试验证结构 → 测试框架
+
+**结构描述**：需要测试组件渲染、用户交互、API 响应。
+
+**构造件**：Vitest / Testing Library / Playwright / Cypress
+
+### 前端构造件选择动作链
+
+```text
+识别工程壳结构，选择脚手架承接：Vite / Next.js / Nuxt
+识别页面流转结构，选择路由库承接：React Router / Vue Router
+识别 UI 展示结构，选择组件库承接：MUI / Ant Design / shadcn/ui
+识别表单交互结构，选择表单库承接：React Hook Form / Formik
+识别字段约束结构，选择验证库承接：Zod / Yup
+识别服务端数据状态结构，选择请求库承接：TanStack Query / SWR
+识别全局共享状态结构，选择状态库承接：Zustand / Redux / Pinia
+识别反馈结构，选择通知库承接：notistack / toast
+识别测试验证结构，选择测试库承接：Vitest / Testing Library
+```
+
+## 例子与实践
+
+### 场景：Task Manager 的前端构造件选择
+
+| 结构 | 构造件 | 胶水代码 |
+|------|--------|---------|
+| 工程壳 | Vite + React | vite.config.ts, tsconfig.json |
+| 页面路由 | React Router v6 | router.tsx, 页面组件映射 |
+| UI 组件 | MUI | theme.ts, 样式覆盖 |
+| 表单 | React Hook Form | useForm 钩子, 字段注册 |
+| 验证 | Zod | TaskSchema 定义 |
+| 服务端数据 | TanStack Query | useTasks, useTask, useMutations |
+| 全局状态 | Zustand | useAuthStore, useUIStore |
+| 反馈 | notistack | SnackbarProvider, 调用封装 |
+| 测试 | Vitest + Testing Library | test utils, mock 配置 |
+
+### 前端构造件的核心原则
+
+前端库不是零散工具，而是**结构承接物**：
+
+- 组件库承接界面展示结构
+- 路由库承接页面流转结构
+- 状态库承接状态拥有和状态变化结构
+- 请求库承接服务端数据状态结构
+- 表单库承接输入交互结构
+- 验证库承接字段约束结构
+- 反馈库承接用户反馈结构
+- 测试库承接可靠性结构
+- 脚手架承接项目壳结构
+
+## 小结
+
+前端构造件不是前端工具清单。它是**结构到实现的映射**。当你有了页面结构、交互结构、状态结构、边界结构后，每个结构都有对应的构造件可以承接。
+
+前端库不是帮你少写代码——它们是帮你承接已经稳定化的程序结构。
+
+下一章进入后端构造件：API、数据访问、权限、任务、缓存与观测。
+
+::: {.content-visible when-format="html"}
+<div class="pcf-toy" data-toy="ch11-frontend-mapper"></div>
+:::
+
+## 本章产物
+
+完成本章后，你拥有以下可交付产物：
+
+- **前端结构到构造件映射表**（标注每个结构选用的构造件与所需胶水代码）
+
+完整分类参考[附录 D：前端构造件分类表](appendix-d-frontend-asset-catalog.qmd)。
+
+
+## 从业者输出
+
+完成本章后，你能做四件事：
+
+第一，说出每个前端库承接了什么程序结构。你不再说"用了 React Hook Form 处理表单"，而是说"React Hook Form 承接了输入交互结构"。
+
+第二，判断一个前端库在结构建模层的定位。看到一个新库时，你先问"这个库承接了什么结构"而不是"这个库有什么功能"。
+
+第三，使用前端构造件选择决策树，为一个前端项目选择合适的构造件组合。你知道先选脚手架，再选路由，再选组件库，再选状态管理——按结构的层级选。
+
+第四，发现前端项目中构造件的缺失。如果项目有表单但没有验证库，你知道"表单交互结构缺少字段约束承接"。
+
+产出物是前端结构到构造件映射表，标注每个结构选择了什么构造件以及需要补的胶水代码。

@@ -1,0 +1,350 @@
+---
+title: "自写代码、构造件和胶水代码如何连接（Glue Code and Assembly）"
+---
+
+## 本章问题
+
+第 14 章做了实现决策：哪些自己写、哪些交给构造件、哪些用脚手架。但有了这些决策不等于它们能自动工作。自写代码需要调用构造件，构造件之间需要适配，数据需要在不同层之间流动。这些连接代码就是胶水代码（Glue Code）。问题不是"要不要胶水代码"，而是"胶水代码写在哪里、怎么写、怎么最小化"。
+
+## 背景：为什么这章重要
+
+胶水代码是连接自写代码和构造件的适配代码。它的职责是**让不同来源的代码片段可以协同工作**。
+
+胶水代码不是业务逻辑——它不解决业务问题。胶水代码也不是构造件本身——它只是让构造件在项目中跑起来。
+
+胶水代码太少：构造件之间不通，数据流断裂。
+
+胶水代码太多：你的"项目"变成了一个巨大的胶水层，构造件反而成了点缀。
+
+胶水代码的原则：**不多不少，把构造件接通即可。**
+
+## 核心内容
+
+以下代码用于展示胶水代码的结构落地方式，不代表完整生产配置。示例在不影响结构展示的前提下做了简化，不保证所有 async/sync 混用场景可直接运行。
+
+### 胶水代码的六种类型
+
+#### 1. 配置胶水
+
+让构造件知道项目的基本参数。
+
+```python
+# FastAPI 配置胶水
+app = FastAPI(title="Task Manager", version="1.0.0")
+
+# SQLAlchemy 配置胶水
+DATABASE_URL = "postgresql+asyncpg://user:pass@localhost:5432/taskmanager"
+engine = create_async_engine(DATABASE_URL)
+session = async_sessionmaker(engine)
+
+# Celery 配置胶水
+celery_app = Celery("tasks", broker="redis://localhost:6379/0")
+```
+
+#### 2. 路由胶水
+
+把入口请求导向对应的处理函数。
+
+```python
+# FastAPI 后端路由胶水
+app.include_router(task_router, prefix="/api/tasks", tags=["tasks"])
+app.include_router(user_router, prefix="/api/users", tags=["users"])
+```
+
+```typescript
+// React Router 前端路由胶水
+const router = createBrowserRouter([
+  { path: "/", element: <Layout />, children: [
+    { path: "tasks", element: <TaskListPage /> },
+    { path: "tasks/:id", element: <TaskDetailPage /> },
+    { path: "tasks/create", element: <CreateTaskPage /> },
+  ]}
+]);
+```
+
+#### 3. 依赖胶水
+
+让不同层之间可以互相调用。
+
+```python
+# 依赖注入胶水 — 连接 API → Service → Repository
+def get_task_service() -> TaskService:
+    repo = TaskRepository(session)
+    notifier = NotificationService(email_client)
+    return TaskService(repo=repo, notifier=notifier)
+
+@app.post("/tasks")
+def create_task(
+    request: TaskCreateRequest,
+    service: TaskService = Depends(get_task_service),
+    current_user: User = Depends(get_current_user),
+):
+    task = service.create(
+        title=request.title,
+        description=request.description,
+        priority=request.priority,
+        due_date=request.due_date,
+        creator_id=current_user.id,
+    )
+    return TaskResponse.from_orm(task)
+```
+
+#### 4. 数据转换胶水
+
+在不同的数据格式之间做转换。
+
+```python
+# 数据转换胶水 — Pydantic schema ↔ ORM Model
+class TaskResponse(BaseModel):
+    id: int
+    title: str
+    status: str
+    assignee_name: str | None = None
+
+    @classmethod
+    def from_orm(cls, task: TaskModel) -> "TaskResponse":
+        return cls(
+            id=task.id,
+            title=task.title,
+            status=task.status,
+            assignee_name=task.assignee.name if task.assignee else None,
+        )
+
+# 使用
+@app.get("/tasks/{task_id}")
+def get_task(task_id: int, service: TaskService = Depends(get_task_service)):
+    task = service.get(task_id)
+    if not task:
+        raise HTTPException(status_code=404)
+    return TaskResponse.from_orm(task)
+```
+
+#### 5. 适配器胶水
+
+让自写代码适应构造件的接口约定。
+
+```python
+# 适配器胶水 — 适配外部通知服务
+class NotificationService:
+    def __init__(self, email_client: EmailClient):
+        self.email_client = email_client
+
+    def notify_assignee(self, task: Task):
+        # 胶水代码：把业务对象适配到外部服务接口
+        if task.assignee and task.assignee.email:
+            self.email_client.send(
+                to=task.assignee.email,
+                subject=f"新任务: {task.title}",
+                body=f"您已被分配任务: {task.title}",
+            )
+```
+
+#### 6. 错误处理胶水
+
+把构造件抛出的底层异常映射为自写代码的业务错误语义。
+
+```python
+# 错误处理胶水 — 把 SQLAlchemy 异常映射到业务错误
+from sqlalchemy.exc import IntegrityError, OperationalError
+from tenacity import retry, stop_after_attempt, wait_exponential
+
+class TaskRepository:
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1))
+    def create(self, **kwargs) -> Task:
+        try:
+            task = TaskModel(**kwargs)
+            self.session.add(task)
+            self.session.commit()
+            return task
+        except IntegrityError:
+            raise ValidationError("数据冲突")
+        except OperationalError:
+            raise DatabaseError("数据库不可用")
+```
+
+![三分法、六类胶水代码与最小可运行系统拓扑图](assets/diagrams/scaffold-glue-system.svg)
+
+::: {.content-visible when-format="html"}
+<div class="pcf-toy" data-toy="ch15-glue-xray"></div>
+:::
+
+### 目录结构中的胶水代码位置
+
+```text
+backend/
+├── app/
+│   ├── main.py              # 配置胶水 + 路由胶水
+│   ├── config.py            # 配置胶水
+│   ├── api/
+│   │   ├── routers/         # 路由胶水
+│   │   └── schemas/         # 数据转换胶水
+│   ├── services/            # 自写代码（业务逻辑）
+│   ├── repositories/        # 数据转换胶水 + 错误处理胶水
+│   └── adapters/            # 适配器胶水
+
+frontend/
+├── src/
+│   ├── main.tsx             # 配置胶水
+│   ├── App.tsx              # 路由胶水
+│   ├── routes/              # 路由胶水
+│   ├── api/                 # 数据转换胶水
+│   ├── hooks/               # 数据转换胶水（连接 API → 组件）
+│   ├── stores/              # 状态胶水（连接全局状态 → 组件）
+│   └── components/          # 自写代码（UI 业务逻辑）
+```
+
+### 胶水代码的最小化原则
+
+胶水代码的原则：**能少则少，不能不写。**
+
+减少胶水代码的方法：
+
+1. **选接口兼容的构造件**：FastAPI 和 Pydantic 天然兼容，不需要额外适配。Express 和 Mongoose 也天然兼容。
+2. **用脚手架的标准目录**：脚手架已经定义了目录结构和规则，减少配置胶水。
+3. **保持构造件版本一致**：API 不兼容的升级会增加额外的适配胶水。
+4. **避免过度封装**：不要把构造件的 API 再包一层"以防未来要换"——未来大概率不会换。
+
+```python
+# ❌ 过度封装（增加无意义的胶水）
+class MyHttpClient:
+    def get_tasks(self):  # 只是包了一层，没有额外逻辑
+        return requests.get("/api/tasks")
+
+# ✓ 直接使用构造件
+# 直接调用 TanStack Query 的 useQuery
+
+# ✓ 合理的胶水：加入了构造件没有的业务逻辑
+class TaskRepository:
+    def get_with_validation(self, task_id: int) -> Task:
+        task = self.session.get(TaskModel, task_id)
+        if task and task.status == "closed" and datetime.now() - task.closed_at > timedelta(days=30):
+            task.archived = True  # 业务逻辑：超期的 closed 任务自动归档
+        return task
+```
+
+## 例子与实践
+
+### 场景：Task Manager 的完整胶水代码
+
+```python
+# config.py — 配置胶水
+from pydantic_settings import BaseSettings
+
+class Settings(BaseSettings):
+    database_url: str = "postgresql+asyncpg://localhost:5432/taskmanager"
+    redis_url: str = "redis://localhost:6379/0"
+    jwt_secret: str = "your-secret-key"
+    email_api_key: str = ""
+
+settings = Settings()  # pydantic-settings 自动读取环境变量
+
+# main.py — 配置胶水 + 路由胶水
+from fastapi import FastAPI
+from app.api.routers import task_router, user_router
+
+app = FastAPI(title="Task Manager API", version="1.0.0")
+app.include_router(task_router, prefix="/api/tasks")
+app.include_router(user_router, prefix="/api/users")
+
+# repositories/task_repository.py — 数据转换 + 错误处理胶水
+class TaskRepository:
+    def __init__(self, session: async_sessionmaker):
+        self.session = session
+
+    @retry(stop=stop_after_attempt(3))
+    async def create(self, data: dict) -> TaskModel:
+        async with self.session() as db:
+            task = TaskModel(**data)
+            db.add(task)
+            await db.commit()
+            await db.refresh(task)
+            return task
+
+# api/schemas/task_schema.py — 数据转换胶水
+class TaskResponse(BaseModel):
+    id: int
+    title: str
+    status: str
+    priority: str
+    assignee_name: str | None = None
+
+    @classmethod
+    def from_orm(cls, task: TaskModel) -> "TaskResponse":
+        return cls(
+            id=task.id,
+            title=task.title,
+            status=task.status,
+            priority=task.priority,
+            assignee_name=task.assignee.name if task.assignee else None,
+        )
+
+# api/routers/task_router.py — 路由胶水 + 依赖胶水
+from fastapi import APIRouter, Depends
+
+router = APIRouter()
+
+def get_task_service():
+    return TaskService(
+        repo=TaskRepository(session),
+        notifier=NotificationService(email_client),
+    )
+
+@router.post("/", response_model=TaskResponse)
+async def create_task(
+    request: TaskCreateRequest,
+    service: TaskService = Depends(get_task_service),
+    user: User = Depends(get_current_user),
+):
+    task = await service.create(
+        title=request.title,
+        description=request.description,
+        priority=request.priority,
+        due_date=request.due_date,
+        creator_id=user.id,
+    )
+    return TaskResponse.from_orm(task)
+```
+
+### 胶水代码检查表
+
+| 检查项 | 标准 | 状态 |
+|--------|------|------|
+| 集中管理所有配置 | 所有配置在一个文件 | ✓ config.py |
+| 注册每个 API 组 | 在 main.py 用 include_router 注册 | ✓ |
+| 注入 Service 依赖 | 通过参数传入而非全局变量 | ✓ |
+| 转换 ORM → Response 格式 | 在 schema 层定义转换方法 | ✓ `from_orm` / `model_validate` |
+| 适配外部服务接口 | 用 adapter 包装第三方 SDK | ✓ `NotificationService` |
+| 映射构造件异常到业务异常 | 在 repository 层捕获并重抛 | ✓ `TaskRepository` + `retry` |
+
+::: {.content-visible when-format="html"}
+<div class="pcf-toy" data-toy="ch15-glue-ratio-meter"></div>
+:::
+
+## 小结
+
+胶水代码是连接自写代码和构造件的适配代码。六种类型（配置、路由、依赖、数据转换、适配器、错误处理）覆盖了所有连接场景。
+
+胶水代码的原则：能少则少，不能不写。好的胶水代码让自写代码和构造件各司其职，坏的项目是一大块胶水代码里掺了一点构造件调用。
+
+有了实现方案（第 14 章）和胶水架构（本章），最后一章做的事：确认系统可运行。
+
+## 本章产物
+
+完成本章后，你拥有以下可交付产物：
+
+- **胶水代码架构图**（标注六类胶水代码及其文件位置）
+- **胶水代码检查表**
+
+胶水分类速查见[附录 C：结构到构造件映射表](appendix-c-structure-to-asset-mapping.qmd#胶水代码分类)。
+
+## 从业者输出
+
+完成本章后，你能做三件事：
+
+第一，在项目中识别出胶水代码，清晰区分业务逻辑（自写代码）、构造件本身与连接适配层。
+
+第二，评估项目胶水代码占比：当超过一半代码都在做配置、路由、数据转换和适配时，果断更换接口更兼容的构造件组合。
+
+第三，为新项目设计胶水代码架构。你知道配置放哪里、路由怎么注册、依赖怎么注入、数据怎么转换、外部服务怎么适配。
+
+产出物是胶水代码架构图，标注每类是哪种胶水代码以及对应的文件位置。
