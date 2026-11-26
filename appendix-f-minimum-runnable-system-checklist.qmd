@@ -2,7 +2,11 @@
 title: "最小可运行系统检查表（Minimum Runnable System Checklist）"
 ---
 
-本附录提供最小可运行系统的完整验收检查表。
+本附录提供最小可运行系统的完整验收检查表。你可以直接在下方交互验收台中逐项勾选（进度自动保存到本地浏览器）并一键导出 Markdown 验收报告。
+
+::: {.content-visible when-format="html"}
+<div class="pcf-toy" data-toy="appf-mrs-checklist"></div>
+:::
 
 ## 启动检查
 

@@ -4,6 +4,8 @@ project:
   resources:
     - assets/toys/*.js
     - assets/diagrams/*.svg
+    - assets/cover.svg
+    - assets/favicon.svg
 
 lang: zh
 
@@ -12,6 +14,10 @@ book:
   subtitle: "从需求结构到构造件组装，把想法变成可运行系统"
   author: "Lin.MI"
   date: today
+  cover-image: assets/cover.svg
+  favicon: assets/favicon.svg
+  open-graph: true
+  twitter-card: true
   description: "拿到一个需求后，如何把它拆成程序可以承接的结构，如何判断哪些部分自己写、哪些部分交给库、框架、组件或脚手架，最后如何组装成一个最小可运行系统。五层递进：需求场景 → 程序结构建模 → 构造件选择 → 胶水代码连接 → 最小可运行系统。"
   chapters:
     - index.qmd
@@ -49,6 +55,7 @@ book:
     - appendix-d-frontend-asset-catalog.qmd
     - appendix-e-backend-asset-catalog.qmd
     - appendix-f-minimum-runnable-system-checklist.qmd
+    - appendix-g-ai-assisted-construction.qmd
   search: true
   page-navigation: true
   reader-mode: true

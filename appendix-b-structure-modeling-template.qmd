@@ -2,9 +2,11 @@
 title: "结构建模模板（Structure Modeling Templates）"
 ---
 
-本附录提供可重复使用的空白模板表格，供读者在自己的项目中按结构建模层记录程序结构。
+本附录提供可重复使用的空白模板表格，供读者在自己的项目中按结构建模层记录程序结构。你可以直接在下方交互生成器中填写并导出完整 Markdown 规格包，也可以复制对应表格离线填写。
 
-使用方式：复制对应表格，在项目中填写。
+::: {.content-visible when-format="html"}
+<div class="pcf-toy" data-toy="appb-spec-generator"></div>
+:::
 
 ---
 

@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1060" width="800" height="1060" role="img" aria-label="程序构造力书籍封面">
+  <defs>
+    <linearGradient id="covBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="55%" stop-color="#1e1b4b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4f46e5" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.05"/>
+    </linearGradient>
+    <linearGradient id="bar1" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#22d3ee"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="1060" fill="url(#covBg)"/>
+  <!-- Subtle architectural grid -->
+  <g stroke="#334155" stroke-opacity="0.25" stroke-width="1">
+    <line x1="80" y1="0" x2="80" y2="1060"/>
+    <line x1="240" y1="0" x2="240" y2="1060"/>
+    <line x1="400" y1="0" x2="400" y2="1060"/>
+    <line x1="560" y1="0" x2="560" y2="1060"/>
+    <line x1="720" y1="0" x2="720" y2="1060"/>
+    <line x1="0" y1="160" x2="800" y2="160"/>
+    <line x1="0" y1="360" x2="800" y2="360"/>
+    <line x1="0" y1="560" x2="800" y2="560"/>
+    <line x1="0" y1="760" x2="800" y2="760"/>
+    <line x1="0" y1="920" x2="800" y2="920"/>
+  </g>
+  <circle cx="640" cy="220" r="260" fill="url(#glow)"/>
+
+  <!-- Top kicker -->
+  <rect x="76" y="88" width="238" height="32" rx="16" fill="#312e81" stroke="#6366f1" stroke-width="1.2"/>
+  <text x="195" y="109" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12.5" font-weight="700" fill="#c7d2fe" letter-spacing="1.5">INTERACTIVE TECH BOOK</text>
+
+  <!-- Title -->
+  <text x="76" y="218" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="76" font-weight="800" fill="#f8fafc" letter-spacing="3">程序构造力</text>
+  <text x="78" y="264" font-family="Inter, SF Pro Display, sans-serif" font-size="22" font-weight="600" fill="#818cf8" letter-spacing="2.2">PROGRAM CONSTRUCTION FORCE</text>
+  <rect x="76" y="294" width="140" height="5" rx="3" fill="url(#bar1)"/>
+
+  <!-- Subtitle -->
+  <text x="76" y="346" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="23" font-weight="500" fill="#cbd5e1">从需求结构到构造件组装，把想法变成可运行系统</text>
+
+  <!-- 5-Layer Isometric / Stacked Architecture Diagram -->
+  <g transform="translate(76, 412)">
+    <!-- Layer 1 -->
+    <rect x="0" y="0" width="648" height="66" rx="12" fill="#1e293b" stroke="#6366f1" stroke-width="2"/>
+    <rect x="0" y="0" width="10" height="66" rx="5" fill="#6366f1"/>
+    <text x="30" y="29" font-family="PingFang SC, sans-serif" font-size="18" font-weight="700" fill="#f8fafc">01 · 需求场景层</text>
+    <text x="30" y="51" font-family="PingFang SC, sans-serif" font-size="13" fill="#94a3b8">六要素场景描述 · 五类结构出口拆解</text>
+    <text x="622" y="39" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="13" fill="#818cf8">WHAT</text>
+
+    <!-- Layer 2 -->
+    <rect x="0" y="84" width="648" height="66" rx="12" fill="#1e293b" stroke="#06b6d4" stroke-width="2"/>
+    <rect x="0" y="84" width="10" height="66" rx="5" fill="#06b6d4"/>
+    <text x="30" y="113" font-family="PingFang SC, sans-serif" font-size="18" font-weight="700" fill="#f8fafc">02 · 程序结构建模层</text>
+    <text x="30" y="135" font-family="PingFang SC, sans-serif" font-size="13" fill="#94a3b8">领域 · 交互 · 状态 · 边界 · 组合 + 约束可靠性切面</text>
+    <text x="622" y="123" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="13" fill="#22d3ee">SPEC</text>
+
+    <!-- Layer 3 -->
+    <rect x="0" y="168" width="648" height="66" rx="12" fill="#1e293b" stroke="#10b981" stroke-width="2"/>
+    <rect x="0" y="168" width="10" height="66" rx="5" fill="#10b981"/>
+    <text x="30" y="197" font-family="PingFang SC, sans-serif" font-size="18" font-weight="700" fill="#f8fafc">03 · 构造件选择层</text>
+    <text x="30" y="219" font-family="PingFang SC, sans-serif" font-size="13" fill="#94a3b8">前端构造件 · 后端构造件 · 脚手架项目壳</text>
+    <text x="622" y="207" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="13" fill="#34d399">ASSETS</text>
+
+    <!-- Layer 4 -->
+    <rect x="0" y="252" width="648" height="66" rx="12" fill="#1e293b" stroke="#f59e0b" stroke-width="2"/>
+    <rect x="0" y="252" width="10" height="66" rx="5" fill="#f59e0b"/>
+    <text x="30" y="281" font-family="PingFang SC, sans-serif" font-size="18" font-weight="700" fill="#f8fafc">04 · 胶水代码连接层</text>
+    <text x="30" y="303" font-family="PingFang SC, sans-serif" font-size="13" fill="#94a3b8">实现方案三分法 · 六类最小化胶水代码</text>
+    <text x="622" y="291" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="13" fill="#fbbf24">GLUE</text>
+
+    <!-- Layer 5 -->
+    <rect x="0" y="336" width="648" height="66" rx="12" fill="#1e293b" stroke="#f43f5e" stroke-width="2"/>
+    <rect x="0" y="336" width="10" height="66" rx="5" fill="#f43f5e"/>
+    <text x="30" y="365" font-family="PingFang SC, sans-serif" font-size="18" font-weight="700" fill="#f8fafc">05 · 最小可运行系统</text>
+    <text x="30" y="387" font-family="PingFang SC, sans-serif" font-size="13" fill="#94a3b8">一键启动 · 核心跑通 · 自动化测试 · 六要素验收</text>
+    <text x="622" y="375" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="13" fill="#fb7185">SYSTEM</text>
+
+    <!-- Support Bar -->
+    <rect x="0" y="424" width="648" height="44" rx="10" fill="#0f172a" stroke="#64748b" stroke-width="1.4" stroke-dasharray="6,4"/>
+    <text x="324" y="451" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="13.5" fill="#94a3b8">贯穿支撑模块：基础代码材料与程序表达  ·  配套 35 个浏览器交互实验</text>
+  </g>
+
+  <!-- Footer Author -->
+  <line x1="76" y1="934" x2="724" y2="934" stroke="#334155" stroke-width="1"/>
+  <text x="76" y="982" font-family="Inter, PingFang SC, sans-serif" font-size="24" font-weight="700" fill="#f8fafc">Lin.MI</text>
+  <text x="724" y="982" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="14" fill="#64748b">Task Manager Full-Stack Edition</text>
+</svg>

@@ -24,8 +24,11 @@ ROOT = Path(__file__).resolve().parent.parent
 def main() -> int:
     errors: list[str] = []
 
-    # 1. 收集 JS 注册的实验 ID
-    js_files = sorted(glob.glob(str(ROOT / "assets/toys/part*.js")))
+    # 1. 收集 JS 注册的实验 ID（涵盖 part1-5 与 appendices）
+    js_files = sorted(
+        p for p in glob.glob(str(ROOT / "assets/toys/*.js"))
+        if Path(p).name != "core.js"
+    )
     registered: list[str] = []
     reg_by_file: dict[str, list[str]] = {}
     for jf in js_files:
@@ -99,6 +102,7 @@ def main() -> int:
             "assets/toys/part3.js",
             "assets/toys/part4.js",
             "assets/toys/part5.js",
+            "assets/toys/appendices.js",
             "PCFToys.mountAll()",
         ]
         positions = [ltxt.find(tok) for tok in expected_order]
